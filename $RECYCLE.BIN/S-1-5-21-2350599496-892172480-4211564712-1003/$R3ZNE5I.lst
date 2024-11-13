@@ -1,0 +1,888 @@
+
+rust.elf64:     file format elf64-x86-64
+
+SYMBOL TABLE:
+0000000000000000 l    df *ABS*	0000000000000000 ../boot/initializer.rasm
+0000000000000019 l       .text	0000000000000000 .n_so
+0000000000000000 l    df *ABS*	0000000000000000 kernel.c086fedab0d9f4aa-cgu.0
+0000000000000000 g       *ABS*	0000000000000000 LS_Phys
+0000000000002000 g       .bss	0000000000000000 LS_Bss
+0000000000000000 g       .text	0000000000000000 LS_Code
+0000000000002000 g       .data	0000000000000000 end
+0000000000001062 g       .data	0000000000000000 LS_Data
+0000000000002000 g       .bss	0000000000000000 _bss
+0000000000001000 g     F .text.rust_begin_unwind	0000000000000002 .hidden rust_begin_unwind
+0000000000001010 g     F .text._start	0000000000000052 _start
+0000000000002000 g       .bss	0000000000000000 bss
+0000000000000000 g       *ABS*	0000000000000000 LS_Virt
+0000000000001062 g       .data	0000000000000000 data
+0000000000001062 g       .data	0000000000000000 _data
+0000000000002000 g       .data	0000000000000000 _end
+0000000000000000 g       .text	0000000000000000 code
+0000000000000000 g       .text	0000000000000000 start
+0000000000000000 g       .text	0000000000000000 _code
+
+
+
+Disassembly of section .text:
+
+0000000000000000 <LS_Code>:
+       0:	48 b8 4f 2f 4b 2f 41 	movabs rax,0x1f592f412f4b2f4f
+       7:	2f 59 1f 
+       a:	48 89 04 25 00 80 0b 	mov    QWORD PTR ds:0xb8000,rax
+      11:	00 
+      12:	e8 f9 0f 00 00       	call   1010 <_start>
+      17:	eb fe                	jmp    17 <LS_Code+0x17>
+
+0000000000000019 <.n_so>:
+      19:	0f 1f 00             	nop    DWORD PTR [rax]
+      1c:	48                   	rex.W
+      1d:	65 6c                	gs ins BYTE PTR es:[rdi],dx
+      1f:	6c                   	ins    BYTE PTR es:[rdi],dx
+      20:	6f                   	outs   dx,DWORD PTR ds:[rsi]
+      21:	20 57 6f             	and    BYTE PTR [rdi+0x6f],dl
+      24:	72 6c                	jb     92 <.n_so+0x79>
+      26:	64 20 66 72          	and    BYTE PTR fs:[rsi+0x72],ah
+      2a:	6f                   	outs   dx,DWORD PTR ds:[rsi]
+      2b:	6d                   	ins    DWORD PTR es:[rdi],dx
+      2c:	20 52 55             	and    BYTE PTR [rdx+0x55],dl
+      2f:	53                   	push   rbx
+      30:	54                   	push   rsp
+      31:	21 66 2e             	and    DWORD PTR [rsi+0x2e],esp
+      34:	0f 1f 84 00 00 00 00 	nop    DWORD PTR [rax+rax*1+0x0]
+      3b:	00 
+      3c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      43:	00 00 00 
+      46:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      4d:	00 00 00 
+      50:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      57:	00 00 00 
+      5a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      61:	00 00 00 
+      64:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      6b:	00 00 00 
+      6e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      75:	00 00 00 
+      78:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      7f:	00 00 00 
+      82:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      89:	00 00 00 
+      8c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      93:	00 00 00 
+      96:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      9d:	00 00 00 
+      a0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      a7:	00 00 00 
+      aa:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      b1:	00 00 00 
+      b4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      bb:	00 00 00 
+      be:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      c5:	00 00 00 
+      c8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      cf:	00 00 00 
+      d2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      d9:	00 00 00 
+      dc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      e3:	00 00 00 
+      e6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      ed:	00 00 00 
+      f0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+      f7:	00 00 00 
+      fa:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     101:	00 00 00 
+     104:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     10b:	00 00 00 
+     10e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     115:	00 00 00 
+     118:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     11f:	00 00 00 
+     122:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     129:	00 00 00 
+     12c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     133:	00 00 00 
+     136:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     13d:	00 00 00 
+     140:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     147:	00 00 00 
+     14a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     151:	00 00 00 
+     154:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     15b:	00 00 00 
+     15e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     165:	00 00 00 
+     168:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     16f:	00 00 00 
+     172:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     179:	00 00 00 
+     17c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     183:	00 00 00 
+     186:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     18d:	00 00 00 
+     190:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     197:	00 00 00 
+     19a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1a1:	00 00 00 
+     1a4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1ab:	00 00 00 
+     1ae:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1b5:	00 00 00 
+     1b8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1bf:	00 00 00 
+     1c2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1c9:	00 00 00 
+     1cc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1d3:	00 00 00 
+     1d6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1dd:	00 00 00 
+     1e0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1e7:	00 00 00 
+     1ea:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1f1:	00 00 00 
+     1f4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     1fb:	00 00 00 
+     1fe:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     205:	00 00 00 
+     208:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     20f:	00 00 00 
+     212:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     219:	00 00 00 
+     21c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     223:	00 00 00 
+     226:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     22d:	00 00 00 
+     230:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     237:	00 00 00 
+     23a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     241:	00 00 00 
+     244:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     24b:	00 00 00 
+     24e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     255:	00 00 00 
+     258:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     25f:	00 00 00 
+     262:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     269:	00 00 00 
+     26c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     273:	00 00 00 
+     276:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     27d:	00 00 00 
+     280:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     287:	00 00 00 
+     28a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     291:	00 00 00 
+     294:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     29b:	00 00 00 
+     29e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2a5:	00 00 00 
+     2a8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2af:	00 00 00 
+     2b2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2b9:	00 00 00 
+     2bc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2c3:	00 00 00 
+     2c6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2cd:	00 00 00 
+     2d0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2d7:	00 00 00 
+     2da:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2e1:	00 00 00 
+     2e4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2eb:	00 00 00 
+     2ee:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2f5:	00 00 00 
+     2f8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     2ff:	00 00 00 
+     302:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     309:	00 00 00 
+     30c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     313:	00 00 00 
+     316:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     31d:	00 00 00 
+     320:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     327:	00 00 00 
+     32a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     331:	00 00 00 
+     334:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     33b:	00 00 00 
+     33e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     345:	00 00 00 
+     348:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     34f:	00 00 00 
+     352:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     359:	00 00 00 
+     35c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     363:	00 00 00 
+     366:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     36d:	00 00 00 
+     370:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     377:	00 00 00 
+     37a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     381:	00 00 00 
+     384:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     38b:	00 00 00 
+     38e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     395:	00 00 00 
+     398:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     39f:	00 00 00 
+     3a2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     3a9:	00 00 00 
+     3ac:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     3b3:	00 00 00 
+     3b6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     3bd:	00 00 00 
+     3c0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     3c7:	00 00 00 
+     3ca:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     3d1:	00 00 00 
+     3d4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     3db:	00 00 00 
+     3de:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     3e5:	00 00 00 
+     3e8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     3ef:	00 00 00 
+     3f2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     3f9:	00 00 00 
+     3fc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     403:	00 00 00 
+     406:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     40d:	00 00 00 
+     410:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     417:	00 00 00 
+     41a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     421:	00 00 00 
+     424:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     42b:	00 00 00 
+     42e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     435:	00 00 00 
+     438:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     43f:	00 00 00 
+     442:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     449:	00 00 00 
+     44c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     453:	00 00 00 
+     456:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     45d:	00 00 00 
+     460:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     467:	00 00 00 
+     46a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     471:	00 00 00 
+     474:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     47b:	00 00 00 
+     47e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     485:	00 00 00 
+     488:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     48f:	00 00 00 
+     492:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     499:	00 00 00 
+     49c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4a3:	00 00 00 
+     4a6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4ad:	00 00 00 
+     4b0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4b7:	00 00 00 
+     4ba:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4c1:	00 00 00 
+     4c4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4cb:	00 00 00 
+     4ce:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4d5:	00 00 00 
+     4d8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4df:	00 00 00 
+     4e2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4e9:	00 00 00 
+     4ec:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4f3:	00 00 00 
+     4f6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     4fd:	00 00 00 
+     500:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     507:	00 00 00 
+     50a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     511:	00 00 00 
+     514:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     51b:	00 00 00 
+     51e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     525:	00 00 00 
+     528:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     52f:	00 00 00 
+     532:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     539:	00 00 00 
+     53c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     543:	00 00 00 
+     546:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     54d:	00 00 00 
+     550:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     557:	00 00 00 
+     55a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     561:	00 00 00 
+     564:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     56b:	00 00 00 
+     56e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     575:	00 00 00 
+     578:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     57f:	00 00 00 
+     582:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     589:	00 00 00 
+     58c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     593:	00 00 00 
+     596:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     59d:	00 00 00 
+     5a0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     5a7:	00 00 00 
+     5aa:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     5b1:	00 00 00 
+     5b4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     5bb:	00 00 00 
+     5be:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     5c5:	00 00 00 
+     5c8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     5cf:	00 00 00 
+     5d2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     5d9:	00 00 00 
+     5dc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     5e3:	00 00 00 
+     5e6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     5ed:	00 00 00 
+     5f0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     5f7:	00 00 00 
+     5fa:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     601:	00 00 00 
+     604:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     60b:	00 00 00 
+     60e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     615:	00 00 00 
+     618:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     61f:	00 00 00 
+     622:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     629:	00 00 00 
+     62c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     633:	00 00 00 
+     636:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     63d:	00 00 00 
+     640:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     647:	00 00 00 
+     64a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     651:	00 00 00 
+     654:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     65b:	00 00 00 
+     65e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     665:	00 00 00 
+     668:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     66f:	00 00 00 
+     672:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     679:	00 00 00 
+     67c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     683:	00 00 00 
+     686:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     68d:	00 00 00 
+     690:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     697:	00 00 00 
+     69a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6a1:	00 00 00 
+     6a4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6ab:	00 00 00 
+     6ae:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6b5:	00 00 00 
+     6b8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6bf:	00 00 00 
+     6c2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6c9:	00 00 00 
+     6cc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6d3:	00 00 00 
+     6d6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6dd:	00 00 00 
+     6e0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6e7:	00 00 00 
+     6ea:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6f1:	00 00 00 
+     6f4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     6fb:	00 00 00 
+     6fe:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     705:	00 00 00 
+     708:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     70f:	00 00 00 
+     712:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     719:	00 00 00 
+     71c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     723:	00 00 00 
+     726:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     72d:	00 00 00 
+     730:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     737:	00 00 00 
+     73a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     741:	00 00 00 
+     744:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     74b:	00 00 00 
+     74e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     755:	00 00 00 
+     758:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     75f:	00 00 00 
+     762:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     769:	00 00 00 
+     76c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     773:	00 00 00 
+     776:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     77d:	00 00 00 
+     780:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     787:	00 00 00 
+     78a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     791:	00 00 00 
+     794:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     79b:	00 00 00 
+     79e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7a5:	00 00 00 
+     7a8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7af:	00 00 00 
+     7b2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7b9:	00 00 00 
+     7bc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7c3:	00 00 00 
+     7c6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7cd:	00 00 00 
+     7d0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7d7:	00 00 00 
+     7da:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7e1:	00 00 00 
+     7e4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7eb:	00 00 00 
+     7ee:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7f5:	00 00 00 
+     7f8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     7ff:	00 00 00 
+     802:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     809:	00 00 00 
+     80c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     813:	00 00 00 
+     816:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     81d:	00 00 00 
+     820:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     827:	00 00 00 
+     82a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     831:	00 00 00 
+     834:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     83b:	00 00 00 
+     83e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     845:	00 00 00 
+     848:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     84f:	00 00 00 
+     852:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     859:	00 00 00 
+     85c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     863:	00 00 00 
+     866:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     86d:	00 00 00 
+     870:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     877:	00 00 00 
+     87a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     881:	00 00 00 
+     884:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     88b:	00 00 00 
+     88e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     895:	00 00 00 
+     898:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     89f:	00 00 00 
+     8a2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     8a9:	00 00 00 
+     8ac:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     8b3:	00 00 00 
+     8b6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     8bd:	00 00 00 
+     8c0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     8c7:	00 00 00 
+     8ca:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     8d1:	00 00 00 
+     8d4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     8db:	00 00 00 
+     8de:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     8e5:	00 00 00 
+     8e8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     8ef:	00 00 00 
+     8f2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     8f9:	00 00 00 
+     8fc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     903:	00 00 00 
+     906:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     90d:	00 00 00 
+     910:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     917:	00 00 00 
+     91a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     921:	00 00 00 
+     924:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     92b:	00 00 00 
+     92e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     935:	00 00 00 
+     938:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     93f:	00 00 00 
+     942:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     949:	00 00 00 
+     94c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     953:	00 00 00 
+     956:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     95d:	00 00 00 
+     960:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     967:	00 00 00 
+     96a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     971:	00 00 00 
+     974:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     97b:	00 00 00 
+     97e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     985:	00 00 00 
+     988:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     98f:	00 00 00 
+     992:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     999:	00 00 00 
+     99c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9a3:	00 00 00 
+     9a6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9ad:	00 00 00 
+     9b0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9b7:	00 00 00 
+     9ba:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9c1:	00 00 00 
+     9c4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9cb:	00 00 00 
+     9ce:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9d5:	00 00 00 
+     9d8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9df:	00 00 00 
+     9e2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9e9:	00 00 00 
+     9ec:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9f3:	00 00 00 
+     9f6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     9fd:	00 00 00 
+     a00:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a07:	00 00 00 
+     a0a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a11:	00 00 00 
+     a14:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a1b:	00 00 00 
+     a1e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a25:	00 00 00 
+     a28:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a2f:	00 00 00 
+     a32:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a39:	00 00 00 
+     a3c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a43:	00 00 00 
+     a46:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a4d:	00 00 00 
+     a50:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a57:	00 00 00 
+     a5a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a61:	00 00 00 
+     a64:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a6b:	00 00 00 
+     a6e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a75:	00 00 00 
+     a78:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a7f:	00 00 00 
+     a82:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a89:	00 00 00 
+     a8c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a93:	00 00 00 
+     a96:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     a9d:	00 00 00 
+     aa0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     aa7:	00 00 00 
+     aaa:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ab1:	00 00 00 
+     ab4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     abb:	00 00 00 
+     abe:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ac5:	00 00 00 
+     ac8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     acf:	00 00 00 
+     ad2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ad9:	00 00 00 
+     adc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ae3:	00 00 00 
+     ae6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     aed:	00 00 00 
+     af0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     af7:	00 00 00 
+     afa:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b01:	00 00 00 
+     b04:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b0b:	00 00 00 
+     b0e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b15:	00 00 00 
+     b18:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b1f:	00 00 00 
+     b22:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b29:	00 00 00 
+     b2c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b33:	00 00 00 
+     b36:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b3d:	00 00 00 
+     b40:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b47:	00 00 00 
+     b4a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b51:	00 00 00 
+     b54:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b5b:	00 00 00 
+     b5e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b65:	00 00 00 
+     b68:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b6f:	00 00 00 
+     b72:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b79:	00 00 00 
+     b7c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b83:	00 00 00 
+     b86:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b8d:	00 00 00 
+     b90:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     b97:	00 00 00 
+     b9a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ba1:	00 00 00 
+     ba4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     bab:	00 00 00 
+     bae:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     bb5:	00 00 00 
+     bb8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     bbf:	00 00 00 
+     bc2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     bc9:	00 00 00 
+     bcc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     bd3:	00 00 00 
+     bd6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     bdd:	00 00 00 
+     be0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     be7:	00 00 00 
+     bea:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     bf1:	00 00 00 
+     bf4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     bfb:	00 00 00 
+     bfe:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c05:	00 00 00 
+     c08:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c0f:	00 00 00 
+     c12:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c19:	00 00 00 
+     c1c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c23:	00 00 00 
+     c26:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c2d:	00 00 00 
+     c30:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c37:	00 00 00 
+     c3a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c41:	00 00 00 
+     c44:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c4b:	00 00 00 
+     c4e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c55:	00 00 00 
+     c58:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c5f:	00 00 00 
+     c62:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c69:	00 00 00 
+     c6c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c73:	00 00 00 
+     c76:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c7d:	00 00 00 
+     c80:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c87:	00 00 00 
+     c8a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c91:	00 00 00 
+     c94:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     c9b:	00 00 00 
+     c9e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ca5:	00 00 00 
+     ca8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     caf:	00 00 00 
+     cb2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     cb9:	00 00 00 
+     cbc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     cc3:	00 00 00 
+     cc6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ccd:	00 00 00 
+     cd0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     cd7:	00 00 00 
+     cda:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ce1:	00 00 00 
+     ce4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ceb:	00 00 00 
+     cee:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     cf5:	00 00 00 
+     cf8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     cff:	00 00 00 
+     d02:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d09:	00 00 00 
+     d0c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d13:	00 00 00 
+     d16:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d1d:	00 00 00 
+     d20:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d27:	00 00 00 
+     d2a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d31:	00 00 00 
+     d34:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d3b:	00 00 00 
+     d3e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d45:	00 00 00 
+     d48:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d4f:	00 00 00 
+     d52:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d59:	00 00 00 
+     d5c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d63:	00 00 00 
+     d66:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d6d:	00 00 00 
+     d70:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d77:	00 00 00 
+     d7a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d81:	00 00 00 
+     d84:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d8b:	00 00 00 
+     d8e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d95:	00 00 00 
+     d98:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     d9f:	00 00 00 
+     da2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     da9:	00 00 00 
+     dac:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     db3:	00 00 00 
+     db6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     dbd:	00 00 00 
+     dc0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     dc7:	00 00 00 
+     dca:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     dd1:	00 00 00 
+     dd4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ddb:	00 00 00 
+     dde:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     de5:	00 00 00 
+     de8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     def:	00 00 00 
+     df2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     df9:	00 00 00 
+     dfc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e03:	00 00 00 
+     e06:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e0d:	00 00 00 
+     e10:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e17:	00 00 00 
+     e1a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e21:	00 00 00 
+     e24:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e2b:	00 00 00 
+     e2e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e35:	00 00 00 
+     e38:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e3f:	00 00 00 
+     e42:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e49:	00 00 00 
+     e4c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e53:	00 00 00 
+     e56:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e5d:	00 00 00 
+     e60:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e67:	00 00 00 
+     e6a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e71:	00 00 00 
+     e74:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e7b:	00 00 00 
+     e7e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e85:	00 00 00 
+     e88:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e8f:	00 00 00 
+     e92:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     e99:	00 00 00 
+     e9c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ea3:	00 00 00 
+     ea6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ead:	00 00 00 
+     eb0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     eb7:	00 00 00 
+     eba:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ec1:	00 00 00 
+     ec4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ecb:	00 00 00 
+     ece:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ed5:	00 00 00 
+     ed8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     edf:	00 00 00 
+     ee2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ee9:	00 00 00 
+     eec:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ef3:	00 00 00 
+     ef6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     efd:	00 00 00 
+     f00:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f07:	00 00 00 
+     f0a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f11:	00 00 00 
+     f14:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f1b:	00 00 00 
+     f1e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f25:	00 00 00 
+     f28:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f2f:	00 00 00 
+     f32:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f39:	00 00 00 
+     f3c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f43:	00 00 00 
+     f46:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f4d:	00 00 00 
+     f50:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f57:	00 00 00 
+     f5a:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f61:	00 00 00 
+     f64:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f6b:	00 00 00 
+     f6e:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f75:	00 00 00 
+     f78:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f7f:	00 00 00 
+     f82:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f89:	00 00 00 
+     f8c:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f93:	00 00 00 
+     f96:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     f9d:	00 00 00 
+     fa0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     fa7:	00 00 00 
+     faa:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     fb1:	00 00 00 
+     fb4:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     fbb:	00 00 00 
+     fbe:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     fc5:	00 00 00 
+     fc8:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     fcf:	00 00 00 
+     fd2:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     fd9:	00 00 00 
+     fdc:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     fe3:	00 00 00 
+     fe6:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     fed:	00 00 00 
+     ff0:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+     ff7:	00 00 00 
+     ffa:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+Disassembly of section .text.rust_begin_unwind:
+
+0000000000001000 <rust_begin_unwind>:
+    1000:	eb fe                	jmp    1000 <rust_begin_unwind>
+
+Disassembly of section .text._start:
+
+0000000000001010 <_start>:
+    1010:	b8 03 80 0b 00       	mov    eax,0xb8003
+    1015:	31 c9                	xor    ecx,ecx
+    1017:	48 8d 15 fe ef ff ff 	lea    rdx,[rip+0xffffffffffffeffe]        # 1c <.n_so+0x3>
+    101e:	48 8d 35 0d f0 ff ff 	lea    rsi,[rip+0xfffffffffffff00d]        # 32 <.n_so+0x19>
+    1025:	66 66 2e 0f 1f 84 00 	data16 cs nop WORD PTR [rax+rax*1+0x0]
+    102c:	00 00 00 00 
+    1030:	0f b6 3c 11          	movzx  edi,BYTE PTR [rcx+rdx*1]
+    1034:	44 0f b6 44 11 01    	movzx  r8d,BYTE PTR [rcx+rdx*1+0x1]
+    103a:	40 88 7c 48 fd       	mov    BYTE PTR [rax+rcx*2-0x3],dil
+    103f:	c6 44 48 fe 0b       	mov    BYTE PTR [rax+rcx*2-0x2],0xb
+    1044:	44 88 44 48 ff       	mov    BYTE PTR [rax+rcx*2-0x1],r8b
+    1049:	c6 04 48 0b          	mov    BYTE PTR [rax+rcx*2],0xb
+    104d:	48 8d 3c 11          	lea    rdi,[rcx+rdx*1]
+    1051:	48 83 c7 02          	add    rdi,0x2
+    1055:	48 83 c1 02          	add    rcx,0x2
+    1059:	48 39 f7             	cmp    rdi,rsi
+    105c:	75 d2                	jne    1030 <_start+0x20>
+    105e:	66 90                	xchg   ax,ax
+    1060:	eb fe                	jmp    1060 <_start+0x50>

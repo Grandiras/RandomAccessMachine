@@ -1,0 +1,899 @@
+
+./target/custom-target/debug/kernel:     file format elf64-x86-64
+
+SYMBOL TABLE:
+0000000000000000 l    df *ABS*	0000000000000000 375zzqhelfb6zohq
+0000000000202dc0 l     O .data.rel.ro	0000000000000010 _ZN6kernel5HELLO17ha59ea5d0829feb26E
+00000000002001c0 l     O .rodata	0000000000000021 str.0
+00000000002001f0 l     O .rodata	000000000000001c str.1
+00000000002015a0 l     F .text	0000000000000007 .hidden rust_begin_unwind
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.03
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.04
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.02
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.00
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.01
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.05
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.06
+0000000000201820 l     F .text	0000000000000023 .hidden _ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$7is_null12runtime_impl17h7a518f1a6b7dbf4bE
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.07
+00000000002018a0 l     F .text	00000000000000a0 .hidden _ZN4core3fmt9Arguments9new_const17h994e3a46ba3b03c6E
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.08
+0000000000201a00 l     F .text	0000000000000064 _ZN4core9panicking18panic_nounwind_fmt7runtime17h47ab5b2d1f4c08e7E
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.09
+0000000000200300 l     O .rodata	000000000000001c str.0
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.10
+0000000000201c60 l     F .text	0000000000000007 .hidden _ZN4core3ptr88drop_in_place$LT$core..panic..panic_info..PanicInfo..internal_constructor..NoPayload$GT$17h51e66a519ef467b2E
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.11
+0000000000201c80 l     F .text	0000000000000071 .hidden _ZN4core5panic10panic_info9PanicInfo20internal_constructor17hb6e93e0af81735d1E
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.12
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.13
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.14
+0000000000201d00 l     F .text	000000000000000b .hidden _ZN4core5panic8location8Location6caller17hf7aa3d9c9f9f4738E
+0000000000000000 l    df *ABS*	0000000000000000 core.51b458324a2c3a89-cgu.15
+0000000000000000 l    df *ABS*	0000000000000000 compiler_builtins.32d6f813ab89665b-cgu.0
+0000000000000000 l    df *ABS*	0000000000000000 compiler_builtins.32d6f813ab89665b-cgu.1
+0000000000000000 l    df *ABS*	0000000000000000 compiler_builtins.32d6f813ab89665b-cgu.2
+0000000000000000 l    df *ABS*	0000000000000000 src/boot.asm
+0000000000201db9 l       .text	0000000000000000 .n_so
+0000000000201400 g     F .text	0000000000000192 main
+0000000000201c40 g     F .text	0000000000000018 _ZN4core5slice29_$LT$impl$u20$$u5b$T$u5d$$GT$4iter17h72c05d94acc08de3E
+00000000002015b0 g     F .text	0000000000000023 _ZN4core4iter6traits8iterator8Iterator9enumerate17hcf9a2b6b0dff91e7E
+0000000000201c20 g     F .text	000000000000001a _ZN63_$LT$I$u20$as$u20$core..iter..traits..collect..IntoIterator$GT$9into_iter17h2c3dd74a00ead380E
+0000000000201b40 g     F .text	00000000000000e0 _ZN110_$LT$core..iter..adapters..enumerate..Enumerate$LT$I$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17h6b0bd6dcdc3d5dd1E
+0000000000201a70 g     F .text	0000000000000045 _ZN4core9panicking5panic17h6492bfd002ebeff0E
+0000000000201780 g     F .text	0000000000000044 _ZN75_$LT$core..option..Option$LT$T$GT$$u20$as$u20$core..ops..try_trait..Try$GT$6branch17h12528343763dbc3eE
+00000000002017d0 g     F .text	000000000000001c _ZN84_$LT$core..option..Option$LT$T$GT$$u20$as$u20$core..ops..try_trait..FromResidual$GT$13from_residual17h5270ab0867bc1b42E
+0000000000201b10 g     F .text	0000000000000024 _ZN4core4iter8adapters9enumerate18Enumerate$LT$I$GT$3new17hed37d1f93f7d1b05E
+0000000000201670 g     F .text	000000000000010a _ZN91_$LT$core..slice..iter..Iter$LT$T$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17hdd892a1cfd50f9b8E
+00000000002015e0 g     F .text	0000000000000082 _ZN4core5slice4iter13Iter$LT$T$GT$3new17h6c4f69d0174a5116E
+0000000000201d10 g     F .text	0000000000000057 _ZN4core3ptr8non_null16NonNull$LT$T$GT$13new_unchecked17h48710200dc76af53E
+0000000000201d70 g     F .text	000000000000002d _ZN78_$LT$core..ptr..non_null..NonNull$LT$T$GT$$u20$as$u20$core..cmp..PartialEq$GT$2eq17hc4fbbb38373b5dddE
+0000000000201ac0 g     F .text	0000000000000042 _ZN4core9panicking14panic_nounwind17h7003c4c42f96938aE
+0000000000201940 g     F .text	0000000000000051 _ZN4core9panicking9panic_fmt17h2ac4f100c089449dE
+00000000002017f0 g     F .text	0000000000000022 _ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$7is_null17hc565d907c42e26e1E
+0000000000201850 g     F .text	000000000000004d _ZN4core3any6TypeId2of17hcf19e3167c4a9ddcE
+00000000002019a0 g     F .text	0000000000000055 _ZN4core9panicking18panic_nounwind_fmt17hc1b81bdc9edaecaaE
+0000000000201c70 g     F .text	000000000000000c _ZN36_$LT$T$u20$as$u20$core..any..Any$GT$7type_id17he1b212558ba32106E
+0000000000201da0 g       .text	0000000000000000 start
+
+
+
+Disassembly of section .text:
+
+0000000000201400 <main>:
+  201400:	48 81 ec b8 00 00 00 	sub    rsp,0xb8
+  201407:	b8 00 80 0b 00       	mov    eax,0xb8000
+  20140c:	48 89 84 24 80 00 00 	mov    QWORD PTR [rsp+0x80],rax
+  201413:	00 
+  201414:	48 8b 3d a5 19 00 00 	mov    rdi,QWORD PTR [rip+0x19a5]        # 202dc0 <_ZN6kernel5HELLO17ha59ea5d0829feb26E>
+  20141b:	48 8b 35 a6 19 00 00 	mov    rsi,QWORD PTR [rip+0x19a6]        # 202dc8 <_ZN6kernel5HELLO17ha59ea5d0829feb26E+0x8>
+  201422:	e8 19 08 00 00       	call   201c40 <_ZN4core5slice29_$LT$impl$u20$$u5b$T$u5d$$GT$4iter17h72c05d94acc08de3E>
+  201427:	48 89 c6             	mov    rsi,rax
+  20142a:	48 8d 7c 24 40       	lea    rdi,[rsp+0x40]
+  20142f:	e8 7c 01 00 00       	call   2015b0 <_ZN4core4iter6traits8iterator8Iterator9enumerate17hcf9a2b6b0dff91e7E>
+  201434:	48 8d 7c 24 28       	lea    rdi,[rsp+0x28]
+  201439:	48 8d 74 24 40       	lea    rsi,[rsp+0x40]
+  20143e:	e8 dd 07 00 00       	call   201c20 <_ZN63_$LT$I$u20$as$u20$core..iter..traits..collect..IntoIterator$GT$9into_iter17h2c3dd74a00ead380E>
+  201443:	48 8b 44 24 28       	mov    rax,QWORD PTR [rsp+0x28]
+  201448:	48 89 44 24 58       	mov    QWORD PTR [rsp+0x58],rax
+  20144d:	48 8b 44 24 30       	mov    rax,QWORD PTR [rsp+0x30]
+  201452:	48 89 44 24 60       	mov    QWORD PTR [rsp+0x60],rax
+  201457:	48 8b 44 24 38       	mov    rax,QWORD PTR [rsp+0x38]
+  20145c:	48 89 44 24 68       	mov    QWORD PTR [rsp+0x68],rax
+  201461:	48 8d 7c 24 58       	lea    rdi,[rsp+0x58]
+  201466:	e8 d5 06 00 00       	call   201b40 <_ZN110_$LT$core..iter..adapters..enumerate..Enumerate$LT$I$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17h6b0bd6dcdc3d5dd1E>
+  20146b:	48 89 44 24 70       	mov    QWORD PTR [rsp+0x70],rax
+  201470:	48 89 54 24 78       	mov    QWORD PTR [rsp+0x78],rdx
+  201475:	48 8b 54 24 78       	mov    rdx,QWORD PTR [rsp+0x78]
+  20147a:	b8 01 00 00 00       	mov    eax,0x1
+  20147f:	31 c9                	xor    ecx,ecx
+  201481:	48 83 fa 00          	cmp    rdx,0x0
+  201485:	48 0f 44 c1          	cmove  rax,rcx
+  201489:	48 83 f8 00          	cmp    rax,0x0
+  20148d:	75 02                	jne    201491 <main+0x91>
+  20148f:	eb fe                	jmp    20148f <main+0x8f>
+  201491:	48 8b 44 24 78       	mov    rax,QWORD PTR [rsp+0x78]
+  201496:	8a 00                	mov    al,BYTE PTR [rax]
+  201498:	88 44 24 17          	mov    BYTE PTR [rsp+0x17],al
+  20149c:	88 84 24 8f 00 00 00 	mov    BYTE PTR [rsp+0x8f],al
+  2014a3:	48 8b 44 24 70       	mov    rax,QWORD PTR [rsp+0x70]
+  2014a8:	48 89 44 24 18       	mov    QWORD PTR [rsp+0x18],rax
+  2014ad:	48 89 84 24 90 00 00 	mov    QWORD PTR [rsp+0x90],rax
+  2014b4:	00 
+  2014b5:	b9 02 00 00 00       	mov    ecx,0x2
+  2014ba:	48 0f af c1          	imul   rax,rcx
+  2014be:	48 89 44 24 20       	mov    QWORD PTR [rsp+0x20],rax
+  2014c3:	0f 90 c0             	seto   al
+  2014c6:	a8 01                	test   al,0x1
+  2014c8:	75 44                	jne    20150e <main+0x10e>
+  2014ca:	48 8b 44 24 18       	mov    rax,QWORD PTR [rsp+0x18]
+  2014cf:	48 8b 54 24 20       	mov    rdx,QWORD PTR [rsp+0x20]
+  2014d4:	40 8a 74 24 17       	mov    sil,BYTE PTR [rsp+0x17]
+  2014d9:	b9 00 80 0b 00       	mov    ecx,0xb8000
+  2014de:	48 89 8c 24 a8 00 00 	mov    QWORD PTR [rsp+0xa8],rcx
+  2014e5:	00 
+  2014e6:	48 89 94 24 b0 00 00 	mov    QWORD PTR [rsp+0xb0],rdx
+  2014ed:	00 
+  2014ee:	b9 00 80 0b 00       	mov    ecx,0xb8000
+  2014f3:	40 88 34 11          	mov    BYTE PTR [rcx+rdx*1],sil
+  2014f7:	b9 02 00 00 00       	mov    ecx,0x2
+  2014fc:	48 0f af c1          	imul   rax,rcx
+  201500:	48 89 44 24 08       	mov    QWORD PTR [rsp+0x8],rax
+  201505:	0f 90 c0             	seto   al
+  201508:	a8 01                	test   al,0x1
+  20150a:	75 2f                	jne    20153b <main+0x13b>
+  20150c:	eb 18                	jmp    201526 <main+0x126>
+  20150e:	48 8d 3d ab ec ff ff 	lea    rdi,[rip+0xffffffffffffecab]        # 2001c0 <str.0>
+  201515:	48 8d 15 b4 18 00 00 	lea    rdx,[rip+0x18b4]        # 202dd0 <_ZN6kernel5HELLO17ha59ea5d0829feb26E+0x10>
+  20151c:	be 21 00 00 00       	mov    esi,0x21
+  201521:	e8 4a 05 00 00       	call   201a70 <_ZN4core9panicking5panic17h6492bfd002ebeff0E>
+  201526:	48 8b 44 24 08       	mov    rax,QWORD PTR [rsp+0x8]
+  20152b:	48 ff c0             	inc    rax
+  20152e:	48 89 04 24          	mov    QWORD PTR [rsp],rax
+  201532:	0f 90 c0             	seto   al
+  201535:	a8 01                	test   al,0x1
+  201537:	75 41                	jne    20157a <main+0x17a>
+  201539:	eb 18                	jmp    201553 <main+0x153>
+  20153b:	48 8d 3d 7e ec ff ff 	lea    rdi,[rip+0xffffffffffffec7e]        # 2001c0 <str.0>
+  201542:	48 8d 15 9f 18 00 00 	lea    rdx,[rip+0x189f]        # 202de8 <_ZN6kernel5HELLO17ha59ea5d0829feb26E+0x28>
+  201549:	be 21 00 00 00       	mov    esi,0x21
+  20154e:	e8 1d 05 00 00       	call   201a70 <_ZN4core9panicking5panic17h6492bfd002ebeff0E>
+  201553:	48 8b 0c 24          	mov    rcx,QWORD PTR [rsp]
+  201557:	b8 00 80 0b 00       	mov    eax,0xb8000
+  20155c:	48 89 84 24 98 00 00 	mov    QWORD PTR [rsp+0x98],rax
+  201563:	00 
+  201564:	48 89 8c 24 a0 00 00 	mov    QWORD PTR [rsp+0xa0],rcx
+  20156b:	00 
+  20156c:	b8 00 80 0b 00       	mov    eax,0xb8000
+  201571:	c6 04 08 0b          	mov    BYTE PTR [rax+rcx*1],0xb
+  201575:	e9 e7 fe ff ff       	jmp    201461 <main+0x61>
+  20157a:	48 8d 3d 6f ec ff ff 	lea    rdi,[rip+0xffffffffffffec6f]        # 2001f0 <str.1>
+  201581:	48 8d 15 60 18 00 00 	lea    rdx,[rip+0x1860]        # 202de8 <_ZN6kernel5HELLO17ha59ea5d0829feb26E+0x28>
+  201588:	be 1c 00 00 00       	mov    esi,0x1c
+  20158d:	e8 de 04 00 00       	call   201a70 <_ZN4core9panicking5panic17h6492bfd002ebeff0E>
+  201592:	cc                   	int3   
+  201593:	cc                   	int3   
+  201594:	cc                   	int3   
+  201595:	cc                   	int3   
+  201596:	cc                   	int3   
+  201597:	cc                   	int3   
+  201598:	cc                   	int3   
+  201599:	cc                   	int3   
+  20159a:	cc                   	int3   
+  20159b:	cc                   	int3   
+  20159c:	cc                   	int3   
+  20159d:	cc                   	int3   
+  20159e:	cc                   	int3   
+  20159f:	cc                   	int3   
+
+00000000002015a0 <rust_begin_unwind>:
+  2015a0:	50                   	push   rax
+  2015a1:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  2015a5:	eb fe                	jmp    2015a5 <rust_begin_unwind+0x5>
+  2015a7:	cc                   	int3   
+  2015a8:	cc                   	int3   
+  2015a9:	cc                   	int3   
+  2015aa:	cc                   	int3   
+  2015ab:	cc                   	int3   
+  2015ac:	cc                   	int3   
+  2015ad:	cc                   	int3   
+  2015ae:	cc                   	int3   
+  2015af:	cc                   	int3   
+
+00000000002015b0 <_ZN4core4iter6traits8iterator8Iterator9enumerate17hcf9a2b6b0dff91e7E>:
+  2015b0:	48 83 ec 18          	sub    rsp,0x18
+  2015b4:	48 89 f8             	mov    rax,rdi
+  2015b7:	48 89 04 24          	mov    QWORD PTR [rsp],rax
+  2015bb:	48 89 74 24 08       	mov    QWORD PTR [rsp+0x8],rsi
+  2015c0:	48 89 54 24 10       	mov    QWORD PTR [rsp+0x10],rdx
+  2015c5:	e8 46 05 00 00       	call   201b10 <_ZN4core4iter8adapters9enumerate18Enumerate$LT$I$GT$3new17hed37d1f93f7d1b05E>
+  2015ca:	48 8b 04 24          	mov    rax,QWORD PTR [rsp]
+  2015ce:	48 83 c4 18          	add    rsp,0x18
+  2015d2:	c3                   	ret    
+  2015d3:	cc                   	int3   
+  2015d4:	cc                   	int3   
+  2015d5:	cc                   	int3   
+  2015d6:	cc                   	int3   
+  2015d7:	cc                   	int3   
+  2015d8:	cc                   	int3   
+  2015d9:	cc                   	int3   
+  2015da:	cc                   	int3   
+  2015db:	cc                   	int3   
+  2015dc:	cc                   	int3   
+  2015dd:	cc                   	int3   
+  2015de:	cc                   	int3   
+  2015df:	cc                   	int3   
+
+00000000002015e0 <_ZN4core5slice4iter13Iter$LT$T$GT$3new17h6c4f69d0174a5116E>:
+  2015e0:	48 83 ec 68          	sub    rsp,0x68
+  2015e4:	48 89 34 24          	mov    QWORD PTR [rsp],rsi
+  2015e8:	48 89 7c 24 08       	mov    QWORD PTR [rsp+0x8],rdi
+  2015ed:	48 89 7c 24 28       	mov    QWORD PTR [rsp+0x28],rdi
+  2015f2:	48 89 74 24 30       	mov    QWORD PTR [rsp+0x30],rsi
+  2015f7:	48 89 7c 24 58       	mov    QWORD PTR [rsp+0x58],rdi
+  2015fc:	48 89 74 24 60       	mov    QWORD PTR [rsp+0x60],rsi
+  201601:	48 89 7c 24 38       	mov    QWORD PTR [rsp+0x38],rdi
+  201606:	31 c0                	xor    eax,eax
+  201608:	a8 01                	test   al,0x1
+  20160a:	75 1d                	jne    201629 <_ZN4core5slice4iter13Iter$LT$T$GT$3new17h6c4f69d0174a5116E+0x49>
+  20160c:	48 8b 0c 24          	mov    rcx,QWORD PTR [rsp]
+  201610:	48 8b 44 24 08       	mov    rax,QWORD PTR [rsp+0x8]
+  201615:	48 89 44 24 40       	mov    QWORD PTR [rsp+0x40],rax
+  20161a:	48 89 4c 24 48       	mov    QWORD PTR [rsp+0x48],rcx
+  20161f:	48 01 c8             	add    rax,rcx
+  201622:	48 89 44 24 20       	mov    QWORD PTR [rsp+0x20],rax
+  201627:	eb 0e                	jmp    201637 <_ZN4core5slice4iter13Iter$LT$T$GT$3new17h6c4f69d0174a5116E+0x57>
+  201629:	48 8b 04 24          	mov    rax,QWORD PTR [rsp]
+  20162d:	48 89 44 24 50       	mov    QWORD PTR [rsp+0x50],rax
+  201632:	48 89 44 24 20       	mov    QWORD PTR [rsp+0x20],rax
+  201637:	48 8b 7c 24 08       	mov    rdi,QWORD PTR [rsp+0x8]
+  20163c:	e8 cf 06 00 00       	call   201d10 <_ZN4core3ptr8non_null16NonNull$LT$T$GT$13new_unchecked17h48710200dc76af53E>
+  201641:	48 89 c1             	mov    rcx,rax
+  201644:	48 8b 44 24 20       	mov    rax,QWORD PTR [rsp+0x20]
+  201649:	48 89 4c 24 10       	mov    QWORD PTR [rsp+0x10],rcx
+  20164e:	48 89 44 24 18       	mov    QWORD PTR [rsp+0x18],rax
+  201653:	48 8b 44 24 10       	mov    rax,QWORD PTR [rsp+0x10]
+  201658:	48 8b 54 24 18       	mov    rdx,QWORD PTR [rsp+0x18]
+  20165d:	48 83 c4 68          	add    rsp,0x68
+  201661:	c3                   	ret    
+  201662:	cc                   	int3   
+  201663:	cc                   	int3   
+  201664:	cc                   	int3   
+  201665:	cc                   	int3   
+  201666:	cc                   	int3   
+  201667:	cc                   	int3   
+  201668:	cc                   	int3   
+  201669:	cc                   	int3   
+  20166a:	cc                   	int3   
+  20166b:	cc                   	int3   
+  20166c:	cc                   	int3   
+  20166d:	cc                   	int3   
+  20166e:	cc                   	int3   
+  20166f:	cc                   	int3   
+
+0000000000201670 <_ZN91_$LT$core..slice..iter..Iter$LT$T$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17hdd892a1cfd50f9b8E>:
+  201670:	48 81 ec a8 00 00 00 	sub    rsp,0xa8
+  201677:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  20167b:	48 89 7c 24 28       	mov    QWORD PTR [rsp+0x28],rdi
+  201680:	31 c0                	xor    eax,eax
+  201682:	a8 01                	test   al,0x1
+  201684:	75 2b                	jne    2016b1 <_ZN91_$LT$core..slice..iter..Iter$LT$T$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17hdd892a1cfd50f9b8E+0x41>
+  201686:	48 8b 3c 24          	mov    rdi,QWORD PTR [rsp]
+  20168a:	48 89 f8             	mov    rax,rdi
+  20168d:	48 83 c0 08          	add    rax,0x8
+  201691:	48 89 44 24 48       	mov    QWORD PTR [rsp+0x48],rax
+  201696:	48 8b 47 08          	mov    rax,QWORD PTR [rdi+0x8]
+  20169a:	48 89 44 24 18       	mov    QWORD PTR [rsp+0x18],rax
+  20169f:	48 8d 74 24 18       	lea    rsi,[rsp+0x18]
+  2016a4:	e8 c7 06 00 00       	call   201d70 <_ZN78_$LT$core..ptr..non_null..NonNull$LT$T$GT$$u20$as$u20$core..cmp..PartialEq$GT$2eq17hc4fbbb38373b5dddE>
+  2016a9:	24 01                	and    al,0x1
+  2016ab:	88 44 24 17          	mov    BYTE PTR [rsp+0x17],al
+  2016af:	eb 24                	jmp    2016d5 <_ZN91_$LT$core..slice..iter..Iter$LT$T$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17hdd892a1cfd50f9b8E+0x65>
+  2016b1:	48 8b 04 24          	mov    rax,QWORD PTR [rsp]
+  2016b5:	48 8b 40 08          	mov    rax,QWORD PTR [rax+0x8]
+  2016b9:	48 89 44 24 50       	mov    QWORD PTR [rsp+0x50],rax
+  2016be:	48 89 44 24 58       	mov    QWORD PTR [rsp+0x58],rax
+  2016c3:	48 89 44 24 30       	mov    QWORD PTR [rsp+0x30],rax
+  2016c8:	48 83 f8 00          	cmp    rax,0x0
+  2016cc:	0f 94 c0             	sete   al
+  2016cf:	24 01                	and    al,0x1
+  2016d1:	88 44 24 17          	mov    BYTE PTR [rsp+0x17],al
+  2016d5:	f6 44 24 17 01       	test   BYTE PTR [rsp+0x17],0x1
+  2016da:	0f 85 84 00 00 00    	jne    201764 <_ZN91_$LT$core..slice..iter..Iter$LT$T$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17hdd892a1cfd50f9b8E+0xf4>
+  2016e0:	48 8b 0c 24          	mov    rcx,QWORD PTR [rsp]
+  2016e4:	48 89 4c 24 68       	mov    QWORD PTR [rsp+0x68],rcx
+  2016e9:	48 c7 44 24 70 01 00 	mov    QWORD PTR [rsp+0x70],0x1
+  2016f0:	00 00 
+  2016f2:	48 8b 01             	mov    rax,QWORD PTR [rcx]
+  2016f5:	48 89 44 24 78       	mov    QWORD PTR [rsp+0x78],rax
+  2016fa:	48 89 ca             	mov    rdx,rcx
+  2016fd:	48 83 c2 08          	add    rdx,0x8
+  201701:	48 89 94 24 a0 00 00 	mov    QWORD PTR [rsp+0xa0],rdx
+  201708:	00 
+  201709:	48 89 94 24 80 00 00 	mov    QWORD PTR [rsp+0x80],rdx
+  201710:	00 
+  201711:	48 8b 11             	mov    rdx,QWORD PTR [rcx]
+  201714:	48 89 94 24 90 00 00 	mov    QWORD PTR [rsp+0x90],rdx
+  20171b:	00 
+  20171c:	48 c7 84 24 98 00 00 	mov    QWORD PTR [rsp+0x98],0x1
+  201723:	00 01 00 00 00 
+  201728:	48 83 c2 01          	add    rdx,0x1
+  20172c:	48 89 94 24 88 00 00 	mov    QWORD PTR [rsp+0x88],rdx
+  201733:	00 
+  201734:	48 8b 94 24 88 00 00 	mov    rdx,QWORD PTR [rsp+0x88]
+  20173b:	00 
+  20173c:	48 89 11             	mov    QWORD PTR [rcx],rdx
+  20173f:	48 89 44 24 20       	mov    QWORD PTR [rsp+0x20],rax
+  201744:	48 8d 44 24 20       	lea    rax,[rsp+0x20]
+  201749:	48 89 44 24 38       	mov    QWORD PTR [rsp+0x38],rax
+  20174e:	48 8b 44 24 20       	mov    rax,QWORD PTR [rsp+0x20]
+  201753:	48 89 44 24 40       	mov    QWORD PTR [rsp+0x40],rax
+  201758:	48 89 44 24 60       	mov    QWORD PTR [rsp+0x60],rax
+  20175d:	48 89 44 24 08       	mov    QWORD PTR [rsp+0x8],rax
+  201762:	eb 09                	jmp    20176d <_ZN91_$LT$core..slice..iter..Iter$LT$T$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17hdd892a1cfd50f9b8E+0xfd>
+  201764:	48 c7 44 24 08 00 00 	mov    QWORD PTR [rsp+0x8],0x0
+  20176b:	00 00 
+  20176d:	48 8b 44 24 08       	mov    rax,QWORD PTR [rsp+0x8]
+  201772:	48 81 c4 a8 00 00 00 	add    rsp,0xa8
+  201779:	c3                   	ret    
+  20177a:	cc                   	int3   
+  20177b:	cc                   	int3   
+  20177c:	cc                   	int3   
+  20177d:	cc                   	int3   
+  20177e:	cc                   	int3   
+  20177f:	cc                   	int3   
+
+0000000000201780 <_ZN75_$LT$core..option..Option$LT$T$GT$$u20$as$u20$core..ops..try_trait..Try$GT$6branch17h12528343763dbc3eE>:
+  201780:	48 83 ec 18          	sub    rsp,0x18
+  201784:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201788:	48 8b 14 24          	mov    rdx,QWORD PTR [rsp]
+  20178c:	b8 01 00 00 00       	mov    eax,0x1
+  201791:	31 c9                	xor    ecx,ecx
+  201793:	48 83 fa 00          	cmp    rdx,0x0
+  201797:	48 0f 44 c1          	cmove  rax,rcx
+  20179b:	48 83 f8 00          	cmp    rax,0x0
+  20179f:	75 0b                	jne    2017ac <_ZN75_$LT$core..option..Option$LT$T$GT$$u20$as$u20$core..ops..try_trait..Try$GT$6branch17h12528343763dbc3eE+0x2c>
+  2017a1:	48 c7 44 24 08 00 00 	mov    QWORD PTR [rsp+0x8],0x0
+  2017a8:	00 00 
+  2017aa:	eb 0e                	jmp    2017ba <_ZN75_$LT$core..option..Option$LT$T$GT$$u20$as$u20$core..ops..try_trait..Try$GT$6branch17h12528343763dbc3eE+0x3a>
+  2017ac:	48 8b 04 24          	mov    rax,QWORD PTR [rsp]
+  2017b0:	48 89 44 24 10       	mov    QWORD PTR [rsp+0x10],rax
+  2017b5:	48 89 44 24 08       	mov    QWORD PTR [rsp+0x8],rax
+  2017ba:	48 8b 44 24 08       	mov    rax,QWORD PTR [rsp+0x8]
+  2017bf:	48 83 c4 18          	add    rsp,0x18
+  2017c3:	c3                   	ret    
+  2017c4:	cc                   	int3   
+  2017c5:	cc                   	int3   
+  2017c6:	cc                   	int3   
+  2017c7:	cc                   	int3   
+  2017c8:	cc                   	int3   
+  2017c9:	cc                   	int3   
+  2017ca:	cc                   	int3   
+  2017cb:	cc                   	int3   
+  2017cc:	cc                   	int3   
+  2017cd:	cc                   	int3   
+  2017ce:	cc                   	int3   
+  2017cf:	cc                   	int3   
+
+00000000002017d0 <_ZN84_$LT$core..option..Option$LT$T$GT$$u20$as$u20$core..ops..try_trait..FromResidual$GT$13from_residual17h5270ab0867bc1b42E>:
+  2017d0:	48 83 ec 20          	sub    rsp,0x20
+  2017d4:	48 c7 44 24 10 00 00 	mov    QWORD PTR [rsp+0x10],0x0
+  2017db:	00 00 
+  2017dd:	48 8b 44 24 08       	mov    rax,QWORD PTR [rsp+0x8]
+  2017e2:	48 8b 54 24 10       	mov    rdx,QWORD PTR [rsp+0x10]
+  2017e7:	48 83 c4 20          	add    rsp,0x20
+  2017eb:	c3                   	ret    
+  2017ec:	cc                   	int3   
+  2017ed:	cc                   	int3   
+  2017ee:	cc                   	int3   
+  2017ef:	cc                   	int3   
+
+00000000002017f0 <_ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$7is_null17hc565d907c42e26e1E>:
+  2017f0:	48 83 ec 18          	sub    rsp,0x18
+  2017f4:	48 89 7c 24 10       	mov    QWORD PTR [rsp+0x10],rdi
+  2017f9:	48 89 7c 24 08       	mov    QWORD PTR [rsp+0x8],rdi
+  2017fe:	48 8b 7c 24 08       	mov    rdi,QWORD PTR [rsp+0x8]
+  201803:	e8 18 00 00 00       	call   201820 <_ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$7is_null12runtime_impl17h7a518f1a6b7dbf4bE>
+  201808:	24 01                	and    al,0x1
+  20180a:	0f b6 c0             	movzx  eax,al
+  20180d:	48 83 c4 18          	add    rsp,0x18
+  201811:	c3                   	ret    
+  201812:	cc                   	int3   
+  201813:	cc                   	int3   
+  201814:	cc                   	int3   
+  201815:	cc                   	int3   
+  201816:	cc                   	int3   
+  201817:	cc                   	int3   
+  201818:	cc                   	int3   
+  201819:	cc                   	int3   
+  20181a:	cc                   	int3   
+  20181b:	cc                   	int3   
+  20181c:	cc                   	int3   
+  20181d:	cc                   	int3   
+  20181e:	cc                   	int3   
+  20181f:	cc                   	int3   
+
+0000000000201820 <_ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$7is_null12runtime_impl17h7a518f1a6b7dbf4bE>:
+  201820:	48 83 ec 18          	sub    rsp,0x18
+  201824:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201828:	48 89 7c 24 08       	mov    QWORD PTR [rsp+0x8],rdi
+  20182d:	48 89 7c 24 10       	mov    QWORD PTR [rsp+0x10],rdi
+  201832:	48 83 ff 00          	cmp    rdi,0x0
+  201836:	0f 94 c0             	sete   al
+  201839:	24 01                	and    al,0x1
+  20183b:	0f b6 c0             	movzx  eax,al
+  20183e:	48 83 c4 18          	add    rsp,0x18
+  201842:	c3                   	ret    
+  201843:	cc                   	int3   
+  201844:	cc                   	int3   
+  201845:	cc                   	int3   
+  201846:	cc                   	int3   
+  201847:	cc                   	int3   
+  201848:	cc                   	int3   
+  201849:	cc                   	int3   
+  20184a:	cc                   	int3   
+  20184b:	cc                   	int3   
+  20184c:	cc                   	int3   
+  20184d:	cc                   	int3   
+  20184e:	cc                   	int3   
+  20184f:	cc                   	int3   
+
+0000000000201850 <_ZN4core3any6TypeId2of17hcf19e3167c4a9ddcE>:
+  201850:	48 83 ec 38          	sub    rsp,0x38
+  201854:	48 b8 6e 51 77 ed 22 	movabs rax,0xb71ae022ed77516e
+  20185b:	e0 1a b7 
+  20185e:	48 89 44 24 18       	mov    QWORD PTR [rsp+0x18],rax
+  201863:	48 b8 6e 09 6a 77 2f 	movabs rax,0x7450ad2f776a096e
+  20186a:	ad 50 74 
+  20186d:	48 89 44 24 10       	mov    QWORD PTR [rsp+0x10],rax
+  201872:	48 8b 44 24 10       	mov    rax,QWORD PTR [rsp+0x10]
+  201877:	48 8b 4c 24 18       	mov    rcx,QWORD PTR [rsp+0x18]
+  20187c:	48 89 4c 24 28       	mov    QWORD PTR [rsp+0x28],rcx
+  201881:	48 89 44 24 20       	mov    QWORD PTR [rsp+0x20],rax
+  201886:	48 89 4c 24 08       	mov    QWORD PTR [rsp+0x8],rcx
+  20188b:	48 89 04 24          	mov    QWORD PTR [rsp],rax
+  20188f:	48 8b 04 24          	mov    rax,QWORD PTR [rsp]
+  201893:	48 8b 54 24 08       	mov    rdx,QWORD PTR [rsp+0x8]
+  201898:	48 83 c4 38          	add    rsp,0x38
+  20189c:	c3                   	ret    
+  20189d:	cc                   	int3   
+  20189e:	cc                   	int3   
+  20189f:	cc                   	int3   
+
+00000000002018a0 <_ZN4core3fmt9Arguments9new_const17h994e3a46ba3b03c6E>:
+  2018a0:	48 83 ec 78          	sub    rsp,0x78
+  2018a4:	48 89 54 24 08       	mov    QWORD PTR [rsp+0x8],rdx
+  2018a9:	48 89 74 24 10       	mov    QWORD PTR [rsp+0x10],rsi
+  2018ae:	48 89 7c 24 18       	mov    QWORD PTR [rsp+0x18],rdi
+  2018b3:	48 89 7c 24 20       	mov    QWORD PTR [rsp+0x20],rdi
+  2018b8:	48 89 74 24 68       	mov    QWORD PTR [rsp+0x68],rsi
+  2018bd:	48 89 54 24 70       	mov    QWORD PTR [rsp+0x70],rdx
+  2018c2:	48 83 fa 01          	cmp    rdx,0x1
+  2018c6:	77 4e                	ja     201916 <_ZN4core3fmt9Arguments9new_const17h994e3a46ba3b03c6E+0x76>
+  2018c8:	48 8b 44 24 20       	mov    rax,QWORD PTR [rsp+0x20]
+  2018cd:	48 8b 4c 24 18       	mov    rcx,QWORD PTR [rsp+0x18]
+  2018d2:	48 8b 54 24 08       	mov    rdx,QWORD PTR [rsp+0x8]
+  2018d7:	48 8b 74 24 10       	mov    rsi,QWORD PTR [rsp+0x10]
+  2018dc:	48 c7 44 24 58 00 00 	mov    QWORD PTR [rsp+0x58],0x0
+  2018e3:	00 00 
+  2018e5:	48 89 31             	mov    QWORD PTR [rcx],rsi
+  2018e8:	48 89 51 08          	mov    QWORD PTR [rcx+0x8],rdx
+  2018ec:	48 8b 74 24 58       	mov    rsi,QWORD PTR [rsp+0x58]
+  2018f1:	48 8b 54 24 60       	mov    rdx,QWORD PTR [rsp+0x60]
+  2018f6:	48 89 71 20          	mov    QWORD PTR [rcx+0x20],rsi
+  2018fa:	48 89 51 28          	mov    QWORD PTR [rcx+0x28],rdx
+  2018fe:	48 8d 15 0b e9 ff ff 	lea    rdx,[rip+0xffffffffffffe90b]        # 200210 <str.1+0x20>
+  201905:	48 89 51 10          	mov    QWORD PTR [rcx+0x10],rdx
+  201909:	48 c7 41 18 00 00 00 	mov    QWORD PTR [rcx+0x18],0x0
+  201910:	00 
+  201911:	48 83 c4 78          	add    rsp,0x78
+  201915:	c3                   	ret    
+  201916:	48 8d 35 e3 14 00 00 	lea    rsi,[rip+0x14e3]        # 202e00 <_ZN6kernel5HELLO17ha59ea5d0829feb26E+0x40>
+  20191d:	48 8d 7c 24 28       	lea    rdi,[rsp+0x28]
+  201922:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201926:	ba 01 00 00 00       	mov    edx,0x1
+  20192b:	e8 70 ff ff ff       	call   2018a0 <_ZN4core3fmt9Arguments9new_const17h994e3a46ba3b03c6E>
+  201930:	48 8b 3c 24          	mov    rdi,QWORD PTR [rsp]
+  201934:	48 8d 35 d5 14 00 00 	lea    rsi,[rip+0x14d5]        # 202e10 <_ZN6kernel5HELLO17ha59ea5d0829feb26E+0x50>
+  20193b:	e8 00 00 00 00       	call   201940 <_ZN4core9panicking9panic_fmt17h2ac4f100c089449dE>
+
+0000000000201940 <_ZN4core9panicking9panic_fmt17h2ac4f100c089449dE>:
+  201940:	48 83 ec 48          	sub    rsp,0x48
+  201944:	48 89 74 24 08       	mov    QWORD PTR [rsp+0x8],rsi
+  201949:	48 89 7c 24 10       	mov    QWORD PTR [rsp+0x10],rdi
+  20194e:	31 c0                	xor    eax,eax
+  201950:	a8 01                	test   al,0x1
+  201952:	75 3b                	jne    20198f <_ZN4core9panicking9panic_fmt17h2ac4f100c089449dE+0x4f>
+  201954:	48 8b 7c 24 08       	mov    rdi,QWORD PTR [rsp+0x8]
+  201959:	48 8b 44 24 10       	mov    rax,QWORD PTR [rsp+0x10]
+  20195e:	48 89 44 24 40       	mov    QWORD PTR [rsp+0x40],rax
+  201963:	e8 98 03 00 00       	call   201d00 <_ZN4core5panic8location8Location6caller17hf7aa3d9c9f9f4738E>
+  201968:	48 89 c2             	mov    rdx,rax
+  20196b:	48 8b 74 24 40       	mov    rsi,QWORD PTR [rsp+0x40]
+  201970:	48 8d 7c 24 18       	lea    rdi,[rsp+0x18]
+  201975:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201979:	b9 01 00 00 00       	mov    ecx,0x1
+  20197e:	45 31 c0             	xor    r8d,r8d
+  201981:	e8 fa 02 00 00       	call   201c80 <_ZN4core5panic10panic_info9PanicInfo20internal_constructor17hb6e93e0af81735d1E>
+  201986:	48 8b 3c 24          	mov    rdi,QWORD PTR [rsp]
+  20198a:	e8 11 fc ff ff       	call   2015a0 <rust_begin_unwind>
+  20198f:	0f 0b                	ud2    
+  201991:	cc                   	int3   
+  201992:	cc                   	int3   
+  201993:	cc                   	int3   
+  201994:	cc                   	int3   
+  201995:	cc                   	int3   
+  201996:	cc                   	int3   
+  201997:	cc                   	int3   
+  201998:	cc                   	int3   
+  201999:	cc                   	int3   
+  20199a:	cc                   	int3   
+  20199b:	cc                   	int3   
+  20199c:	cc                   	int3   
+  20199d:	cc                   	int3   
+  20199e:	cc                   	int3   
+  20199f:	cc                   	int3   
+
+00000000002019a0 <_ZN4core9panicking18panic_nounwind_fmt17hc1b81bdc9edaecaaE>:
+  2019a0:	48 83 ec 48          	sub    rsp,0x48
+  2019a4:	40 88 f0             	mov    al,sil
+  2019a7:	24 01                	and    al,0x1
+  2019a9:	88 44 24 47          	mov    BYTE PTR [rsp+0x47],al
+  2019ad:	48 8b 4f 28          	mov    rcx,QWORD PTR [rdi+0x28]
+  2019b1:	48 89 4c 24 30       	mov    QWORD PTR [rsp+0x30],rcx
+  2019b6:	48 8b 4f 20          	mov    rcx,QWORD PTR [rdi+0x20]
+  2019ba:	48 89 4c 24 28       	mov    QWORD PTR [rsp+0x28],rcx
+  2019bf:	48 8b 4f 18          	mov    rcx,QWORD PTR [rdi+0x18]
+  2019c3:	48 89 4c 24 20       	mov    QWORD PTR [rsp+0x20],rcx
+  2019c8:	48 8b 4f 10          	mov    rcx,QWORD PTR [rdi+0x10]
+  2019cc:	48 89 4c 24 18       	mov    QWORD PTR [rsp+0x18],rcx
+  2019d1:	48 8b 0f             	mov    rcx,QWORD PTR [rdi]
+  2019d4:	48 8b 77 08          	mov    rsi,QWORD PTR [rdi+0x8]
+  2019d8:	48 89 74 24 10       	mov    QWORD PTR [rsp+0x10],rsi
+  2019dd:	48 89 4c 24 08       	mov    QWORD PTR [rsp+0x8],rcx
+  2019e2:	88 44 24 38          	mov    BYTE PTR [rsp+0x38],al
+  2019e6:	0f b6 74 24 38       	movzx  esi,BYTE PTR [rsp+0x38]
+  2019eb:	48 8d 7c 24 08       	lea    rdi,[rsp+0x8]
+  2019f0:	e8 0b 00 00 00       	call   201a00 <_ZN4core9panicking18panic_nounwind_fmt7runtime17h47ab5b2d1f4c08e7E>
+  2019f5:	cc                   	int3   
+  2019f6:	cc                   	int3   
+  2019f7:	cc                   	int3   
+  2019f8:	cc                   	int3   
+  2019f9:	cc                   	int3   
+  2019fa:	cc                   	int3   
+  2019fb:	cc                   	int3   
+  2019fc:	cc                   	int3   
+  2019fd:	cc                   	int3   
+  2019fe:	cc                   	int3   
+  2019ff:	cc                   	int3   
+
+0000000000201a00 <_ZN4core9panicking18panic_nounwind_fmt7runtime17h47ab5b2d1f4c08e7E>:
+  201a00:	48 83 ec 58          	sub    rsp,0x58
+  201a04:	48 89 54 24 08       	mov    QWORD PTR [rsp+0x8],rdx
+  201a09:	48 89 7c 24 10       	mov    QWORD PTR [rsp+0x10],rdi
+  201a0e:	40 88 f0             	mov    al,sil
+  201a11:	88 44 24 1f          	mov    BYTE PTR [rsp+0x1f],al
+  201a15:	24 01                	and    al,0x1
+  201a17:	88 44 24 57          	mov    BYTE PTR [rsp+0x57],al
+  201a1b:	31 c0                	xor    eax,eax
+  201a1d:	a8 01                	test   al,0x1
+  201a1f:	75 41                	jne    201a62 <_ZN4core9panicking18panic_nounwind_fmt7runtime17h47ab5b2d1f4c08e7E+0x62>
+  201a21:	48 8b 7c 24 08       	mov    rdi,QWORD PTR [rsp+0x8]
+  201a26:	48 8b 44 24 10       	mov    rax,QWORD PTR [rsp+0x10]
+  201a2b:	48 89 44 24 48       	mov    QWORD PTR [rsp+0x48],rax
+  201a30:	e8 cb 02 00 00       	call   201d00 <_ZN4core5panic8location8Location6caller17hf7aa3d9c9f9f4738E>
+  201a35:	48 89 c2             	mov    rdx,rax
+  201a38:	8a 44 24 1f          	mov    al,BYTE PTR [rsp+0x1f]
+  201a3c:	48 8b 74 24 48       	mov    rsi,QWORD PTR [rsp+0x48]
+  201a41:	44 0f b6 c0          	movzx  r8d,al
+  201a45:	41 83 e0 01          	and    r8d,0x1
+  201a49:	48 8d 7c 24 20       	lea    rdi,[rsp+0x20]
+  201a4e:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201a52:	31 c9                	xor    ecx,ecx
+  201a54:	e8 27 02 00 00       	call   201c80 <_ZN4core5panic10panic_info9PanicInfo20internal_constructor17hb6e93e0af81735d1E>
+  201a59:	48 8b 3c 24          	mov    rdi,QWORD PTR [rsp]
+  201a5d:	e8 3e fb ff ff       	call   2015a0 <rust_begin_unwind>
+  201a62:	0f 0b                	ud2    
+  201a64:	cc                   	int3   
+  201a65:	cc                   	int3   
+  201a66:	cc                   	int3   
+  201a67:	cc                   	int3   
+  201a68:	cc                   	int3   
+  201a69:	cc                   	int3   
+  201a6a:	cc                   	int3   
+  201a6b:	cc                   	int3   
+  201a6c:	cc                   	int3   
+  201a6d:	cc                   	int3   
+  201a6e:	cc                   	int3   
+  201a6f:	cc                   	int3   
+
+0000000000201a70 <_ZN4core9panicking5panic17h6492bfd002ebeff0E>:
+  201a70:	48 83 ec 68          	sub    rsp,0x68
+  201a74:	48 89 54 24 10       	mov    QWORD PTR [rsp+0x10],rdx
+  201a79:	48 89 7c 24 58       	mov    QWORD PTR [rsp+0x58],rdi
+  201a7e:	48 89 74 24 60       	mov    QWORD PTR [rsp+0x60],rsi
+  201a83:	48 89 7c 24 48       	mov    QWORD PTR [rsp+0x48],rdi
+  201a88:	48 89 74 24 50       	mov    QWORD PTR [rsp+0x50],rsi
+  201a8d:	48 8d 7c 24 18       	lea    rdi,[rsp+0x18]
+  201a92:	48 89 7c 24 08       	mov    QWORD PTR [rsp+0x8],rdi
+  201a97:	48 8d 74 24 48       	lea    rsi,[rsp+0x48]
+  201a9c:	ba 01 00 00 00       	mov    edx,0x1
+  201aa1:	e8 fa fd ff ff       	call   2018a0 <_ZN4core3fmt9Arguments9new_const17h994e3a46ba3b03c6E>
+  201aa6:	48 8b 7c 24 08       	mov    rdi,QWORD PTR [rsp+0x8]
+  201aab:	48 8b 74 24 10       	mov    rsi,QWORD PTR [rsp+0x10]
+  201ab0:	e8 8b fe ff ff       	call   201940 <_ZN4core9panicking9panic_fmt17h2ac4f100c089449dE>
+  201ab5:	cc                   	int3   
+  201ab6:	cc                   	int3   
+  201ab7:	cc                   	int3   
+  201ab8:	cc                   	int3   
+  201ab9:	cc                   	int3   
+  201aba:	cc                   	int3   
+  201abb:	cc                   	int3   
+  201abc:	cc                   	int3   
+  201abd:	cc                   	int3   
+  201abe:	cc                   	int3   
+  201abf:	cc                   	int3   
+
+0000000000201ac0 <_ZN4core9panicking14panic_nounwind17h7003c4c42f96938aE>:
+  201ac0:	48 83 ec 58          	sub    rsp,0x58
+  201ac4:	48 89 7c 24 48       	mov    QWORD PTR [rsp+0x48],rdi
+  201ac9:	48 89 74 24 50       	mov    QWORD PTR [rsp+0x50],rsi
+  201ace:	48 89 7c 24 38       	mov    QWORD PTR [rsp+0x38],rdi
+  201ad3:	48 89 74 24 40       	mov    QWORD PTR [rsp+0x40],rsi
+  201ad8:	48 8d 7c 24 08       	lea    rdi,[rsp+0x8]
+  201add:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201ae1:	48 8d 74 24 38       	lea    rsi,[rsp+0x38]
+  201ae6:	ba 01 00 00 00       	mov    edx,0x1
+  201aeb:	e8 b0 fd ff ff       	call   2018a0 <_ZN4core3fmt9Arguments9new_const17h994e3a46ba3b03c6E>
+  201af0:	48 8b 3c 24          	mov    rdi,QWORD PTR [rsp]
+  201af4:	48 8d 15 2d 13 00 00 	lea    rdx,[rip+0x132d]        # 202e28 <_ZN6kernel5HELLO17ha59ea5d0829feb26E+0x68>
+  201afb:	31 f6                	xor    esi,esi
+  201afd:	e8 9e fe ff ff       	call   2019a0 <_ZN4core9panicking18panic_nounwind_fmt17hc1b81bdc9edaecaaE>
+  201b02:	cc                   	int3   
+  201b03:	cc                   	int3   
+  201b04:	cc                   	int3   
+  201b05:	cc                   	int3   
+  201b06:	cc                   	int3   
+  201b07:	cc                   	int3   
+  201b08:	cc                   	int3   
+  201b09:	cc                   	int3   
+  201b0a:	cc                   	int3   
+  201b0b:	cc                   	int3   
+  201b0c:	cc                   	int3   
+  201b0d:	cc                   	int3   
+  201b0e:	cc                   	int3   
+  201b0f:	cc                   	int3   
+
+0000000000201b10 <_ZN4core4iter8adapters9enumerate18Enumerate$LT$I$GT$3new17hed37d1f93f7d1b05E>:
+  201b10:	48 83 ec 10          	sub    rsp,0x10
+  201b14:	48 89 f8             	mov    rax,rdi
+  201b17:	48 89 34 24          	mov    QWORD PTR [rsp],rsi
+  201b1b:	48 89 54 24 08       	mov    QWORD PTR [rsp+0x8],rdx
+  201b20:	48 89 37             	mov    QWORD PTR [rdi],rsi
+  201b23:	48 89 57 08          	mov    QWORD PTR [rdi+0x8],rdx
+  201b27:	48 c7 47 10 00 00 00 	mov    QWORD PTR [rdi+0x10],0x0
+  201b2e:	00 
+  201b2f:	48 83 c4 10          	add    rsp,0x10
+  201b33:	c3                   	ret    
+  201b34:	cc                   	int3   
+  201b35:	cc                   	int3   
+  201b36:	cc                   	int3   
+  201b37:	cc                   	int3   
+  201b38:	cc                   	int3   
+  201b39:	cc                   	int3   
+  201b3a:	cc                   	int3   
+  201b3b:	cc                   	int3   
+  201b3c:	cc                   	int3   
+  201b3d:	cc                   	int3   
+  201b3e:	cc                   	int3   
+  201b3f:	cc                   	int3   
+
+0000000000201b40 <_ZN110_$LT$core..iter..adapters..enumerate..Enumerate$LT$I$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17h6b0bd6dcdc3d5dd1E>:
+  201b40:	48 83 ec 68          	sub    rsp,0x68
+  201b44:	48 89 7c 24 18       	mov    QWORD PTR [rsp+0x18],rdi
+  201b49:	48 89 7c 24 50       	mov    QWORD PTR [rsp+0x50],rdi
+  201b4e:	e8 1d fb ff ff       	call   201670 <_ZN91_$LT$core..slice..iter..Iter$LT$T$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17hdd892a1cfd50f9b8E>
+  201b53:	48 89 c7             	mov    rdi,rax
+  201b56:	e8 25 fc ff ff       	call   201780 <_ZN75_$LT$core..option..Option$LT$T$GT$$u20$as$u20$core..ops..try_trait..Try$GT$6branch17h12528343763dbc3eE>
+  201b5b:	48 89 44 24 38       	mov    QWORD PTR [rsp+0x38],rax
+  201b60:	48 8b 54 24 38       	mov    rdx,QWORD PTR [rsp+0x38]
+  201b65:	31 c0                	xor    eax,eax
+  201b67:	b9 01 00 00 00       	mov    ecx,0x1
+  201b6c:	48 83 fa 00          	cmp    rdx,0x0
+  201b70:	48 0f 44 c1          	cmove  rax,rcx
+  201b74:	48 83 f8 00          	cmp    rax,0x0
+  201b78:	75 37                	jne    201bb1 <_ZN110_$LT$core..iter..adapters..enumerate..Enumerate$LT$I$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17h6b0bd6dcdc3d5dd1E+0x71>
+  201b7a:	48 8b 44 24 18       	mov    rax,QWORD PTR [rsp+0x18]
+  201b7f:	48 8b 4c 24 38       	mov    rcx,QWORD PTR [rsp+0x38]
+  201b84:	48 89 0c 24          	mov    QWORD PTR [rsp],rcx
+  201b88:	48 89 4c 24 58       	mov    QWORD PTR [rsp+0x58],rcx
+  201b8d:	48 8b 48 10          	mov    rcx,QWORD PTR [rax+0x10]
+  201b91:	48 89 4c 24 08       	mov    QWORD PTR [rsp+0x8],rcx
+  201b96:	48 89 4c 24 60       	mov    QWORD PTR [rsp+0x60],rcx
+  201b9b:	48 8b 40 10          	mov    rax,QWORD PTR [rax+0x10]
+  201b9f:	48 83 c0 01          	add    rax,0x1
+  201ba3:	48 89 44 24 10       	mov    QWORD PTR [rsp+0x10],rax
+  201ba8:	0f 92 c0             	setb   al
+  201bab:	a8 01                	test   al,0x1
+  201bad:	75 4a                	jne    201bf9 <_ZN110_$LT$core..iter..adapters..enumerate..Enumerate$LT$I$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17h6b0bd6dcdc3d5dd1E+0xb9>
+  201baf:	eb 11                	jmp    201bc2 <_ZN110_$LT$core..iter..adapters..enumerate..Enumerate$LT$I$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17h6b0bd6dcdc3d5dd1E+0x82>
+  201bb1:	e8 1a fc ff ff       	call   2017d0 <_ZN84_$LT$core..option..Option$LT$T$GT$$u20$as$u20$core..ops..try_trait..FromResidual$GT$13from_residual17h5270ab0867bc1b42E>
+  201bb6:	48 89 44 24 28       	mov    QWORD PTR [rsp+0x28],rax
+  201bbb:	48 89 54 24 30       	mov    QWORD PTR [rsp+0x30],rdx
+  201bc0:	eb 4f                	jmp    201c11 <_ZN110_$LT$core..iter..adapters..enumerate..Enumerate$LT$I$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17h6b0bd6dcdc3d5dd1E+0xd1>
+  201bc2:	48 8b 04 24          	mov    rax,QWORD PTR [rsp]
+  201bc6:	48 8b 4c 24 08       	mov    rcx,QWORD PTR [rsp+0x8]
+  201bcb:	48 8b 54 24 18       	mov    rdx,QWORD PTR [rsp+0x18]
+  201bd0:	48 8b 74 24 10       	mov    rsi,QWORD PTR [rsp+0x10]
+  201bd5:	48 89 72 10          	mov    QWORD PTR [rdx+0x10],rsi
+  201bd9:	48 89 4c 24 40       	mov    QWORD PTR [rsp+0x40],rcx
+  201bde:	48 89 44 24 48       	mov    QWORD PTR [rsp+0x48],rax
+  201be3:	48 8b 4c 24 40       	mov    rcx,QWORD PTR [rsp+0x40]
+  201be8:	48 8b 44 24 48       	mov    rax,QWORD PTR [rsp+0x48]
+  201bed:	48 89 4c 24 28       	mov    QWORD PTR [rsp+0x28],rcx
+  201bf2:	48 89 44 24 30       	mov    QWORD PTR [rsp+0x30],rax
+  201bf7:	eb 18                	jmp    201c11 <_ZN110_$LT$core..iter..adapters..enumerate..Enumerate$LT$I$GT$$u20$as$u20$core..iter..traits..iterator..Iterator$GT$4next17h6b0bd6dcdc3d5dd1E+0xd1>
+  201bf9:	48 8d 3d 00 e7 ff ff 	lea    rdi,[rip+0xffffffffffffe700]        # 200300 <str.0>
+  201c00:	48 8d 15 39 12 00 00 	lea    rdx,[rip+0x1239]        # 202e40 <_ZN6kernel5HELLO17ha59ea5d0829feb26E+0x80>
+  201c07:	be 1c 00 00 00       	mov    esi,0x1c
+  201c0c:	e8 5f fe ff ff       	call   201a70 <_ZN4core9panicking5panic17h6492bfd002ebeff0E>
+  201c11:	48 8b 44 24 28       	mov    rax,QWORD PTR [rsp+0x28]
+  201c16:	48 8b 54 24 30       	mov    rdx,QWORD PTR [rsp+0x30]
+  201c1b:	48 83 c4 68          	add    rsp,0x68
+  201c1f:	c3                   	ret    
+
+0000000000201c20 <_ZN63_$LT$I$u20$as$u20$core..iter..traits..collect..IntoIterator$GT$9into_iter17h2c3dd74a00ead380E>:
+  201c20:	48 89 f8             	mov    rax,rdi
+  201c23:	48 8b 0e             	mov    rcx,QWORD PTR [rsi]
+  201c26:	48 89 0f             	mov    QWORD PTR [rdi],rcx
+  201c29:	48 8b 4e 08          	mov    rcx,QWORD PTR [rsi+0x8]
+  201c2d:	48 89 4f 08          	mov    QWORD PTR [rdi+0x8],rcx
+  201c31:	48 8b 4e 10          	mov    rcx,QWORD PTR [rsi+0x10]
+  201c35:	48 89 4f 10          	mov    QWORD PTR [rdi+0x10],rcx
+  201c39:	c3                   	ret    
+  201c3a:	cc                   	int3   
+  201c3b:	cc                   	int3   
+  201c3c:	cc                   	int3   
+  201c3d:	cc                   	int3   
+  201c3e:	cc                   	int3   
+  201c3f:	cc                   	int3   
+
+0000000000201c40 <_ZN4core5slice29_$LT$impl$u20$$u5b$T$u5d$$GT$4iter17h72c05d94acc08de3E>:
+  201c40:	48 83 ec 18          	sub    rsp,0x18
+  201c44:	48 89 7c 24 08       	mov    QWORD PTR [rsp+0x8],rdi
+  201c49:	48 89 74 24 10       	mov    QWORD PTR [rsp+0x10],rsi
+  201c4e:	e8 8d f9 ff ff       	call   2015e0 <_ZN4core5slice4iter13Iter$LT$T$GT$3new17h6c4f69d0174a5116E>
+  201c53:	48 83 c4 18          	add    rsp,0x18
+  201c57:	c3                   	ret    
+  201c58:	cc                   	int3   
+  201c59:	cc                   	int3   
+  201c5a:	cc                   	int3   
+  201c5b:	cc                   	int3   
+  201c5c:	cc                   	int3   
+  201c5d:	cc                   	int3   
+  201c5e:	cc                   	int3   
+  201c5f:	cc                   	int3   
+
+0000000000201c60 <_ZN4core3ptr88drop_in_place$LT$core..panic..panic_info..PanicInfo..internal_constructor..NoPayload$GT$17h51e66a519ef467b2E>:
+  201c60:	50                   	push   rax
+  201c61:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201c65:	58                   	pop    rax
+  201c66:	c3                   	ret    
+  201c67:	cc                   	int3   
+  201c68:	cc                   	int3   
+  201c69:	cc                   	int3   
+  201c6a:	cc                   	int3   
+  201c6b:	cc                   	int3   
+  201c6c:	cc                   	int3   
+  201c6d:	cc                   	int3   
+  201c6e:	cc                   	int3   
+  201c6f:	cc                   	int3   
+
+0000000000201c70 <_ZN36_$LT$T$u20$as$u20$core..any..Any$GT$7type_id17he1b212558ba32106E>:
+  201c70:	50                   	push   rax
+  201c71:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201c75:	e8 d6 fb ff ff       	call   201850 <_ZN4core3any6TypeId2of17hcf19e3167c4a9ddcE>
+  201c7a:	59                   	pop    rcx
+  201c7b:	c3                   	ret    
+  201c7c:	cc                   	int3   
+  201c7d:	cc                   	int3   
+  201c7e:	cc                   	int3   
+  201c7f:	cc                   	int3   
+
+0000000000201c80 <_ZN4core5panic10panic_info9PanicInfo20internal_constructor17hb6e93e0af81735d1E>:
+  201c80:	48 83 ec 28          	sub    rsp,0x28
+  201c84:	44 89 44 24 04       	mov    DWORD PTR [rsp+0x4],r8d
+  201c89:	89 c8                	mov    eax,ecx
+  201c8b:	8b 4c 24 04          	mov    ecx,DWORD PTR [rsp+0x4]
+  201c8f:	48 89 54 24 08       	mov    QWORD PTR [rsp+0x8],rdx
+  201c94:	49 89 f0             	mov    r8,rsi
+  201c97:	48 8b 74 24 08       	mov    rsi,QWORD PTR [rsp+0x8]
+  201c9c:	88 c2                	mov    dl,al
+  201c9e:	48 89 f8             	mov    rax,rdi
+  201ca1:	4c 89 44 24 10       	mov    QWORD PTR [rsp+0x10],r8
+  201ca6:	48 89 74 24 18       	mov    QWORD PTR [rsp+0x18],rsi
+  201cab:	41 88 d1             	mov    r9b,dl
+  201cae:	41 80 e1 01          	and    r9b,0x1
+  201cb2:	44 88 4c 24 26       	mov    BYTE PTR [rsp+0x26],r9b
+  201cb7:	41 88 c9             	mov    r9b,cl
+  201cba:	41 80 e1 01          	and    r9b,0x1
+  201cbe:	44 88 4c 24 27       	mov    BYTE PTR [rsp+0x27],r9b
+  201cc3:	4c 8d 0d cc e6 ff ff 	lea    r9,[rip+0xffffffffffffe6cc]        # 200396 <str.0+0x96>
+  201cca:	4c 89 0f             	mov    QWORD PTR [rdi],r9
+  201ccd:	4c 8d 0d 84 11 00 00 	lea    r9,[rip+0x1184]        # 202e58 <_ZN6kernel5HELLO17ha59ea5d0829feb26E+0x98>
+  201cd4:	4c 89 4f 08          	mov    QWORD PTR [rdi+0x8],r9
+  201cd8:	4c 89 47 10          	mov    QWORD PTR [rdi+0x10],r8
+  201cdc:	48 89 77 18          	mov    QWORD PTR [rdi+0x18],rsi
+  201ce0:	80 e2 01             	and    dl,0x1
+  201ce3:	88 57 20             	mov    BYTE PTR [rdi+0x20],dl
+  201ce6:	80 e1 01             	and    cl,0x1
+  201ce9:	88 4f 21             	mov    BYTE PTR [rdi+0x21],cl
+  201cec:	48 83 c4 28          	add    rsp,0x28
+  201cf0:	c3                   	ret    
+  201cf1:	cc                   	int3   
+  201cf2:	cc                   	int3   
+  201cf3:	cc                   	int3   
+  201cf4:	cc                   	int3   
+  201cf5:	cc                   	int3   
+  201cf6:	cc                   	int3   
+  201cf7:	cc                   	int3   
+  201cf8:	cc                   	int3   
+  201cf9:	cc                   	int3   
+  201cfa:	cc                   	int3   
+  201cfb:	cc                   	int3   
+  201cfc:	cc                   	int3   
+  201cfd:	cc                   	int3   
+  201cfe:	cc                   	int3   
+  201cff:	cc                   	int3   
+
+0000000000201d00 <_ZN4core5panic8location8Location6caller17hf7aa3d9c9f9f4738E>:
+  201d00:	50                   	push   rax
+  201d01:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201d05:	48 8b 04 24          	mov    rax,QWORD PTR [rsp]
+  201d09:	59                   	pop    rcx
+  201d0a:	c3                   	ret    
+  201d0b:	cc                   	int3   
+  201d0c:	cc                   	int3   
+  201d0d:	cc                   	int3   
+  201d0e:	cc                   	int3   
+  201d0f:	cc                   	int3   
+
+0000000000201d10 <_ZN4core3ptr8non_null16NonNull$LT$T$GT$13new_unchecked17h48710200dc76af53E>:
+  201d10:	48 83 ec 28          	sub    rsp,0x28
+  201d14:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201d18:	48 89 7c 24 18       	mov    QWORD PTR [rsp+0x18],rdi
+  201d1d:	b0 01                	mov    al,0x1
+  201d1f:	a8 01                	test   al,0x1
+  201d21:	75 13                	jne    201d36 <_ZN4core3ptr8non_null16NonNull$LT$T$GT$13new_unchecked17h48710200dc76af53E+0x26>
+  201d23:	48 8b 04 24          	mov    rax,QWORD PTR [rsp]
+  201d27:	48 89 44 24 08       	mov    QWORD PTR [rsp+0x8],rax
+  201d2c:	48 8b 44 24 08       	mov    rax,QWORD PTR [rsp+0x8]
+  201d31:	48 83 c4 28          	add    rsp,0x28
+  201d35:	c3                   	ret    
+  201d36:	48 8b 04 24          	mov    rax,QWORD PTR [rsp]
+  201d3a:	48 89 44 24 10       	mov    QWORD PTR [rsp+0x10],rax
+  201d3f:	48 8b 7c 24 10       	mov    rdi,QWORD PTR [rsp+0x10]
+  201d44:	48 89 7c 24 20       	mov    QWORD PTR [rsp+0x20],rdi
+  201d49:	e8 a2 fa ff ff       	call   2017f0 <_ZN4core3ptr7mut_ptr31_$LT$impl$u20$$BP$mut$u20$T$GT$7is_null17hc565d907c42e26e1E>
+  201d4e:	a8 01                	test   al,0x1
+  201d50:	75 02                	jne    201d54 <_ZN4core3ptr8non_null16NonNull$LT$T$GT$13new_unchecked17h48710200dc76af53E+0x44>
+  201d52:	eb 11                	jmp    201d65 <_ZN4core3ptr8non_null16NonNull$LT$T$GT$13new_unchecked17h48710200dc76af53E+0x55>
+  201d54:	48 8d 3d 3b e6 ff ff 	lea    rdi,[rip+0xffffffffffffe63b]        # 200396 <str.0+0x96>
+  201d5b:	be 5d 00 00 00       	mov    esi,0x5d
+  201d60:	e8 5b fd ff ff       	call   201ac0 <_ZN4core9panicking14panic_nounwind17h7003c4c42f96938aE>
+  201d65:	eb bc                	jmp    201d23 <_ZN4core3ptr8non_null16NonNull$LT$T$GT$13new_unchecked17h48710200dc76af53E+0x13>
+  201d67:	cc                   	int3   
+  201d68:	cc                   	int3   
+  201d69:	cc                   	int3   
+  201d6a:	cc                   	int3   
+  201d6b:	cc                   	int3   
+  201d6c:	cc                   	int3   
+  201d6d:	cc                   	int3   
+  201d6e:	cc                   	int3   
+  201d6f:	cc                   	int3   
+
+0000000000201d70 <_ZN78_$LT$core..ptr..non_null..NonNull$LT$T$GT$$u20$as$u20$core..cmp..PartialEq$GT$2eq17hc4fbbb38373b5dddE>:
+  201d70:	48 83 ec 20          	sub    rsp,0x20
+  201d74:	48 89 3c 24          	mov    QWORD PTR [rsp],rdi
+  201d78:	48 89 74 24 08       	mov    QWORD PTR [rsp+0x8],rsi
+  201d7d:	48 8b 07             	mov    rax,QWORD PTR [rdi]
+  201d80:	48 89 44 24 18       	mov    QWORD PTR [rsp+0x18],rax
+  201d85:	48 8b 0e             	mov    rcx,QWORD PTR [rsi]
+  201d88:	48 89 4c 24 10       	mov    QWORD PTR [rsp+0x10],rcx
+  201d8d:	48 39 c8             	cmp    rax,rcx
+  201d90:	0f 94 c0             	sete   al
+  201d93:	24 01                	and    al,0x1
+  201d95:	0f b6 c0             	movzx  eax,al
+  201d98:	48 83 c4 20          	add    rsp,0x20
+  201d9c:	c3                   	ret    
+  201d9d:	cc                   	int3   
+  201d9e:	cc                   	int3   
+  201d9f:	cc                   	int3   
+
+0000000000201da0 <start>:
+  201da0:	48 b8 4f 2f 4b 2f 41 	movabs rax,0x1f592f412f4b2f4f
+  201da7:	2f 59 1f 
+  201daa:	48 89 04 25 00 80 0b 	mov    QWORD PTR ds:0xb8000,rax
+  201db1:	00 
+  201db2:	e8 49 f6 ff ff       	call   201400 <main>
+  201db7:	eb fe                	jmp    201db7 <start+0x17>
