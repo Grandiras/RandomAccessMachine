@@ -1,5 +1,5 @@
-﻿namespace RandomAccessMachine.App.Specification;
-public enum OpCodes
+﻿namespace RandomAccessMachine.Backend.Specification;
+public enum OpCode
 {
     LOAD,
     STORE,

@@ -1,14 +1,67 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.22000</TargetFramework>
+	<TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
+	<ApplicationIcon>Assets/WindowIcon.ico</ApplicationIcon>
+	<ApplicationManifest>app.manifest</ApplicationManifest>
+	<Platforms>x86;x64;arm64</Platforms>
+	<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+	<PublishProfile>Properties\PublishProfiles\win-$(Platform).pubxml</PublishProfile>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<UseWinUI>true</UseWinUI>
+	<EnableMsixTooling>true</EnableMsixTooling>
+	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OneOf" Version="3.0.271" />
+    <PackageReference Include="WinSharp" Version="0.3.17" />
+    <PackageReference Include="WinUIEdit" Version="0.0.3-prerelease" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RandomAccessMachine.Backend\RandomAccessMachine.Backend.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+  	<AppxManifest Include="Package.appxmanifest">
+  	  <SubType>Designer</SubType>
+  	</AppxManifest>
+  </ItemGroup>
+  <ItemGroup>
+  	<Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+  	<ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+  	<Compile Update="Resources.Designer.cs">
+  	  <DesignTime>True</DesignTime>
+  	  <AutoGen>True</AutoGen>
+  	  <DependentUpon>Resources.resx</DependentUpon>
+  	</Compile>
+  </ItemGroup>
+  <ItemGroup>
+  	<Content Update="Assets/WindowIcon.ico">
+  	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</Content>
+  </ItemGroup>
+  <ItemGroup>
+  	<EmbeddedResource Update="Resources.resx">
+  	  <Generator>ResXFileCodeGenerator</Generator>
+  	  <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+  	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+  	<None Update="appsettings.json">
+  	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</None>
+  </ItemGroup>
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+  	<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
 
 </Project>

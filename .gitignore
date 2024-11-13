@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/RandomAccessMachine.Backend/obj
+/RandomAccessMachine.Demo/bin/Debug/net9.0
+/RandomAccessMachine.Demo/obj
+/RandomAccessMachine.Backend/bin/Debug/net9.0
+/RandomAccessMachine.Demo/Properties
+*.user
+/.dockerignore
