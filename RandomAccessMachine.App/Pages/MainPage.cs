@@ -1,66 +1,105 @@
-﻿using CommunityToolkit.Labs.WinUI;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI.UI.Controls;
+﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Animation;
-using RandomAccessMachine.App.Components;
+using RandomAccessMachine.App.Helpers;
 using RandomAccessMachine.App.Services;
 using RandomAccessMachine.Backend.Interpreter;
+using RandomAccessMachine.Backend.Specification;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 using Windows.System;
-using WinRT.Interop;
 using WinSharp.BindingExtensions;
 using WinSharp.Helpers;
 using WinSharp.Styles;
 using WinUIEditor;
-using WinUIEx;
 
 namespace RandomAccessMachine.App.Pages;
-public sealed class MainPage : Page
+public sealed class MainPage : Page, INotifyPropertyChanged
 {
+    private readonly FileService FileService;
+
+    private readonly Interpreter? Interpreter = new();
+
     private readonly CodeEditorControl Editor;
     private readonly Slider SpeedSlider;
     private readonly ToggleSwitch RealtimeToggle;
-    private readonly WinSharp.Controls.StackPanel RegistersStackPanel;
+    private readonly ListView RegistersListView;
     private readonly InfoBar ErrorInfo;
 
+    private readonly ObservableCollection<Register> Registers;
+
+    private Scope CurrentScope = default;
+
+    private readonly RelayCommand NewCommand;
     private readonly RelayCommand OpenCommand;
     private readonly RelayCommand SaveCommand;
     private readonly RelayCommand RunCommand;
+    private readonly RelayCommand StopCommand;
     private readonly RelayCommand StepCommand;
+    private readonly RelayCommand AddRegisterCommand;
+    private readonly RelayCommand DeleteRegistersCommand;
 
-    private readonly ObservableCollection<RegisterComponent> Registers;
-
-    private readonly bool IsRunning = false;
-
-    private CancellationTokenSource SyntaxCheckCancellationTokenSource;
+    private CancellationTokenSource? SyntaxCheckCancellationTokenSource;
     private DateTime LastTimeChecked = DateTime.MinValue;
 
+    private CancellationTokenSource? RunnerCancellationTokenSource;
 
-    public MainPage(WindowEx window, object? parameter = null)
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+
+    public MainPage(FileService fileService, object? parameter = null)
     {
-        var file = FileSystemService.GetScriptFiles().FirstOrDefault(f => f.EndsWith(parameter?.ToString() ?? "null"));
+        FileService = fileService;
 
+        Registers = [];
+
+        NewCommand = new(async () =>
+        {
+            if (Editor!.Editor.Modify)
+            {
+                var dialog = new ContentDialog
+                {
+                    Title = "Unsaved changes",
+                    Content = "You have unsaved changes. Do you want to save them?",
+                    PrimaryButtonText = "Save",
+                    CloseButtonText = "Don't save",
+                    DefaultButton = ContentDialogButton.Primary
+                };
+                var result = await dialog.ShowAsync(this);
+                if (result is ContentDialogResult.Primary)
+                {
+                    if (FileService.OpenFile is not null) await FileIO.WriteTextAsync(FileService.OpenFile, Editor!.Editor.GetText(Editor.Editor.TextLength) ?? "");
+                    else
+                    {
+                        await FileService.SaveFileAsync();
+                        if (FileService.OpenFile is null) return;
+
+                        CachedFileManager.DeferUpdates(FileService.OpenFile);
+                        using var stream = await FileService.OpenFile.OpenStreamForWriteAsync();
+                        using var writer = new StreamWriter(stream);
+                        writer.WriteLine(Editor?.Editor.GetText(Editor.Editor.TextLength));
+                    }
+
+                    Editor?.Editor.SetSavePoint();
+                }
+            };
+
+            await FileService.CreateFileAsync();
+
+            Editor?.Editor.SetText("");
+            Editor?.Editor.SetSavePoint();
+        });
         OpenCommand = new(async () =>
         {
-            var filePicker = new FileOpenPicker
-            {
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-            };
-            filePicker.FileTypeFilter.Add(".txt");
+            await FileService.OpenFileAsync();
+            if (FileService.OpenFile is null) return;
 
-            var hWnd = WindowNative.GetWindowHandle(window);
-            InitializeWithWindow.Initialize(filePicker, hWnd);
-
-            var openFile = await filePicker.PickSingleFileAsync();
-
-            file = openFile!.Path;
-
-            Editor?.Editor.SetText(file is not null ? FileSystemService.GetScriptCommands(file).Aggregate((x, y) => x + "\n\n" + y) : "");
+            Editor?.Editor.SetText(await FileIO.ReadTextAsync(FileService.OpenFile));
             Editor?.Editor.SetSavePoint();
 
             SaveCommand!.NotifyCanExecuteChanged();
@@ -69,112 +108,165 @@ public sealed class MainPage : Page
         });
         SaveCommand = new(async () =>
         {
-            if (file is not null) File.WriteAllText(file, Editor?.Editor.GetText(Editor.Editor.TextLength) ?? FileSystemService.GetScriptCommands(file).Aggregate((x, y) => x + "\n\n" + y));
+            if (FileService.OpenFile is not null) await FileIO.WriteTextAsync(FileService.OpenFile, Editor!.Editor.GetText(Editor.Editor.TextLength) ?? "");
             else
             {
-                var savePicker = new FileSavePicker
-                {
-                    SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-                    SuggestedFileName = DateTime.Now.ToString("yyyy-MM-dd--hh-mm-ss")
-                };
-                savePicker.FileTypeChoices.Add("TXT file", [".txt"]);
+                await FileService.SaveFileAsync();
+                if (FileService.OpenFile is null) return;
 
-                var hWnd = WindowNative.GetWindowHandle(window);
-                InitializeWithWindow.Initialize(savePicker, hWnd);
-
-                var saveFile = await savePicker.PickSaveFileAsync();
-                if (saveFile is not null)
-                {
-                    CachedFileManager.DeferUpdates(saveFile);
-
-                    using var stream = await saveFile.OpenStreamForWriteAsync();
-                    using var writer = new StreamWriter(stream);
-                    writer.WriteLine(Editor?.Editor.GetText(Editor.Editor.TextLength));
-
-                    file = saveFile!.Path;
-                }
+                CachedFileManager.DeferUpdates(FileService.OpenFile);
+                using var stream = await FileService.OpenFile.OpenStreamForWriteAsync();
+                using var writer = new StreamWriter(stream);
+                writer.WriteLine(Editor?.Editor.GetText(Editor.Editor.TextLength));
             }
 
             Editor?.Editor.SetSavePoint();
             SaveCommand!.NotifyCanExecuteChanged();
-        }, () => Editor is not null && !string.IsNullOrWhiteSpace(Editor.Editor.GetText(Editor.Editor.TextLength)) && Editor.Editor.Modify);
-        RunCommand = new(async () =>
+        }, () => Editor is not null && Editor.Editor.Modify);
+        RunCommand = new(() =>
         {
+            Interpreter.Speed = SpeedSlider!.Value;
+            Interpreter.IsRealTime = RealtimeToggle!.IsOn;
 
-        }, () => Editor is not null && !string.IsNullOrWhiteSpace(Editor.Editor.GetText(Editor.Editor.TextLength)) && !IsRunning);
+            Interpreter.LoadProgram(CurrentScope, (uint)(Registers.Count - 1));
+
+            Registers.Clear();
+            foreach (var register in Interpreter.Registers) Registers.Add(register);
+
+            RunnerCancellationTokenSource = new();
+            _ = Interpreter.Execute(RunnerCancellationTokenSource.Token);
+        }, () => !Interpreter.IsRunning && CurrentScope != default && CurrentScope.Instructions.Count is not 0);
+        StopCommand = new(() => RunnerCancellationTokenSource?.Cancel(), () => Interpreter.IsRunning);
         StepCommand = new(async () =>
         {
 
-        }, () => Editor is not null && !string.IsNullOrWhiteSpace(Editor.Editor.GetText(Editor.Editor.TextLength)) && !IsRunning);
+        });
+        AddRegisterCommand = new(() =>
+        {
+            var register = new Register($"R{Registers.Count}", 0);
+            Registers.Add(register);
+            Interpreter.Registers.Add(register);
+        });
+        DeleteRegistersCommand = new(() =>
+        {
+            foreach (var register in RegistersListView!.SelectedItems)
+            {
+                _ = Registers.Remove((Register)register);
+                _ = Interpreter.Registers.Remove((Register)register);
+            }
+        }, () => RegistersListView is not null && RegistersListView.SelectedItems.Count is not 0);
 
-        Registers = [];
+        Interpreter.Started += (_, _) => DispatcherQueue.TryEnqueue(() =>
+        {
+            RunCommand.NotifyCanExecuteChanged();
+            StopCommand.NotifyCanExecuteChanged();
+        });
+        Interpreter.Stopped += (_, _) => DispatcherQueue.TryEnqueue(() =>
+        {
+            RunCommand.NotifyCanExecuteChanged();
+            StopCommand.NotifyCanExecuteChanged();
+        });
+        Interpreter.Stepped += (_, pointer) => DispatcherQueue.TryEnqueue(() =>
+        {
+            Editor!.Editor.ClearSelections();
+
+            var lineNumber = Interpreter.Memory[(int)pointer].Token.LineNumber - 1;
+            var index = Editor.Editor.IndexPositionFromLine(lineNumber, LineCharacterIndexType.None);
+            var length = Editor.Editor.LineLength(lineNumber);
+            var offset = Editor.Editor.GetLine(lineNumber).TakeWhile(x => char.IsWhiteSpace(x)).Count();
+            Editor.Editor.AddSelection(index + offset, index + length);
+        });
 
         Content = new WinSharp.Controls.DockPanel
         {
-            new DockPanel
+            new StackPanel
             {
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Orientation = Orientation.Horizontal,
                 Margin = MarginStyles.PageContentMargin,
-                LastChildFill = false,
+                Spacing = 4,
                 Children =
                 {
-                    new Button
-                    {
-                        Content = Symbol.Save.ToIcon(),
-                        Height = 36,
-                        Margin = MarginStyles.XXSmallLeftMargin,
-                        Command = SaveCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.S, Modifiers = VirtualKeyModifiers.Control }
-                        }
-                    }
-                    .SetAttached(ToolTipService.ToolTipProperty, "Save file")
-                    .Dock(Dock.Right)
-                    .SetStyle(ButtonStyles.AccentButtonStyle),
-
-                    new Button
-                    {
-                        Content = Symbol.OpenFile.ToIcon(),
-                        Height = 36,
-                        Margin = MarginStyles.XXSmallLeftMargin,
-                        Command = OpenCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.O, Modifiers = VirtualKeyModifiers.Control }
-                        }
-                    }
-                    .SetAttached(ToolTipService.ToolTipProperty, "Open file")
-                    .Dock(Dock.Right),
-
-                    new AppBarSeparator().Dock(Dock.Right),
-
-                    new Button
-                    {
-                        Content = Symbol.Next.ToIcon(),
-                        Height = 36,
-                        Margin = MarginStyles.XXSmallRightMargin,
-                        Command = StepCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.F5, Modifiers = VirtualKeyModifiers.Control }
-                        }
-                    }
-                    .SetAttached(ToolTipService.ToolTipProperty, "Run")
-                    .Dock(Dock.Right),
-
+                    // Run
                     new Button
                     {
                         Content = Symbol.Play.ToIcon(),
                         Height = 36,
-                        Margin = MarginStyles.XXSmallRightMargin with { Left = MarginStyles.XXSmallLeftMargin.Left },
                         Command = RunCommand,
                         KeyboardAccelerators =
                         {
                             new() { Key = VirtualKey.F5 }
                         }
                     }
-                    .SetAttached(ToolTipService.ToolTipProperty, "Step")
-                    .Dock(Dock.Right)
+                    .SetAttached(ToolTipService.ToolTipProperty, "Run (F5)")
+                    .SetStyle(ButtonStyles.AccentButtonStyle),
+
+                    // Stop
+                    new Button
+                    {
+                        Content = Symbol.Stop.ToIcon(),
+                        Height = 36,
+                        Command = StopCommand,
+                        KeyboardAccelerators =
+                        {
+                            new() { Key = VirtualKey.F5, Modifiers = VirtualKeyModifiers.Shift }
+                        }
+                    }
+                    .SetAttached(ToolTipService.ToolTipProperty, "Stop (Shift + F5)"),
+
+                    // Step
+                    new Button
+                    {
+                        Content = Symbol.Next.ToIcon(),
+                        Height = 36,
+                        Command = StepCommand,
+                        KeyboardAccelerators =
+                        {
+                            new() { Key = VirtualKey.F5, Modifiers = VirtualKeyModifiers.Control }
+                        }
+                    }
+                    .SetAttached(ToolTipService.ToolTipProperty, "Step (Ctrl + F5)"),
+
+                    new AppBarSeparator().Dock(Dock.Right),
+
+                    // New file
+                    new Button
+                    {
+                        Content = Symbol.Add.ToIcon(),
+                        Height = 36,
+                        Command = NewCommand,
+                        KeyboardAccelerators =
+                        {
+                            new() { Key = VirtualKey.N, Modifiers = VirtualKeyModifiers.Control }
+                        }
+                    }
+                    .SetAttached(ToolTipService.ToolTipProperty, "New file (Ctrl + N)"),
+
+                    // Open file
+                    new Button
+                    {
+                        Content = Symbol.OpenFile.ToIcon(),
+                        Height = 36,
+                        Command = OpenCommand,
+                        KeyboardAccelerators =
+                        {
+                            new() { Key = VirtualKey.O, Modifiers = VirtualKeyModifiers.Control }
+                        }
+                    }
+                    .SetAttached(ToolTipService.ToolTipProperty, "Open file (Ctrl + O)"),
+
+                    // Save file
+                    new Button
+                    {
+                        Content = Symbol.Save.ToIcon(),
+                        Height = 36,
+                        Command = SaveCommand,
+                        KeyboardAccelerators =
+                        {
+                            new() { Key = VirtualKey.S, Modifiers = VirtualKeyModifiers.Control }
+                        }
+                    }
+                    .SetAttached(ToolTipService.ToolTipProperty, "Save file (Ctrl + S)")
                     .SetStyle(ButtonStyles.AccentButtonStyle)
                 }
             }.Dock(Dock.Top),
@@ -200,6 +292,7 @@ public sealed class MainPage : Page
                                     {
                                         SnapsTo = SliderSnapsTo.StepValues,
                                         StepFrequency = 0.1,
+                                        Value = 1,
                                         Minimum = 0.1,
                                         Maximum = 10,
                                         HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -221,15 +314,41 @@ public sealed class MainPage : Page
                                 Header = "Registers",
                                 HeaderIcon = Symbol.List.ToIcon(),
                                 Description = "View registers in real time, add and remove them",
+                                HorizontalContentAlignment = HorizontalAlignment.Stretch,
                                 Content = new WinSharp.Controls.StackPanel
                                 {
-                                    new WinSharp.Controls.StackPanel().BindSelf(out RegistersStackPanel),
-
-                                    new Button
+                                    new WinSharp.Controls.StackPanel
                                     {
-                                        Content = Symbol.Add.ToIcon()
+                                        new Button
+                                        {
+                                            Content = Symbol.Add.ToIcon(),
+                                            Height = 36,
+                                            Command = AddRegisterCommand
+                                        },
+
+                                        new Button
+                                        {
+                                            Content = Symbol.Delete.ToIcon(),
+                                            Height = 36,
+                                            Command = DeleteRegistersCommand
+                                        }
+                                    }.SetProperties(x => x.Orientation = Orientation.Horizontal),
+
+                                    new ListView
+                                    {
+                                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                                        HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                                        SelectionMode = ListViewSelectionMode.Multiple,
+                                        ItemTemplate = RegisterDataTemplate.Template
                                     }
-                                }
+                                    .BindSelf(out RegistersListView)
+                                    .Bind(ItemsControl.ItemsSourceProperty, new Binding
+                                    {
+                                        Source = Registers,
+                                        Mode = BindingMode.OneWay,
+                                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                                    })
+                                }.SetProperties(x => x.HorizontalAlignment = HorizontalAlignment.Stretch)
                             }
                         }
                     }
@@ -238,7 +357,8 @@ public sealed class MainPage : Page
 
                     new InfoBar
                     {
-                        Severity = InfoBarSeverity.Error,
+                        Content = "No issues found.",
+                        Severity = InfoBarSeverity.Success,
                         IsOpen = true,
                         IsClosable = false,
                         Margin = MarginStyles.XSmallLeftTopRightBottomMargin,
@@ -264,19 +384,30 @@ public sealed class MainPage : Page
             ];
         });
 
-        if (file is not null)
+        foreach (var register in Interpreter.Registers) Registers.Add(register);
+
+        Loaded += (_, _) => _ = DispatcherQueue.TryEnqueue(async () =>
         {
-            Editor.Editor.SetText(file is not null ? FileSystemService.GetScriptCommands(file).Aggregate((x, y) => x + "\n\n" + y) : "");
+            if (FileService.OpenFile is null) return;
+
+            Editor.Editor.SetText(await FileIO.ReadTextAsync(FileService.OpenFile));
             Editor.Editor.SetSavePoint();
-        }
+
+            Registers[0].Value = 1;
+        });
 
         Editor.Editor.Modified += (_, _) =>
         {
-            SaveCommand.NotifyCanExecuteChanged();
-            RunCommand.NotifyCanExecuteChanged();
-            StepCommand.NotifyCanExecuteChanged();
+            SaveCommand?.NotifyCanExecuteChanged();
 
             _ = EnqueueSyntaxCheck();
+        };
+
+        RegistersListView.SelectionChanged += (_, _) =>
+        {
+            if (RegistersListView.SelectedItems.Contains(Registers[0])) _ = RegistersListView.SelectedItems.Remove(Registers[0]);
+
+            DeleteRegistersCommand.NotifyCanExecuteChanged();
         };
     }
 
@@ -304,6 +435,7 @@ public sealed class MainPage : Page
                 if (!token.IsCancellationRequested)
                 {
                     PerformSyntaxCheck();
+                    RunCommand?.NotifyCanExecuteChanged();
                     LastTimeChecked = DateTime.Now;
                 }
             }
@@ -329,6 +461,19 @@ public sealed class MainPage : Page
             ErrorInfo.Content = scope.AsT1;
             return;
         }
+
+        var validationResult = LabelValidator.Validate(scope.AsT0);
+
+        if (validationResult.IsT1)
+        {
+            ErrorInfo.Severity = InfoBarSeverity.Error;
+            ErrorInfo.Content = validationResult.AsT1;
+            return;
+        }
+
+        scope = validationResult.AsT0;
+
+        CurrentScope = scope.AsT0;
 
         ErrorInfo.Content = "No issues found.";
         ErrorInfo.Severity = InfoBarSeverity.Success;

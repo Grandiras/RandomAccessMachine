@@ -5,7 +5,7 @@ using RandomAccessMachine.Backend.Specification;
 using System.Text;
 
 namespace RandomAccessMachine.Backend.Interpreter;
-public class Tokenizer
+public static class Tokenizer
 {
     public static OneOf<Queue<Token>, ErrorInfo> Tokenize(string code)
     {

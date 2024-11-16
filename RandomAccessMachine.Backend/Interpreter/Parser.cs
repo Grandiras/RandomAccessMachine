@@ -3,7 +3,7 @@ using RandomAccessMachine.Backend.Debugging;
 using RandomAccessMachine.Backend.Specification;
 
 namespace RandomAccessMachine.Backend.Interpreter;
-public class Parser
+public static class Parser
 {
     public static OneOf<Scope, ErrorInfo> Parse(Queue<Token> tokens)
     {
@@ -64,15 +64,7 @@ public class Parser
         TokenType.Immediate => new Argument(new Immediate(token.Value.AsT1), token),
         TokenType.Address => new Argument(new Address(token.Value.AsT1), token),
         TokenType.AddressPointer => new Argument(new AddressPointer(token.Value.AsT1), token),
-        TokenType.LabelReference => ParseLabel(token, tokens, scope),
+        TokenType.LabelReference => new Argument(new LabelReference(token.Value.AsT0, null!), token),
         _ => new ErrorInfo($"Unexpected token type: {token.Type}", token)
     };
-
-    private static OneOf<Argument, ErrorInfo> ParseLabel(Token token, Queue<Token> tokens, Scope scope)
-    {
-        var label = scope.Labels.Find(l => l.Name == token.Value.AsT0);
-        return label is null
-            ? new ErrorInfo($"Label not found: {token.Value.AsT0}", token)
-            : new Argument(new LabelReference(token.Value.AsT0, label), token);
-    }
 }
