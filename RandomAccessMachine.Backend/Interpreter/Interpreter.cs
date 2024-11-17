@@ -3,7 +3,7 @@
 namespace RandomAccessMachine.Backend.Interpreter;
 public class Interpreter
 {
-    public List<Register> Registers { get; private set; } = [new("Acc", 0)];
+    public List<Register> Registers { get; private set; } = [new("Acc", 0), new("R1", 0), new("R2", 0), new("R3", 0), new("R4", 0), new("R5", 0)];
     public List<Instruction> Memory { get; private set; } = [];
     public uint MemoryPointer { get; private set; }
     public List<Label> Labels { get; private set; } = [];

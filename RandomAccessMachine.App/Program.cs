@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.AnimatedVisuals;
 using RandomAccessMachine.App;
+using RandomAccessMachine.App.Components.Settings;
 using RandomAccessMachine.App.Pages;
 using RandomAccessMachine.Backend.Interpreter;
 using System.Diagnostics;
@@ -21,6 +22,7 @@ new AppBuilder()
 
 .Configure<SettingsPage>(settings => settings
     .AddComponent<ThemeSelector>()
+    .AddComponent<AutoSaveComponent>()
     .AddComponent<AboutSection>())
 .Configure<AboutSection>(section =>
 {
@@ -32,5 +34,8 @@ new AppBuilder()
 })
 
 .AddSingleton<Interpreter>()
+//.AddSingleton<AutoSaveService>()
+
+.AddTransient<AutoSaveComponent>()
 
 .Build();

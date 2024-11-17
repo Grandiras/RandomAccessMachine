@@ -52,7 +52,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
 
-    public MainPage(FileService fileService, Interpreter interpreter, PersistenceService persistenceService, object? parameter = null)
+    public MainPage(FileService fileService, Interpreter interpreter, PersistenceService persistenceService, AutoSaveService autoSaveService, object? parameter = null)
     {
         FileService = fileService;
         Interpreter = interpreter;
@@ -435,6 +435,12 @@ public sealed class MainPage : Page, INotifyPropertyChanged
 
             DeleteRegistersCommand.NotifyCanExecuteChanged();
         };
+
+        autoSaveService.AutoSaved += (_, _) => DispatcherQueue.TryEnqueue(() =>
+        {
+            Editor.Editor.SetSavePoint();
+            SaveCommand.NotifyCanExecuteChanged();
+        });
     }
 
     private async Task EnqueueSyntaxCheck()
@@ -511,5 +517,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
 
         ErrorInfo.Content = "No issues found.";
         ErrorInfo.Severity = InfoBarSeverity.Success;
+
+        RunCommand?.NotifyCanExecuteChanged();
     }
 }
