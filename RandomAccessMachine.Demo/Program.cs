@@ -1,4 +1,5 @@
 ﻿using RandomAccessMachine.Backend.Interpreter;
+using RandomAccessMachine.Backend.Specification;
 
 var code = @"
 START:

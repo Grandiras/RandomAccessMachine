@@ -16,8 +16,7 @@ public static class LabelResolver
             var label = scope.Labels.Find(l => l.Name == instruction.Argument!.Value.Value.AsT3.Name);
             if (label is null) return new ErrorInfo($"Label '{instruction.Argument!.Value.Value.AsT3.Name}' not found", instruction.Argument!.Value.Token);
 
-            var newInstruction = instruction with { Argument = new Argument(new LabelReference(instruction.Argument!.Value.Value.AsT3.Name, label), instruction.Argument!.Value.Token) };
-            scope.Instructions[scope.Instructions.IndexOf(instruction)] = newInstruction;
+            scope.Instructions[i] = instruction with { Argument = new Argument(new LabelReference(instruction.Argument!.Value.Value.AsT3.Name, label), instruction.Argument!.Value.Token) };
         }
 
         return scope;

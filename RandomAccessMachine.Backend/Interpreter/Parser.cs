@@ -21,7 +21,6 @@ public static class Parser
             else
             {
                 var instruction = ParseInstruction(token, tokens, scope);
-
                 if (instruction.IsT1) return instruction.AsT1;
 
                 scope.Instructions.Add(instruction.AsT0);
@@ -47,14 +46,24 @@ public static class Parser
 
         // Check if the given argument is valid for the OpCode
         if (opCode is OpCode.GOTO or OpCode.JZERO or OpCode.JNZERO)
+        {
             // Only labels are allowed for GOTO, JZERO and JNZERO
-            if (!argument.AsT0.Value.IsT3) return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
-            else if (opCode is OpCode.STORE)
-                // Only addresses and address pointers are allowed for STORE
-                if (!argument.AsT0.Value.IsT1 && !argument.AsT0.Value.IsT2) return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
-                else
-                // Only immediate values, addresses and address pointers are allowed for LOAD, ADD, SUB, MUL, and DIV
-                if (argument.AsT0.Value.IsT3) return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
+            if (!argument.AsT0.Value.IsT3)
+                return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
+        }
+        else if (opCode is OpCode.STORE)
+        {
+            // Only addresses and address pointers are allowed for STORE
+            if (!argument.AsT0.Value.IsT1 && !argument.AsT0.Value.IsT2)
+                return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
+        }
+        else
+        {
+            // Only immediate values, addresses and address pointers are allowed for LOAD, ADD, SUB, MUL, and DIV
+            if (argument.AsT0.Value.IsT3)
+                return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
+        }
+
 
         return new Instruction(opCode, argument.AsT0, token);
     }

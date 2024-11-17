@@ -13,24 +13,33 @@ public static class Tokenizer
 
         code += Environment.NewLine;
 
-        // go through each character in the code, if it's a letter, it's a label or an opcode, if it doesn't start with one, there is an error
         var state = TokenizerState.Start;
         var buffer = new StringBuilder();
+        var lineNumber = 1u;
+        var columnNumber = 0u;
+
         for (var i = 0; i < code.Length; i++)
         {
             var currentChar = code[i];
-            var lineNumber = (uint)code[..i].Count(c => c == '\n') + 1;
-            var columnNumber = (uint)(i - code[..i].LastIndexOf('\n'));
+            columnNumber++;
 
             // Skip comments
-            if (currentChar is '/' && code[i + 1] is '/')
+            if (currentChar is '/' && i < code.Length && code[i + 1] is '/')
             {
                 i = code.IndexOf('\n', i);
                 continue;
             }
 
             // Skip whitespaces
-            if (state is TokenizerState.Start && char.IsWhiteSpace(currentChar)) continue;
+            if (state is TokenizerState.Start && char.IsWhiteSpace(currentChar))
+            {
+                if (currentChar is '\n')
+                {
+                    lineNumber++;
+                    columnNumber = 0;
+                }
+                continue;
+            }
 
             // If the character is a letter, we either have a label or an opcode
             if (state is TokenizerState.Start && (char.IsLetter(currentChar) || currentChar is '_'))
@@ -53,7 +62,7 @@ public static class Tokenizer
             if (state is TokenizerState.Text && char.IsWhiteSpace(currentChar))
             {
                 // If any of the OpCode enum values is parsed, it's an opcode, otherwise it's a label reference
-                if (Enum.TryParse<OpCode>(buffer.ToString(), true, out var opCode))
+                if (Enum.TryParse<OpCode>(buffer.ToString(), true, out _))
                     tokens.Enqueue(new(buffer.ToString().ToUpper(), TokenType.OpCode, lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length));
                 else
                     tokens.Enqueue(new(buffer.ToString().ToUpper(), TokenType.LabelReference, lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length));
@@ -104,12 +113,15 @@ public static class Tokenizer
             {
                 if (buffer.Length is 0) return new ErrorInfo($"Address or immediate missing number!", new(new Error(), state is TokenizerState.Address ? TokenType.Address : TokenType.AddressPointer, lineNumber, columnNumber, 1));
 
-                if (state is TokenizerState.Address)
-                    tokens.Enqueue(new(uint.Parse(buffer.ToString()), TokenType.Address, lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length));
-                else if (state is TokenizerState.Immediate)
-                    tokens.Enqueue(new(uint.Parse(buffer.ToString()), TokenType.Immediate, lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length));
-                else if (state is TokenizerState.AddressPointer)
-                    tokens.Enqueue(new(uint.Parse(buffer.ToString()), TokenType.AddressPointer, lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length));
+                var type = state switch
+                {
+                    TokenizerState.Address => TokenType.Address,
+                    TokenizerState.Immediate => TokenType.Immediate,
+                    TokenizerState.AddressPointer => TokenType.AddressPointer,
+                    _ => TokenType.Faulty
+                };
+
+                tokens.Enqueue(new(uint.Parse(buffer.ToString()), type, lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length));
 
                 _ = buffer.Clear();
                 state = TokenizerState.Start;
