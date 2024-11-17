@@ -13,7 +13,7 @@ public sealed class StartupService(LocalSettingsService LocalSettingsService, Fi
     public async Task InitializeAsync()
     {
         Settings = LocalSettingsService.Read<StartupSettings>(SETTINGS_KEY).Match(x => x, _ => new(false, ""));
-        if (Settings.ShouldOpenLastFile && !string.IsNullOrWhiteSpace(Settings.LastFilePath))
+        if (Settings.ShouldOpenLastFile && !string.IsNullOrWhiteSpace(Settings.LastFilePath) && File.Exists(Settings.LastFilePath))
         {
             await FileService.OpenFileAsync(Settings.LastFilePath);
             PersistenceService.Code = await FileIO.ReadTextAsync(FileService.OpenFile);
