@@ -24,25 +24,25 @@ public sealed class AutoSaveComponent : SettingsComponent
         {
             new TextBlock
             {
-                Text = "Auto Save"
+                Text = Resources.Settings_AutoSave_SectionHeader
             }.SetStyle(SettingsStyles.CategoryTextBlock),
             new SettingsExpander
             {
-                Header = "Auto Save",
+                Header = Resources.Settings_AutoSave_AutoSaveHeader,
                 HeaderIcon = Symbol.Save.ToIcon(),
-                Description = "Automatically save your work",
+                Description = Resources.Settings_AutoSave_AutoSaveDescription,
                 Margin = MarginStyles.XSmallTopMargin,
                 Content = new ToggleSwitch
                 {
-                    IsOn = AutoSaveService.Settings.ShouldAutoSave
+                    IsOn = AutoSaveService.Settings!.ShouldAutoSave
                 }.BindSelf(out AutoSaveSwitch),
                 Items =
                 {
                     new SettingsCard
                     {
-                        Header = "Interval",
+                        Header = Resources.Settings_AutoSave_IntervalHeader,
                         HeaderIcon = Symbol.Clock.ToIcon(),
-                        Description = "The interval in seconds between auto saves",
+                        Description = Resources.Settings_AutoSave_IntervalDescription,
                         IsEnabled = AutoSaveService.Settings.ShouldAutoSave,
                         Content = new NumberBox
                         {

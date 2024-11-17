@@ -3,7 +3,6 @@ using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Animation;
 using RandomAccessMachine.App.Helpers;
 using RandomAccessMachine.App.Services;
@@ -66,13 +65,15 @@ public sealed class MainPage : Page, INotifyPropertyChanged
             {
                 var dialog = new ContentDialog
                 {
-                    Title = "Unsaved changes",
-                    Content = "You have unsaved changes. Do you want to save them?",
-                    PrimaryButtonText = "Save",
-                    CloseButtonText = "Don't save",
+                    Title = App.Resources.MainPage_New_UnsavedChanges_Title,
+                    Content = App.Resources.MainPage_New_UnsavedChanges_Content,
+                    PrimaryButtonText = App.Resources.MainPage_New_UnsavedChanges_Save,
+                    SecondaryButtonText = App.Resources.MainPage_New_UnsavedChanges_DontSave,
+                    CloseButtonText = App.Resources.MainPage_New_UnsavedChanges_Cancel,
                     DefaultButton = ContentDialogButton.Primary
                 };
                 var result = await dialog.ShowAsync(this);
+                if (result is not ContentDialogResult.Primary or ContentDialogResult.Secondary) return;
                 if (result is ContentDialogResult.Primary)
                 {
                     if (FileService.OpenFile is not null) await FileIO.WriteTextAsync(FileService.OpenFile, Editor!.Editor.GetText(Editor.Editor.TextLength) ?? "");
@@ -201,7 +202,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                             new() { Key = VirtualKey.F5 }
                         }
                     }
-                    .SetAttached(ToolTipService.ToolTipProperty, "Run (F5)")
+                    .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_Run_Tooltip} (F5)")
                     .SetStyle(ButtonStyles.AccentButtonStyle),
 
                     // Stop
@@ -215,7 +216,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                             new() { Key = VirtualKey.F5, Modifiers = VirtualKeyModifiers.Shift }
                         }
                     }
-                    .SetAttached(ToolTipService.ToolTipProperty, "Stop (Shift + F5)"),
+                    .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_Stop_Tooltip} (Shift + F5)"),
 
                     // Step
                     new Button
@@ -228,7 +229,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                             new() { Key = VirtualKey.F5, Modifiers = VirtualKeyModifiers.Control }
                         }
                     }
-                    .SetAttached(ToolTipService.ToolTipProperty, "Step (Ctrl + F5)"),
+                    .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_Step_Tooltip} (Ctrl + F5)"),
 
                     new AppBarSeparator().Dock(Dock.Right),
 
@@ -243,7 +244,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                             new() { Key = VirtualKey.N, Modifiers = VirtualKeyModifiers.Control }
                         }
                     }
-                    .SetAttached(ToolTipService.ToolTipProperty, "New file (Ctrl + N)"),
+                    .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_NewFile_Tooltip} (Ctrl + N)"),
 
                     // Open file
                     new Button
@@ -256,7 +257,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                             new() { Key = VirtualKey.O, Modifiers = VirtualKeyModifiers.Control }
                         }
                     }
-                    .SetAttached(ToolTipService.ToolTipProperty, "Open file (Ctrl + O)"),
+                    .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_OpenFile_Tooltip} (Ctrl + O)"),
 
                     // Save file
                     new Button
@@ -269,7 +270,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                             new() { Key = VirtualKey.S, Modifiers = VirtualKeyModifiers.Control }
                         }
                     }
-                    .SetAttached(ToolTipService.ToolTipProperty, "Save file (Ctrl + S)")
+                    .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_SaveFile_Tooltip} (Ctrl + S)")
                     .SetStyle(ButtonStyles.AccentButtonStyle)
                 }
             }.Dock(Dock.Top),
@@ -288,9 +289,9 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                             {
                                 new SettingsCard
                                 {
-                                    Header = "Speed (Hz)",
+                                    Header = App.Resources.MainPage_Speed_Title,
                                     HeaderIcon = new FontIcon { Glyph = "\uEC4A" },
-                                    Description = "Control how fast to simulate",
+                                    Description = App.Resources.MainPage_Speed_Description,
                                     Content = new WinSharp.Controls.StackPanel
                                     {
                                         new Slider
@@ -301,29 +302,17 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                                             Maximum = 10,
                                             HorizontalAlignment = HorizontalAlignment.Stretch,
                                         }
-                                        .Bind(Slider.ValueProperty, new Binding
-                                        {
-                                            Source = PersistenceService,
-                                            Path = new PropertyPath("Speed"),
-                                            Mode = BindingMode.TwoWay,
-                                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                                        })
+                                        .BindTwoWay(RangeBase.ValueProperty, PersistenceService, nameof(PersistenceService.Speed))
                                         .BindSelf(out SpeedSlider),
 
                                         new WinSharp.Controls.StackPanel
                                         {
                                             new TextBlock
                                             {
-                                                Text = "Realtime"
+                                                Text = App.Resources.MainPage_Speed_Realtime
                                             }.SetStyle(WinSharpStyles.SettingsCategoryTextBlock),
                                             new ToggleSwitch()
-                                            .Bind(ToggleSwitch.IsOnProperty, new Binding
-                                            {
-                                                Source = PersistenceService,
-                                                Path = new PropertyPath("IsRealTime"),
-                                                Mode = BindingMode.TwoWay,
-                                                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                                            })
+                                            .BindTwoWay(ToggleSwitch.IsOnProperty, PersistenceService, nameof(PersistenceService.IsRealTime))
                                             .BindSelf(out RealtimeToggle)
                                         }
                                     }
@@ -331,9 +320,9 @@ public sealed class MainPage : Page, INotifyPropertyChanged
 
                                 new SettingsCard
                                 {
-                                    Header = "Registers",
+                                    Header = App.Resources.MainPage_Registers_Title,
                                     HeaderIcon = Symbol.List.ToIcon(),
-                                    Description = "View registers in real time, add and remove them",
+                                    Description = App.Resources.MainPage_Registers_Description,
                                     HorizontalContentAlignment = HorizontalAlignment.Stretch,
                                     Content = new WinSharp.Controls.StackPanel
                                     {
@@ -362,12 +351,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                                             ItemTemplate = RegisterDataTemplate.Template
                                         }
                                         .BindSelf(out RegistersListView)
-                                        .Bind(ItemsControl.ItemsSourceProperty, new Binding
-                                        {
-                                            Source = Registers,
-                                            Mode = BindingMode.OneWay,
-                                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                                        })
+                                        .BindOneWay(ItemsControl.ItemsSourceProperty, Registers)
                                     }.SetProperties(x => x.HorizontalAlignment = HorizontalAlignment.Stretch)
                                 }
                             }
@@ -378,7 +362,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
 
                     new InfoBar
                     {
-                        Content = "No issues found.",
+                        Content = App.Resources.MainPage_Issues_None,
                         Severity = InfoBarSeverity.Success,
                         IsOpen = true,
                         IsClosable = false,
@@ -515,7 +499,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
 
         CurrentScope = scope.AsT0;
 
-        ErrorInfo.Content = "No issues found.";
+        ErrorInfo.Content = App.Resources.MainPage_Issues_None;
         ErrorInfo.Severity = InfoBarSeverity.Success;
 
         RunCommand?.NotifyCanExecuteChanged();

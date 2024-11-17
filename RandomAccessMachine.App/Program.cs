@@ -22,6 +22,7 @@ new AppBuilder()
 
 .Configure<SettingsPage>(settings => settings
     .AddComponent<ThemeSelector>()
+    .AddComponent<StartupComponent>()
     .AddComponent<AutoSaveComponent>()
     .AddComponent<AboutSection>())
 .Configure<AboutSection>(section =>
@@ -34,8 +35,8 @@ new AppBuilder()
 })
 
 .AddSingleton<Interpreter>()
-//.AddSingleton<AutoSaveService>()
 
 .AddTransient<AutoSaveComponent>()
+.AddTransient<StartupComponent>()
 
 .Build();

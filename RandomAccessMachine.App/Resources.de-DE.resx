@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Title" xml:space="preserve">
-    <value>RanAcMa</value>
+    <value>Ranacma</value>
   </data>
   <data name="SettingsPage.Title" xml:space="preserve">
     <value>Einstellungen</value>
@@ -149,5 +149,80 @@
   </data>
   <data name="MainPage.Title" xml:space="preserve">
     <value>Startseite</value>
+  </data>
+  <data name="MainPage.New.UnsavedChanges.Title" xml:space="preserve">
+    <value>Ungespeicherte Änderungen</value>
+  </data>
+  <data name="MainPage.New.UnsavedChanges.Content" xml:space="preserve">
+    <value>Es gibt ungespeicherte Änderungen. Speichern?</value>
+  </data>
+  <data name="MainPage.New.UnsavedChanges.Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="MainPage.New.UnsavedChanges.DontSave" xml:space="preserve">
+    <value>Nicht speichern</value>
+  </data>
+  <data name="MainPage.New.UnsavedChanges.Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="MainPage.Run.Tooltip" xml:space="preserve">
+    <value>Ausführen</value>
+  </data>
+  <data name="MainPage.Stop.Tooltip" xml:space="preserve">
+    <value>Stoppen</value>
+  </data>
+  <data name="MainPage.Step.Tooltip" xml:space="preserve">
+    <value>Schritt</value>
+  </data>
+  <data name="MainPage.NewFile.Tooltip" xml:space="preserve">
+    <value>Neue Datei</value>
+  </data>
+  <data name="MainPage.OpenFile.Tooltip" xml:space="preserve">
+    <value>Datei öffnen</value>
+  </data>
+  <data name="MainPage.SaveFile.Tooltip" xml:space="preserve">
+    <value>Datei speichern</value>
+  </data>
+  <data name="MainPage.Speed.Title" xml:space="preserve">
+    <value>Geschwindigkeit (Hz)</value>
+  </data>
+  <data name="MainPage.Speed.Description" xml:space="preserve">
+    <value>Geschwindigkeit der Simulation einstellen</value>
+  </data>
+  <data name="MainPage.Speed.Realtime" xml:space="preserve">
+    <value>Echzeit</value>
+  </data>
+  <data name="MainPage.Registers.Title" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="MainPage.Registers.Description" xml:space="preserve">
+    <value>Register in Echtzeit betrachten, hinzufügen und entfernen</value>
+  </data>
+  <data name="MainPage.Issues.None" xml:space="preserve">
+    <value>Keine Fehler gefunden.</value>
+  </data>
+  <data name="Settings.AutoSave.SectionHeader" xml:space="preserve">
+    <value>Automatisches Speichern</value>
+  </data>
+  <data name="Settings.AutoSave.AutoSaveHeader" xml:space="preserve">
+    <value>Automatisches Speichern</value>
+  </data>
+  <data name="Settings.AutoSave.AutoSaveDescription" xml:space="preserve">
+    <value>Speichert Ihre Arbeit automatisch</value>
+  </data>
+  <data name="Settings.AutoSave.IntervalHeader" xml:space="preserve">
+    <value>Intervall</value>
+  </data>
+  <data name="Settings.AutoSave.IntervalDescription" xml:space="preserve">
+    <value>Intervall in Sekunden zwischen automatischem Speichern</value>
+  </data>
+  <data name="Settings.Startup.SectionHeader" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Settings.Startup.OpenLastFileHeader" xml:space="preserve">
+    <value>Letzte Datei öffnen</value>
+  </data>
+  <data name="Settings.Startup.OpenLastFileDescription" xml:space="preserve">
+    <value>Beim Starten die zuletzt geöffnete Datei öffnen</value>
   </data>
 </root>
