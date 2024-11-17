@@ -24,9 +24,21 @@ public static class Tokenizer
             columnNumber++;
 
             // Skip comments
-            if (currentChar is '/' && i < code.Length && code[i + 1] is '/')
+            if (state is TokenizerState.Comment)
             {
-                i = code.IndexOf('\n', i);
+                if (currentChar is '\n')
+                {
+                    state = TokenizerState.Start;
+                    lineNumber++;
+                    columnNumber = 0;
+                }
+                continue;
+            }
+
+            // Detect comments
+            if (currentChar is '/' && i + 1 < code.Length && code[i + 1] is '/')
+            {
+                state = TokenizerState.Comment;
                 continue;
             }
 
@@ -141,6 +153,7 @@ public static class Tokenizer
 internal enum TokenizerState
 {
     Start,
+    Comment,
     Text,
     Immediate,
     Address,
