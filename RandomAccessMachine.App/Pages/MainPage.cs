@@ -22,8 +22,8 @@ namespace RandomAccessMachine.App.Pages;
 public sealed class MainPage : Page, INotifyPropertyChanged
 {
     private readonly FileService FileService;
-
-    private readonly Interpreter? Interpreter = new();
+    private readonly Interpreter Interpreter;
+    private readonly PersistenceService PersistenceService;
 
     private readonly CodeEditorControl Editor;
     private readonly Slider SpeedSlider;
@@ -52,11 +52,13 @@ public sealed class MainPage : Page, INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
 
-    public MainPage(FileService fileService, object? parameter = null)
+    public MainPage(FileService fileService, Interpreter interpreter, PersistenceService persistenceService, object? parameter = null)
     {
         FileService = fileService;
+        Interpreter = interpreter;
+        PersistenceService = persistenceService;
 
-        Registers = [];
+        Registers = [.. Interpreter.Registers];
 
         NewCommand = new(async () =>
         {
@@ -135,7 +137,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
 
             RunnerCancellationTokenSource = new();
             _ = Interpreter.Execute(RunnerCancellationTokenSource.Token);
-        }, () => !Interpreter.IsRunning && CurrentScope != default && CurrentScope.Instructions.Count is not 0);
+        }, () => !Interpreter.IsRunning && CurrentScope != default && CurrentScope.Instructions.Count is not 0 && ErrorInfo!.Severity is not InfoBarSeverity.Error);
         StopCommand = new(() => RunnerCancellationTokenSource?.Cancel(), () => Interpreter.IsRunning);
         StepCommand = new(async () =>
         {
@@ -146,6 +148,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
             var register = new Register($"R{Registers.Count}", 0);
             Registers.Add(register);
             Interpreter.Registers.Add(register);
+            PerformSyntaxCheck();
         });
         DeleteRegistersCommand = new(() =>
         {
@@ -279,76 +282,94 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                     {
                         Width = 350,
                         Padding = MarginStyles.XSmallLeftTopRightBottomMargin,
-                        Child = new WinSharp.Controls.StackPanel
+                        Child = new ScrollViewer
                         {
-                            new SettingsCard
+                            Content = new WinSharp.Controls.StackPanel
                             {
-                                Header = "Speed (Hz)",
-                                HeaderIcon = new FontIcon { Glyph = "\uEC4A" },
-                                Description = "Control how fast to simulate",
-                                Content = new WinSharp.Controls.StackPanel
+                                new SettingsCard
                                 {
-                                    new Slider
+                                    Header = "Speed (Hz)",
+                                    HeaderIcon = new FontIcon { Glyph = "\uEC4A" },
+                                    Description = "Control how fast to simulate",
+                                    Content = new WinSharp.Controls.StackPanel
                                     {
-                                        SnapsTo = SliderSnapsTo.StepValues,
-                                        StepFrequency = 0.1,
-                                        Value = 1,
-                                        Minimum = 0.1,
-                                        Maximum = 10,
-                                        HorizontalAlignment = HorizontalAlignment.Stretch,
-                                    }.BindSelf(out SpeedSlider),
-
-                                    new WinSharp.Controls.StackPanel
-                                    {
-                                        new TextBlock
+                                        new Slider
                                         {
-                                            Text = "Realtime"
-                                        }.SetStyle(WinSharpStyles.SettingsCategoryTextBlock),
-                                        new ToggleSwitch().BindSelf(out RealtimeToggle)
-                                    }
-                                }
-                            },
-
-                            new SettingsCard
-                            {
-                                Header = "Registers",
-                                HeaderIcon = Symbol.List.ToIcon(),
-                                Description = "View registers in real time, add and remove them",
-                                HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                                Content = new WinSharp.Controls.StackPanel
-                                {
-                                    new WinSharp.Controls.StackPanel
-                                    {
-                                        new Button
-                                        {
-                                            Content = Symbol.Add.ToIcon(),
-                                            Height = 36,
-                                            Command = AddRegisterCommand
-                                        },
-
-                                        new Button
-                                        {
-                                            Content = Symbol.Delete.ToIcon(),
-                                            Height = 36,
-                                            Command = DeleteRegistersCommand
+                                            SnapsTo = SliderSnapsTo.StepValues,
+                                            StepFrequency = 0.1,
+                                            Minimum = 0.1,
+                                            Maximum = 10,
+                                            HorizontalAlignment = HorizontalAlignment.Stretch,
                                         }
-                                    }.SetProperties(x => x.Orientation = Orientation.Horizontal),
+                                        .Bind(Slider.ValueProperty, new Binding
+                                        {
+                                            Source = PersistenceService,
+                                            Path = new PropertyPath("Speed"),
+                                            Mode = BindingMode.TwoWay,
+                                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                                        })
+                                        .BindSelf(out SpeedSlider),
 
-                                    new ListView
-                                    {
-                                        HorizontalAlignment = HorizontalAlignment.Stretch,
-                                        HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                                        SelectionMode = ListViewSelectionMode.Multiple,
-                                        ItemTemplate = RegisterDataTemplate.Template
+                                        new WinSharp.Controls.StackPanel
+                                        {
+                                            new TextBlock
+                                            {
+                                                Text = "Realtime"
+                                            }.SetStyle(WinSharpStyles.SettingsCategoryTextBlock),
+                                            new ToggleSwitch()
+                                            .Bind(ToggleSwitch.IsOnProperty, new Binding
+                                            {
+                                                Source = PersistenceService,
+                                                Path = new PropertyPath("IsRealTime"),
+                                                Mode = BindingMode.TwoWay,
+                                                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                                            })
+                                            .BindSelf(out RealtimeToggle)
+                                        }
                                     }
-                                    .BindSelf(out RegistersListView)
-                                    .Bind(ItemsControl.ItemsSourceProperty, new Binding
+                                },
+
+                                new SettingsCard
+                                {
+                                    Header = "Registers",
+                                    HeaderIcon = Symbol.List.ToIcon(),
+                                    Description = "View registers in real time, add and remove them",
+                                    HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                                    Content = new WinSharp.Controls.StackPanel
                                     {
-                                        Source = Registers,
-                                        Mode = BindingMode.OneWay,
-                                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                                    })
-                                }.SetProperties(x => x.HorizontalAlignment = HorizontalAlignment.Stretch)
+                                        new WinSharp.Controls.StackPanel
+                                        {
+                                            new Button
+                                            {
+                                                Content = Symbol.Add.ToIcon(),
+                                                Height = 36,
+                                                Command = AddRegisterCommand
+                                            },
+
+                                            new Button
+                                            {
+                                                Content = Symbol.Delete.ToIcon(),
+                                                Height = 36,
+                                                Command = DeleteRegistersCommand
+                                            }
+                                        }.SetProperties(x => x.Orientation = Orientation.Horizontal),
+
+                                        new ListView
+                                        {
+                                            HorizontalAlignment = HorizontalAlignment.Stretch,
+                                            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                                            SelectionMode = ListViewSelectionMode.Multiple,
+                                            ItemTemplate = RegisterDataTemplate.Template
+                                        }
+                                        .BindSelf(out RegistersListView)
+                                        .Bind(ItemsControl.ItemsSourceProperty, new Binding
+                                        {
+                                            Source = Registers,
+                                            Mode = BindingMode.OneWay,
+                                            UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                                        })
+                                    }.SetProperties(x => x.HorizontalAlignment = HorizontalAlignment.Stretch)
+                                }
                             }
                         }
                     }
@@ -384,11 +405,14 @@ public sealed class MainPage : Page, INotifyPropertyChanged
             ];
         });
 
-        foreach (var register in Interpreter.Registers) Registers.Add(register);
-
         Loaded += (_, _) => _ = DispatcherQueue.TryEnqueue(async () =>
         {
-            if (FileService.OpenFile is null) return;
+            if (FileService.OpenFile is null)
+            {
+                Editor.Editor.SetText(PersistenceService.Code);
+                Editor.Editor.SetSavePoint();
+                return;
+            }
 
             Editor.Editor.SetText(await FileIO.ReadTextAsync(FileService.OpenFile));
             Editor.Editor.SetSavePoint();
@@ -399,6 +423,8 @@ public sealed class MainPage : Page, INotifyPropertyChanged
         Editor.Editor.Modified += (_, _) =>
         {
             SaveCommand?.NotifyCanExecuteChanged();
+
+            PersistenceService.Code = Editor.Editor.GetText(Editor.Editor.TextLength);
 
             _ = EnqueueSyntaxCheck();
         };
@@ -462,7 +488,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
             return;
         }
 
-        var validationResult = LabelValidator.Validate(scope.AsT0);
+        var validationResult = LabelResolver.Validate(scope.AsT0);
 
         if (validationResult.IsT1)
         {
@@ -472,6 +498,14 @@ public sealed class MainPage : Page, INotifyPropertyChanged
         }
 
         scope = validationResult.AsT0;
+
+        var boundsCheckResult = BoundsChecker.CheckBounds(scope.AsT0, Interpreter);
+        if (boundsCheckResult.IsT1)
+        {
+            ErrorInfo!.Severity = InfoBarSeverity.Error;
+            ErrorInfo.Content = boundsCheckResult.AsT1;
+            return;
+        }
 
         CurrentScope = scope.AsT0;
 

@@ -33,7 +33,7 @@ public static class Tokenizer
             if (state is TokenizerState.Start && char.IsWhiteSpace(currentChar)) continue;
 
             // If the character is a letter, we either have a label or an opcode
-            if (state is TokenizerState.Start && char.IsLetter(currentChar))
+            if (state is TokenizerState.Start && (char.IsLetter(currentChar) || currentChar is '_'))
             {
                 _ = buffer.Append(currentChar);
                 state = TokenizerState.Text;
@@ -64,7 +64,7 @@ public static class Tokenizer
             }
 
             // Otherwise, if we are in a correct state, we can add the character to the buffer
-            if (state is TokenizerState.Text && char.IsLetter(currentChar))
+            if (state is TokenizerState.Text && (char.IsLetterOrDigit(currentChar) || currentChar is '_'))
             {
                 _ = buffer.Append(currentChar);
                 continue;
@@ -102,7 +102,7 @@ public static class Tokenizer
             // If we have a whitespace, we can add the token to the list
             if (state is TokenizerState.Address or TokenizerState.Immediate or TokenizerState.AddressPointer && char.IsWhiteSpace(currentChar))
             {
-                if (buffer.Length is 0) return new ErrorInfo($"Address missing number!", new(new Error(), state is TokenizerState.Address ? TokenType.Address : TokenType.AddressPointer, lineNumber, columnNumber, 1));
+                if (buffer.Length is 0) return new ErrorInfo($"Address or immediate missing number!", new(new Error(), state is TokenizerState.Address ? TokenType.Address : TokenType.AddressPointer, lineNumber, columnNumber, 1));
 
                 if (state is TokenizerState.Address)
                     tokens.Enqueue(new(uint.Parse(buffer.ToString()), TokenType.Address, lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length));

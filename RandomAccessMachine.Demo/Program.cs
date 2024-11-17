@@ -29,7 +29,7 @@ foreach (var label in scope.AsT0.Labels)
     Console.WriteLine(label);
 }
 
-var validationResult = LabelValidator.Validate(scope.AsT0);
+var validationResult = LabelResolver.Validate(scope.AsT0);
 scope = validationResult.AsT0;
 
 foreach (var label in validationResult.AsT0.Labels)
@@ -43,6 +43,8 @@ foreach (var register in interpreter.Registers)
 {
     Console.WriteLine(register);
 }
+
+var boundsCheckResult = BoundsChecker.CheckBounds(scope.AsT0, interpreter);
 
 interpreter.Stopped += (sender, e) => Console.WriteLine("Stopped");
 

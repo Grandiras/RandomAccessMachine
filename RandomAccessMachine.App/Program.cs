@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls.AnimatedVisuals;
 using RandomAccessMachine.App;
 using RandomAccessMachine.App.Pages;
+using RandomAccessMachine.Backend.Interpreter;
 using System.Diagnostics;
 using WinSharp;
 using WinSharp.Pages;
@@ -29,5 +30,7 @@ new AppBuilder()
 
     section.Links.Add(new("Repository", "https://github.com/Grandiras/RandomAccessMachine"));
 })
+
+.AddSingleton<Interpreter>()
 
 .Build();

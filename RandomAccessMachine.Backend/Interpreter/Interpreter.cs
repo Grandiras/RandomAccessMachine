@@ -69,9 +69,17 @@ public class Interpreter
 
             if (instruction.OpCode is OpCode.LOAD) Registers[0].Value = value;
             else if (instruction.OpCode is OpCode.ADD) Registers[0].Value += value;
-            else if (instruction.OpCode is OpCode.SUB) Registers[0].Value -= value;
+            else if (instruction.OpCode is OpCode.SUB) Registers[0].Value = value > Registers[0].Value ? 0 : Registers[0].Value - value;
             else if (instruction.OpCode is OpCode.MUL) Registers[0].Value *= value;
-            else if (instruction.OpCode is OpCode.DIV) Registers[0].Value /= value;
+            else if (instruction.OpCode is OpCode.DIV)
+            {
+                if (value is 0)
+                {
+                    IsRunning = false;
+                    return;
+                }
+                Registers[0].Value /= value;
+            }
 
             return;
         }

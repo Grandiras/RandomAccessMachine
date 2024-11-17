@@ -3,7 +3,7 @@ using RandomAccessMachine.Backend.Debugging;
 using RandomAccessMachine.Backend.Specification;
 
 namespace RandomAccessMachine.Backend.Interpreter;
-public static class LabelValidator
+public static class LabelResolver
 {
     public static OneOf<Scope, ErrorInfo> Validate(Scope scope)
     {
