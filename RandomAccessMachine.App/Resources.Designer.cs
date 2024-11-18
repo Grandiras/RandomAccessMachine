@@ -61,6 +61,15 @@ namespace RandomAccessMachine.App {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        internal static string MainPage_Copy_Tooltip {
+            get {
+                return ResourceManager.GetString("MainPage.Copy.Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No issues found..
         /// </summary>
         internal static string MainPage_Issues_None {
@@ -129,6 +138,15 @@ namespace RandomAccessMachine.App {
         internal static string MainPage_OpenFile_Tooltip {
             get {
                 return ResourceManager.GetString("MainPage.OpenFile.Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste.
+        /// </summary>
+        internal static string MainPage_Paste_Tooltip {
+            get {
+                return ResourceManager.GetString("MainPage.Paste.Tooltip", resourceCulture);
             }
         }
         

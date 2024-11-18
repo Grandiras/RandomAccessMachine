@@ -225,4 +225,10 @@
   <data name="Settings.Startup.OpenLastFileDescription" xml:space="preserve">
     <value>Reopen the last opened file at startup</value>
   </data>
+  <data name="MainPage.Copy.Tooltip" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="MainPage.Paste.Tooltip" xml:space="preserve">
+    <value>Paste</value>
+  </data>
 </root>
