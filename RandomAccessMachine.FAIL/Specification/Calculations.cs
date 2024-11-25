@@ -5,6 +5,7 @@ internal enum Calculations : int
     Term = 1,
     DotCalculations = 2,
     StrokeCalculations = 4,
+    TestOperations = 8,
 }
 
 internal static class CalculationsExtensions

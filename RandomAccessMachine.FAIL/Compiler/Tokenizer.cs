@@ -86,6 +86,7 @@ public static class Tokenizer
                 _ = buffer.Clear();
                 state = TokenizerState.Start;
                 i--;
+                columnNumber--;
                 continue;
             }
 
@@ -103,6 +104,7 @@ public static class Tokenizer
                 _ = buffer.Clear();
                 state = TokenizerState.Start;
                 i--;
+                columnNumber--;
                 continue;
             }
 
@@ -110,6 +112,20 @@ public static class Tokenizer
             if (state is TokenizerState.Start && currentChar.GetBinaryOperator() is not null and BinaryOperator binaryOperator)
             {
                 tokens.Enqueue(new(binaryOperator, TokenType.BinaryOperator, lineNumber, columnNumber, 1, currentChar.ToString()));
+                continue;
+            }
+
+            // Comparison tokens
+            if (state is TokenizerState.Start && currentChar is '=' && i + 1 < code.Length && code[i + 1] is '=')
+            {
+                tokens.Enqueue(new(BinaryOperator.Equal, TokenType.BinaryOperator, lineNumber, columnNumber, 2, "=="));
+                i++;
+                columnNumber++;
+                continue;
+            }
+            if (state is TokenizerState.Start && currentChar is '>')
+            {
+                tokens.Enqueue(new(BinaryOperator.GreaterThan, TokenType.BinaryOperator, lineNumber, columnNumber, 1, currentChar.ToString()));
                 continue;
             }
 
@@ -129,6 +145,16 @@ public static class Tokenizer
             if (state is TokenizerState.Start && currentChar is ')')
             {
                 tokens.Enqueue(new(currentChar.ToString(), TokenType.RightParenthesis, lineNumber, columnNumber, 1, currentChar.ToString()));
+                continue;
+            }
+            if (state is TokenizerState.Start && currentChar is '{')
+            {
+                tokens.Enqueue(new(currentChar.ToString(), TokenType.LeftCurlyBrace, lineNumber, columnNumber, 1, currentChar.ToString()));
+                continue;
+            }
+            if (state is TokenizerState.Start && currentChar is '}')
+            {
+                tokens.Enqueue(new(currentChar.ToString(), TokenType.RightCurlyBrace, lineNumber, columnNumber, 1, currentChar.ToString()));
                 continue;
             }
 

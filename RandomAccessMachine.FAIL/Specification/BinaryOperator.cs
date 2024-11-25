@@ -5,6 +5,8 @@ public enum BinaryOperator
     Subtract,
     Multiply,
     Divide,
+    Equal,
+    GreaterThan,
 }
 
 public static class BinaryOperatorExtensions
@@ -24,6 +26,8 @@ public static class BinaryOperatorExtensions
         BinaryOperator.Subtract => "-",
         BinaryOperator.Multiply => "*",
         BinaryOperator.Divide => "/",
+        BinaryOperator.Equal => "==",
+        BinaryOperator.GreaterThan => ">",
         _ => throw new ArgumentOutOfRangeException(nameof(@operator), @operator, null),
     };
 }

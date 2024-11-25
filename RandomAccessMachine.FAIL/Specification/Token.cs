@@ -20,4 +20,7 @@ public enum TokenType
     Identifier,
     EndOfLine,
     Error,
+    While,
+    LeftCurlyBrace,
+    RightCurlyBrace,
 }

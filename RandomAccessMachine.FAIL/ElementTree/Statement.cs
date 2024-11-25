@@ -34,3 +34,7 @@ public record Expression(OneOf<Identifier, Number, BinaryOperation> Value) : Sta
         binaryOperation => binaryOperation.ToString()
     );
 }
+public record While(Expression Condition, Scope Body) : Statement
+{
+    public override string ToString() => $"while ({Condition}) {{ {Body} }}";
+}

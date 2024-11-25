@@ -2,7 +2,8 @@
 public enum Keyword
 {
     Var,
-    Int
+    Int,
+    While,
 }
 
 public static class KeywordExtensions
@@ -11,6 +12,7 @@ public static class KeywordExtensions
     {
         Keyword.Var => TokenType.Var,
         Keyword.Int => TokenType.Type,
+        Keyword.While => TokenType.While,
         _ => throw new NotImplementedException(),
     };
 

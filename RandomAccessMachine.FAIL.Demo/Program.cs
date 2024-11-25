@@ -5,9 +5,12 @@ var x = 20;
 var y = 6;
 var result = x / y * y;
 result = x - result;
+while (result > 0) {
+    result = result - 1;
+}
 ";
 
-Console.WriteLine(code);
+Console.WriteLine(code.Trim());
 
 Console.WriteLine();
 

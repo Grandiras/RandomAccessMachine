@@ -6,17 +6,19 @@
 
 `StatementList` -> Statement StatementList | Statement
 
-`Statement` -> Assignment
+`Statement` -> Assignment | Declaration | While
 
 `Assignment` -> Declaration = Expression
 
 `Declaration` -> Type Identifier
 
+`While` -> while ( Expression ) \{ StatementList }
+
 `Type` -> int | var
 
 `Identifier` -> [a-zA-Z_][a-zA-Z0-9_]*
 
-`Expression` -> Number BinaryOperator Expression | Identifier BinaryOperator Expression | ( Expression ) | Number | Identifier
+`Expression` -> Number BinaryOperator Expression | Identifier BinaryOperator Expression | ( Expression ) BinaryOperator Expression | ( Expression ) | Number | Identifier
 
 `BinaryOperator` -> + | - | * | /
 
@@ -35,15 +37,18 @@
 
 - `=` Assignment
 
-## Types
+## Keywords
 
 - `var` Variable Declaration
 - `int` Integer Type
+- `while` While Loop
 
 ## Parentheses
 
 - `(` Left Parenthesis
 - `)` Right Parenthesis
+- `{` Left Curly Brace
+- `}` Right Curly Brace
 
 ## Identifiers
  
@@ -51,6 +56,11 @@
 - `[a-zA-Z_][a-zA-Z0-9_]*` Identifier
 
 # Examples
+
+## Declaration
+```
+var a = 1;
+```
 
 ## Assignment
 
