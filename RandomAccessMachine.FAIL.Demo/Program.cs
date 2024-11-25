@@ -3,8 +3,7 @@
 var code = @"
 var x = 20;
 var y = 6;
-var result = x / y;
-result = result * y;
+var result = x / y * y;
 result = x - result;
 ";
 
