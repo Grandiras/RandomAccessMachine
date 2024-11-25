@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomAccessMachine.Backend
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomAccessMachine.Demo", "RandomAccessMachine.Demo\RandomAccessMachine.Demo.csproj", "{D20631C1-DF5A-417E-835D-20B944A98BB1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomAccessMachine.FAIL", "RandomAccessMachine.FAIL\RandomAccessMachine.FAIL.csproj", "{39030A99-C628-4042-A109-8604C943DD11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomAccessMachine.FAIL.Demo", "RandomAccessMachine.FAIL.Demo\RandomAccessMachine.FAIL.Demo.csproj", "{BA7B6608-C9BE-4C8D-933B-CF8D066313EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +30,14 @@ Global
 		{D20631C1-DF5A-417E-835D-20B944A98BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D20631C1-DF5A-417E-835D-20B944A98BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D20631C1-DF5A-417E-835D-20B944A98BB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39030A99-C628-4042-A109-8604C943DD11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39030A99-C628-4042-A109-8604C943DD11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39030A99-C628-4042-A109-8604C943DD11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39030A99-C628-4042-A109-8604C943DD11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA7B6608-C9BE-4C8D-933B-CF8D066313EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA7B6608-C9BE-4C8D-933B-CF8D066313EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA7B6608-C9BE-4C8D-933B-CF8D066313EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA7B6608-C9BE-4C8D-933B-CF8D066313EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

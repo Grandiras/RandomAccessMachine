@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RandomAccessMachine.FAIL.Demo": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

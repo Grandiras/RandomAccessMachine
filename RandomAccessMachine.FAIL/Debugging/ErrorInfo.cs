@@ -1,6 +1,6 @@
-﻿using RandomAccessMachine.Backend.Specification;
+﻿using RandomAccessMachine.FAIL.Specification;
 
-namespace RandomAccessMachine.Backend.Debugging;
+namespace RandomAccessMachine.FAIL.Debugging;
 public record struct ErrorInfo(string Message, Token Token)
 {
     public override readonly string ToString() => $"Error at line {Token.LineNumber}, column {Token.ColumnNumber}: {Message}";
