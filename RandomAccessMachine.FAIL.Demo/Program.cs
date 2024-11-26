@@ -1,12 +1,12 @@
 ﻿using RandomAccessMachine.FAIL.Compiler;
 
 var code = @"
-var x = 20;
-var y = 6;
-var result = x / y * y;
-result = x - result;
-while (result > 0) {
-    result = result - 1;
+var x = 5;
+// Do a factorial
+var y = 1;
+while (x > 1) {
+    y = y * x;
+    x = x - 1;
 }
 ";
 
@@ -49,6 +49,7 @@ var output = Emitter.Emit(scope.AsT0);
 Console.WriteLine(output);
 
 // Hook this up to the interpreter
+
 var ramTokens = RandomAccessMachine.Backend.Interpreter.Tokenizer.Tokenize(output);
 
 if (ramTokens.IsT1)

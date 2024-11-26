@@ -11,6 +11,7 @@ public record Assignment(Identifier Identifier, Expression Expression) : Stateme
 public record Identifier(string Name, ElementType? Type = null) : Statement
 {
     public static Identifier Temporary { get; } = new("t", new("var")); // TODO: improve this
+    public static Identifier Empty { get; } = new(""); // TODO: improve this
 
     public override string ToString() => Type is null ? Name : $"{Type} {Name}";
 }

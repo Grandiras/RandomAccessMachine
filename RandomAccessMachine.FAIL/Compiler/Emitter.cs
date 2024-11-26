@@ -1,25 +1,29 @@
 ﻿using OneOf;
 using RandomAccessMachine.FAIL.ElementTree;
+using RandomAccessMachine.FAIL.Helpers;
 using RandomAccessMachine.FAIL.Specification;
 using System.Text;
 
 namespace RandomAccessMachine.FAIL.Compiler;
 public static class Emitter
 {
-    public static string Emit(Scope scope)
+    public static string Emit(Scope scope, Dictionary<Identifier, uint>? registerReservations = null, bool emitEnd = true)
     {
         var output = new StringBuilder();
-        var registerReservations = new Dictionary<Identifier, uint>();
+        registerReservations ??= [];
 
         foreach (var statement in scope.Statements)
         {
-            _ = output.Append(EmitComment(statement.ToString()));
+            _ = output.Append(EmitComment(statement.ToString().Replace("\n", "; ")));
 
-            if (statement is Assignment assignment)
-                _ = output.Append(EmitAssignment(registerReservations, assignment));
+            if (statement is Assignment assignment) _ = output.Append(EmitAssignment(registerReservations, assignment));
+
+            else if (statement is While @while) _ = output.Append(EmitWhileLoop(registerReservations, @while));
+
+            else _ = output.Append(EmitComment("unknown statement"));
         }
 
-        _ = output.Append(EmitEnd());
+        if (emitEnd) _ = output.Append(EmitEnd());
 
         return output.ToString();
     }
@@ -41,49 +45,81 @@ public static class Emitter
         {
             if (operation.Right.Value.IsT0)
             {
-                _ = registerReservations[operation.Right.Value.AsT0];
-                return EmitLoad(operation.Left.Value.AsT0, registerReservations) + EmitOperation(operation.Operator, operation.Right.Value.AsT0, registerReservations);
+                return EmitLoad(operation.Left.Value.AsT0, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT0, operation.Right.Value.AsT0, registerReservations);
             }
 
             if (operation.Right.Value.IsT1)
             {
-                return EmitLoad(operation.Left.Value.AsT0, registerReservations) + EmitOperation(operation.Operator, operation.Right.Value.AsT1, registerReservations);
+                return EmitLoad(operation.Left.Value.AsT0, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT0, operation.Right.Value.AsT1, registerReservations);
             }
 
-            return string.Empty;
+            var tempRegister = ReserveRegister(Identifier.Temporary, registerReservations);
+
+            var right = EmitBinaryOperation(registerReservations, operation.Right.Value.AsT2);
+            var operationResult = EmitOperation(operation.Operator, operation.Left.Value.AsT0, Identifier.Temporary, registerReservations);
+
+            FreeRegister(Identifier.Temporary, registerReservations);
+
+            return right + EmitStore(tempRegister) + operationResult;
         }
 
         if (operation.Left.Value.IsT1)
         {
             if (operation.Right.Value.IsT0)
             {
-                return EmitLoad(operation.Left.Value.AsT1, registerReservations) + EmitOperation(operation.Operator, operation.Right.Value.AsT0, registerReservations);
+                return EmitLoad(operation.Left.Value.AsT1, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT1, operation.Right.Value.AsT0, registerReservations);
             }
 
             if (operation.Right.Value.IsT1)
             {
-                return EmitLoad(operation.Left.Value.AsT1, registerReservations) + EmitOperation(operation.Operator, operation.Right.Value.AsT1, registerReservations);
+                return EmitLoad(operation.Left.Value.AsT1, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT1, operation.Right.Value.AsT1, registerReservations);
             }
 
-            return string.Empty;
+            var tempRegister = ReserveRegister(Identifier.Temporary, registerReservations);
+
+            var right = EmitBinaryOperation(registerReservations, operation.Right.Value.AsT2);
+            var operationResult = EmitOperation(operation.Operator, operation.Left.Value.AsT1, Identifier.Temporary, registerReservations);
+
+            FreeRegister(Identifier.Temporary, registerReservations);
+
+            return right + EmitStore(tempRegister) + operationResult;
         }
 
-        if (operation.Left.Value.IsT2)
+        if (operation.Right.Value.IsT0)
         {
-            if (operation.Right.Value.IsT0)
-            {
-                return EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2) + EmitOperation(operation.Operator, operation.Right.Value.AsT0, registerReservations);
-            }
-
-            if (operation.Right.Value.IsT1)
-            {
-                return EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2) + EmitOperation(operation.Operator, operation.Right.Value.AsT1, registerReservations);
-            }
-
-            return string.Empty;
+            return EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2) + EmitOperation(operation.Operator, Identifier.Empty, operation.Right.Value.AsT0, registerReservations);
         }
 
-        return string.Empty;
+        if (operation.Right.Value.IsT1)
+        {
+            return EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2) + EmitOperation(operation.Operator, Identifier.Empty, operation.Right.Value.AsT1, registerReservations);
+        }
+
+        {
+            var left = EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2);
+
+            var tempRegister = ReserveRegister(Identifier.Temporary, registerReservations);
+
+            var right = EmitBinaryOperation(registerReservations, operation.Right.Value.AsT2);
+            var operationResult = EmitOperation(operation.Operator, Identifier.Empty, Identifier.Temporary, registerReservations);
+
+            FreeRegister(Identifier.Temporary, registerReservations);
+
+            return left + right + EmitStore(tempRegister) + operationResult;
+        }
+    }
+
+    private static string EmitWhileLoop(Dictionary<Identifier, uint> registerReservations, While @while)
+    {
+        var startLabel = Guid.NewGuid().ToLabelString();
+        var endLabel = Guid.NewGuid().ToLabelString();
+
+        var conditionResult = EmitBinaryOperation(registerReservations, @while.Condition.Value.AsT2);
+        var conditionJump = EmitJumpIfZero(endLabel);
+
+        var body = Emit(@while.Body, registerReservations, false);
+
+        return EmitLabel(startLabel) + conditionResult + conditionJump + body + EmitGoto(startLabel) + EmitLabel(endLabel);
     }
 
     private static string EmitLoad(OneOf<Number, Identifier> value, Dictionary<Identifier, uint> registerReservations)
@@ -91,12 +127,14 @@ public static class Emitter
 
     private static string EmitStore(uint register) => $"STORE {register}\n";
 
-    private static string EmitOperation(BinaryOperator @operator, OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations) => @operator switch
+    private static string EmitOperation(BinaryOperator @operator, OneOf<Number, Identifier> left, OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations) => @operator switch
     {
         BinaryOperator.Add => EmitAdd(right, registerReservations),
         BinaryOperator.Subtract => EmitSubtract(right, registerReservations),
         BinaryOperator.Multiply => EmitMultiply(right, registerReservations),
         BinaryOperator.Divide => EmitDivide(right, registerReservations),
+        BinaryOperator.Equal => EmitEqual(left, right, registerReservations),
+        BinaryOperator.GreaterThan => EmitGreaterThan(right, registerReservations),
         _ => string.Empty
     };
 
@@ -108,10 +146,27 @@ public static class Emitter
         => right.Match(number => $"MUL #{number.Value}\n", identifier => $"MUL {registerReservations[identifier]}\n");
     private static string EmitDivide(OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations)
         => right.Match(number => $"DIV #{number.Value}\n", identifier => $"DIV {registerReservations[identifier]}\n");
+    private static string EmitEqual(OneOf<Number, Identifier> left, OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations)
+    {
+        var firstCheckFailedLabel = Guid.NewGuid().ToLabelString();
+        var successLabel = Guid.NewGuid().ToLabelString();
+
+        var subtractRightFromLeft = EmitSubtract(right, registerReservations);
+        var subtractLeftFromRight = EmitLoad(right, registerReservations) + EmitSubtract(left, registerReservations);
+
+        return subtractRightFromLeft + EmitJumpIfNotZero(firstCheckFailedLabel) + subtractLeftFromRight + EmitJumpIfNotZero(firstCheckFailedLabel) + EmitLoad(new Number(1), registerReservations) + EmitGoto(successLabel) + EmitLabel(firstCheckFailedLabel) + EmitLabel(successLabel);
+    }
+    private static string EmitGreaterThan(OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations) => EmitSubtract(right, registerReservations);
 
     private static string EmitEnd() => "END\n";
 
     private static string EmitComment(string comment) => $"// {comment}\n";
+
+    private static string EmitLabel(string label) => $"{label}:\n";
+
+    private static string EmitGoto(string label) => $"GOTO {label}\n";
+    private static string EmitJumpIfZero(string label) => $"JZERO {label}\n";
+    private static string EmitJumpIfNotZero(string label) => $"JNZERO {label}\n";
 
     private static uint ReserveRegister(Identifier identifier, Dictionary<Identifier, uint> registerReservations)
     {
