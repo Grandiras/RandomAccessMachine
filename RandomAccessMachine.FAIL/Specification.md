@@ -4,9 +4,9 @@
 
 # Grammar Specification
 
-`StatementList` -> Statement StatementList | Statement
+`StatementList` -> Statement EndOfLine (except for blocks) StatementList | Statement EndOfLine (except for blocks)
 
-`Statement` -> Assignment | Declaration | While
+`Statement` -> Assignment | Declaration | While | Break (only in loops) | Continue (only in loops)
 
 `Assignment` -> Declaration = Expression
 
@@ -23,6 +23,8 @@
 `BinaryOperator` -> + | - | * | /
 
 `Number` -> [0-9]+
+
+`EndOfLine` -> ;
 
 # Tokens
 
@@ -49,6 +51,8 @@
 - `int` Integer Type
 - `bool` Boolean Type
 - `while` While Loop
+- `break` Break Statement
+- `continue` Continue Statement
 
 ## Parentheses
 
@@ -61,6 +65,10 @@
  
 - `[0-9]+` Number
 - `[a-zA-Z_][a-zA-Z0-9_]*` Identifier
+
+## End of Line
+
+- `;` End of Line
 
 # Examples
 
@@ -134,5 +142,21 @@ a = (1 + 2) * 3;
 ```
 while (a < 10) {
 	a = a + 1;
+}
+```
+
+## Break Statement
+```
+while (a < 10) {
+	a = a + 1;
+	break;
+}
+```
+
+## Continue Statement
+```
+while (a < 10) {
+	a = a + 1;
+	continue;
 }
 ```

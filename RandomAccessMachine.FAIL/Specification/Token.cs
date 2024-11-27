@@ -23,4 +23,6 @@ public enum TokenType
     While,
     LeftCurlyBrace,
     RightCurlyBrace,
+    Break,
+    Continue,
 }

@@ -80,7 +80,11 @@ public static class Tokenizer
             if (state is TokenizerState.Text)
             {
                 // If the buffer is a keyword, we have a keyword token
-                if (Enum.TryParse<Keyword>(buffer.ToString(), true, out var keyword)) tokens.Enqueue(new(keyword, keyword.GetTokenType(), lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length, buffer.ToString()));
+                if (buffer.ToString().IsSpelledCorrectly())
+                {
+                    var keyword = Enum.Parse<Keyword>(buffer.ToString(), true);
+                    tokens.Enqueue(new(keyword, keyword.GetTokenType(), lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length, buffer.ToString()));
+                }
                 else tokens.Enqueue(new(buffer.ToString(), TokenType.Identifier, lineNumber, (uint)(columnNumber - buffer.Length), (uint)buffer.Length, buffer.ToString()));
 
                 _ = buffer.Clear();

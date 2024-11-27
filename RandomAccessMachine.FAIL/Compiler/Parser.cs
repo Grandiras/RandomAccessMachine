@@ -7,23 +7,32 @@ using RandomAccessMachine.FAIL.Specification;
 namespace RandomAccessMachine.FAIL.Compiler;
 public static class Parser
 {
-    public static OneOf<Scope, ErrorInfo> Parse(Queue<Token> tokens, TokenType endOfBlockSign = TokenType.Error)
+    public static OneOf<Scope, ErrorInfo> Parse(Queue<Token> tokens) => Parse(tokens, out _);
+    public static OneOf<Scope, ErrorInfo> Parse(Queue<Token> tokens, out bool isBlock, TokenType endOfBlockSign = TokenType.Error, bool isLoop = false)
     {
+        isBlock = endOfBlockSign is not TokenType.Error;
+
         var scope = new Scope([]);
 
         if (tokens.Count is 0) return scope;
 
         while (tokens.Count > 0 && (endOfBlockSign is TokenType.Error || tokens.Peek().Type != endOfBlockSign))
         {
-            var statement = ParseStatement(tokens);
+            var statement = ParseStatement(tokens, isLoop);
             if (statement.IsT1) return statement.AsT1;
             scope.Statements.Add(statement.AsT0);
+        }
+
+        if (endOfBlockSign is not TokenType.Error)
+        {
+            var endOfBlock = tokens.Dequeue();
+            if (endOfBlock.Type != endOfBlockSign) return new ErrorInfo($"Unexpected token type: {endOfBlock.Type}", endOfBlock);
         }
 
         return scope;
     }
 
-    private static OneOf<Statement, ErrorInfo> ParseStatement(Queue<Token> tokens)
+    private static OneOf<Statement, ErrorInfo> ParseStatement(Queue<Token> tokens, bool isLoop = false)
     {
         var token = tokens.Dequeue();
 
@@ -34,6 +43,9 @@ public static class Parser
             TokenType.Var or TokenType.Type => ParseDeclaration(tokens, token),
             TokenType.Identifier => ParseAssignment(tokens, token),
             TokenType.While => ParseWhile(tokens, out isBlock),
+            TokenType.LeftCurlyBrace => Parse(tokens, out isBlock, TokenType.RightCurlyBrace).TryPickT0(out var scope, out var error) ? new Body(scope) : error,
+            TokenType.Break => isLoop ? new Break() : new ErrorInfo($"Break must be inside a loop!", token),
+            TokenType.Continue => isLoop ? new Continue() : new ErrorInfo($"Continue must be inside a loop!", token),
             _ => new ErrorInfo($"Unexpected token type: {token.Type}", token)
         };
 
@@ -207,7 +219,7 @@ public static class Parser
 
     private static OneOf<Statement, ErrorInfo> ParseWhile(Queue<Token> tokens, out bool isBlock)
     {
-        isBlock = true;
+        isBlock = false;
 
         var leftParenthesis = tokens.Dequeue();
         if (leftParenthesis.Type is not TokenType.LeftParenthesis) return new ErrorInfo($"Unexpected token type: {leftParenthesis.Type}", leftParenthesis);
@@ -222,11 +234,8 @@ public static class Parser
         var leftCurlyBrace = tokens.Dequeue();
         if (leftCurlyBrace.Type is not TokenType.LeftCurlyBrace) return new ErrorInfo($"Unexpected token type: {leftCurlyBrace.Type}", leftCurlyBrace);
 
-        var body = Parse(tokens, TokenType.RightCurlyBrace);
+        var body = Parse(tokens, out isBlock, TokenType.RightCurlyBrace, true);
 
-        var rightCurlyBrace = tokens.Dequeue();
-        if (rightCurlyBrace.Type is not TokenType.RightCurlyBrace) return new ErrorInfo($"Unexpected token type: {rightCurlyBrace.Type}", rightCurlyBrace);
-
-        return new While(condition.AsT0, body.AsT0);
+        return new While(condition.AsT0, new Body(body.AsT0));
     }
 }

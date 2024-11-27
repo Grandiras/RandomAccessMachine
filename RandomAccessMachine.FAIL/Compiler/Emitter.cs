@@ -7,7 +7,7 @@ using System.Text;
 namespace RandomAccessMachine.FAIL.Compiler;
 public static class Emitter
 {
-    public static string Emit(Scope scope, Dictionary<Identifier, uint>? registerReservations = null, bool emitEnd = true)
+    public static string Emit(Scope scope, Dictionary<Identifier, uint>? registerReservations = null, bool emitEnd = true, string? startOfBlockLabel = null, string? endOfBlockLabel = null)
     {
         var output = new StringBuilder();
         registerReservations ??= [];
@@ -17,10 +17,11 @@ public static class Emitter
             _ = output.Append(EmitComment(statement.ToString().Replace("\n", "; ")));
 
             if (statement is Assignment assignment) _ = output.Append(EmitAssignment(registerReservations, assignment));
-
             else if (statement is While @while) _ = output.Append(EmitWhileLoop(registerReservations, @while));
-
-            else _ = output.Append(EmitComment("unknown statement"));
+            else if (statement is Body body) _ = output.Append(Emit(body.Scope, registerReservations, false));
+            else if (statement is Break) _ = output.Append(EmitBreak(endOfBlockLabel!));
+            else if (statement is Continue) _ = output.Append(EmitContinue(startOfBlockLabel!));
+            else _ = output.Append(EmitComment("Unknown statement"));
         }
 
         if (emitEnd) _ = output.Append(EmitEnd());
@@ -99,10 +100,12 @@ public static class Emitter
         var conditionResult = EmitBinaryOperation(registerReservations, @while.Condition.Value.AsT2);
         var conditionJump = EmitJumpIfZero(endLabel);
 
-        var body = Emit(@while.Body, registerReservations, false);
+        var body = Emit(@while.Body.Scope, registerReservations, false, startLabel, endLabel);
 
         return EmitLabel(startLabel) + conditionResult + conditionJump + body + EmitGoto(startLabel) + EmitLabel(endLabel);
     }
+    private static string EmitBreak(string endOfBlockLabel) => EmitGoto(endOfBlockLabel);
+    private static string EmitContinue(string startOfBlockLabel) => EmitGoto(startOfBlockLabel);
 
     private static string EmitLoad(OneOf<Number, Identifier> value, Dictionary<Identifier, uint> registerReservations)
         => value.Match(number => $"LOAD #{number.Value}\n", identifier => $"LOAD {registerReservations[identifier]}\n");
