@@ -2,6 +2,7 @@
 using OneOf.Types;
 using RandomAccessMachine.FAIL.Debugging;
 using RandomAccessMachine.FAIL.Specification;
+using RandomAccessMachine.FAIL.Specification.Operators;
 using System.Text;
 
 namespace RandomAccessMachine.FAIL.Compiler;
@@ -109,6 +110,24 @@ public static class Tokenizer
                 state = TokenizerState.Start;
                 i--;
                 columnNumber--;
+                continue;
+            }
+
+            // Self-assignment operator tokens
+            if (state is TokenizerState.Start && code[i..(i + 2)].ToString().GetSelfAssignmentOperator() is not null and SelfAssignmentOperator selfAssignmentOperator)
+            {
+                tokens.Enqueue(new(selfAssignmentOperator, TokenType.SelfAssignment, lineNumber, columnNumber, 2, code[i..(i + 2)].ToString()));
+                i++;
+                columnNumber++;
+                continue;
+            }
+
+            // Incremental operator tokens
+            if (state is TokenizerState.Start && code[i..(i + 2)].ToString().GetIncrementalOperator() is not null and IncrementalOperator incrementalOperator)
+            {
+                tokens.Enqueue(new(incrementalOperator, TokenType.IncrementalOperator, lineNumber, columnNumber, 2, code[i..(i + 2)].ToString()));
+                i++;
+                columnNumber++;
                 continue;
             }
 

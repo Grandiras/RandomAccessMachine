@@ -1,5 +1,6 @@
 ﻿using OneOf;
 using RandomAccessMachine.FAIL.Specification;
+using RandomAccessMachine.FAIL.Specification.Operators;
 
 namespace RandomAccessMachine.FAIL.ElementTree;
 public record Statement();

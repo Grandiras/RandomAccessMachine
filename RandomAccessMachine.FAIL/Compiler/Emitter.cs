@@ -2,6 +2,7 @@
 using RandomAccessMachine.FAIL.ElementTree;
 using RandomAccessMachine.FAIL.Helpers;
 using RandomAccessMachine.FAIL.Specification;
+using RandomAccessMachine.FAIL.Specification.Operators;
 using System.Text;
 
 namespace RandomAccessMachine.FAIL.Compiler;

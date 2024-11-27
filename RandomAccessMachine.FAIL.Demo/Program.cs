@@ -3,10 +3,10 @@
 var code = @"
 var x = 5;
 // Do a factorial
-var y = 1;
+var result = 1;
 while (x != 1) {
-    y = y * x;
-    x = x - 1;
+    result *= x;
+    x--;
 }
 ";
 
@@ -73,13 +73,6 @@ if (validationResult.IsT1)
     Console.WriteLine(validationResult.AsT1);
     return;
 }
-
-foreach (var label in validationResult.AsT0.Labels)
-{
-    Console.WriteLine(label);
-}
-
-Console.WriteLine();
 
 var interpreter = new RandomAccessMachine.Backend.Interpreter.Interpreter
 {

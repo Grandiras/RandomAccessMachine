@@ -3,6 +3,7 @@ using OneOf.Types;
 using RandomAccessMachine.FAIL.Debugging;
 using RandomAccessMachine.FAIL.ElementTree;
 using RandomAccessMachine.FAIL.Specification;
+using RandomAccessMachine.FAIL.Specification.Operators;
 
 namespace RandomAccessMachine.FAIL.Compiler;
 public static class Parser
@@ -83,13 +84,34 @@ public static class Parser
     {
         var identifier = tokens.Dequeue();
 
-        var token = tokens.Dequeue();
+        var token = tokens.Peek();
+
+        if (token.Type is TokenType.SelfAssignment) return ParseSelfAssignment(identifier, tokens);
+        if (token.Type is TokenType.IncrementalOperator) return ParseIncrementalAssignment(identifier, tokens);
+
+        _ = tokens.Dequeue();
         if (token.Type is not TokenType.Assignment) return new ErrorInfo($"Unexpected token type {token.Type}! Requiring type {TokenType.Assignment}.", token);
 
         var expression = ParseArithmetic(tokens, new None());
         if (expression.IsT1) return expression.AsT1;
 
         return new Assignment(new(identifier.Value.AsT0, new("var")), expression.AsT0); // TODO: validate type later
+    }
+
+    private static OneOf<Statement, ErrorInfo> ParseSelfAssignment(Token identifier, Queue<Token> tokens)
+    {
+        var selfAssignment = tokens.Dequeue();
+
+        var expression = ParseArithmetic(tokens, new None());
+        if (expression.IsT1) return expression.AsT1;
+
+        return new Assignment(new(identifier.Value.AsT0, new("var")), new(new BinaryOperation(selfAssignment.Value.AsT4.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, new("var"))), expression.AsT0)));
+    }
+
+    private static OneOf<Statement, ErrorInfo> ParseIncrementalAssignment(Token identifier, Queue<Token> tokens)
+    {
+        var incrementalOperator = tokens.Dequeue();
+        return new Assignment(new(identifier.Value.AsT0, new("var")), new(new BinaryOperation(incrementalOperator.Value.AsT5.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, new("var"))), new Expression(new Number(1)))));
     }
 
     private static OneOf<Expression, ErrorInfo> ParseArithmetic(Queue<Token> tokens, OneOf<Expression, None> heap) => ParseArithmetic(tokens, CalculationsExtensions.All, heap);

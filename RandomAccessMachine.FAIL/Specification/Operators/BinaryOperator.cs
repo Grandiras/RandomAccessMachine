@@ -1,4 +1,4 @@
-﻿namespace RandomAccessMachine.FAIL.Specification;
+﻿namespace RandomAccessMachine.FAIL.Specification.Operators;
 public enum BinaryOperator
 {
     Add,
