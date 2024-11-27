@@ -16,6 +16,8 @@ public static class Emitter
 
         if (emitEnd) _ = output.Append(EmitEnd());
 
+        foreach (var register in scope.Where(x => x is Assignment).Select(x => ((Assignment)x).Identifier)) _ = registerReservations.Remove(register);
+
         return output.ToString();
     }
 

@@ -23,7 +23,7 @@ public static class Parser
         {
             var statement = ParseStatement(tokens, scope, isLoop);
             if (statement.IsT1) return statement.AsT1;
-            scope.Statements.Add(statement.AsT0);
+            scope.Add(statement.AsT0);
         }
 
         if (endOfBlockSign is not TokenType.ErrorOrEmpty)
