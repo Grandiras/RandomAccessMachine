@@ -17,8 +17,9 @@ public static class Emitter
             _ = output.Append(EmitComment(statement.ToString().Replace("\n", "; ")));
 
             if (statement is Assignment assignment) _ = output.Append(EmitAssignment(registerReservations, assignment));
+            else if (statement is If @if) _ = output.Append(EmitIfElse(registerReservations, @if, startOfBlockLabel, endOfBlockLabel));
             else if (statement is While @while) _ = output.Append(EmitWhileLoop(registerReservations, @while));
-            else if (statement is Body body) _ = output.Append(Emit(body.Scope, registerReservations, false));
+            else if (statement is Body body) _ = output.Append(Emit(body.Scope, registerReservations, false, startOfBlockLabel, endOfBlockLabel));
             else if (statement is Break) _ = output.Append(EmitBreak(endOfBlockLabel!));
             else if (statement is Continue) _ = output.Append(EmitContinue(startOfBlockLabel!));
             else _ = output.Append(EmitComment("Unknown statement"));
@@ -90,6 +91,20 @@ public static class Emitter
 
             return left + right + EmitStore(tempRegister) + operationResult;
         }
+    }
+
+    private static string EmitIfElse(Dictionary<Identifier, uint> registerReservations, If @if, string? startOfBlockLabel, string? endOfBlockLabel)
+    {
+        var elseLabel = Guid.NewGuid().ToLabelString();
+        var endLabel = Guid.NewGuid().ToLabelString();
+
+        var conditionResult = EmitBinaryOperation(registerReservations, @if.Condition.Value.AsT2);
+        var conditionJump = EmitJumpIfZero(elseLabel);
+
+        var body = Emit(@if.Body.Scope, registerReservations, false, startOfBlockLabel, endOfBlockLabel);
+        var elseBody = @if.ElseBody is not null ? Emit(@if.ElseBody.Scope, registerReservations, false, startOfBlockLabel, endOfBlockLabel) : string.Empty;
+
+        return conditionResult + conditionJump + body + EmitGoto(endLabel) + EmitLabel(elseLabel) + elseBody + EmitLabel(endLabel);
     }
 
     private static string EmitWhileLoop(Dictionary<Identifier, uint> registerReservations, While @while)

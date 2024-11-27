@@ -42,8 +42,9 @@ public static class Parser
         {
             TokenType.Var or TokenType.Type => ParseDeclaration(tokens, token),
             TokenType.Identifier => ParseAssignment(tokens, token),
+            TokenType.If => ParseIf(tokens, token, out isBlock, isLoop),
             TokenType.While => ParseWhile(tokens, out isBlock),
-            TokenType.LeftCurlyBrace => Parse(tokens, out isBlock, TokenType.RightCurlyBrace).TryPickT0(out var scope, out var error) ? new Body(scope) : error,
+            TokenType.LeftCurlyBrace => Parse(tokens, out isBlock, TokenType.RightCurlyBrace, isLoop).TryPickT0(out var scope, out var error) ? new Body(scope) : error,
             TokenType.Break => isLoop ? new Break() : new ErrorInfo($"Break must be inside a loop!", token),
             TokenType.Continue => isLoop ? new Continue() : new ErrorInfo($"Continue must be inside a loop!", token),
             _ => new ErrorInfo($"Unexpected token type: {token.Type}", token)
@@ -217,6 +218,40 @@ public static class Parser
         return heap.TryPickT0(out var some, out var none) ? some : none;
     }
 
+    private static OneOf<Statement, ErrorInfo> ParseIf(Queue<Token> tokens, Token token, out bool isBlock, bool isLoop = false)
+    {
+        isBlock = false;
+
+        var leftParenthesis = tokens.Dequeue();
+        if (leftParenthesis.Type is not TokenType.LeftParenthesis) return new ErrorInfo($"Unexpected token type: {leftParenthesis.Type}", leftParenthesis);
+
+        var condition = ParseArithmetic(tokens, new None());
+        if (condition.IsT1) return condition.AsT1;
+        if (condition.AsT0.Value.IsT2 && !condition.AsT0.Value.AsT2.Operator.IsTestOperation()) return new ErrorInfo($"Unexpected token type: {condition.AsT0.Value.AsT2.Operator}", new()); // TODO: improve error message (token)
+
+        var rightParenthesis = tokens.Dequeue();
+        if (rightParenthesis.Type is not TokenType.RightParenthesis) return new ErrorInfo($"Unexpected token type: {rightParenthesis.Type}", rightParenthesis);
+
+        var leftCurlyBrace = tokens.Dequeue();
+        if (leftCurlyBrace.Type is not TokenType.LeftCurlyBrace) return new ErrorInfo($"Unexpected token type: {leftCurlyBrace.Type}", leftCurlyBrace);
+
+        var body = Parse(tokens, out isBlock, TokenType.RightCurlyBrace, isLoop);
+        if (body.IsT1) return body.AsT1;
+
+        var next = tokens.Peek();
+        if (next.Type is not TokenType.Else) return new If(condition.AsT0, new Body(body.AsT0));
+
+        _ = tokens.Dequeue();
+
+        var leftCurlyBraceElse = tokens.Dequeue();
+        if (leftCurlyBraceElse.Type is not TokenType.LeftCurlyBrace) return new ErrorInfo($"Unexpected token type: {leftCurlyBraceElse.Type}", leftCurlyBraceElse);
+
+        var elseBody = Parse(tokens, out isBlock, TokenType.RightCurlyBrace, isLoop);
+        if (elseBody.IsT1) return elseBody.AsT1;
+
+        return new If(condition.AsT0, new Body(body.AsT0), new Body(elseBody.AsT0));
+    }
+
     private static OneOf<Statement, ErrorInfo> ParseWhile(Queue<Token> tokens, out bool isBlock)
     {
         isBlock = false;
@@ -235,6 +270,7 @@ public static class Parser
         if (leftCurlyBrace.Type is not TokenType.LeftCurlyBrace) return new ErrorInfo($"Unexpected token type: {leftCurlyBrace.Type}", leftCurlyBrace);
 
         var body = Parse(tokens, out isBlock, TokenType.RightCurlyBrace, true);
+        if (body.IsT1) return body.AsT1;
 
         return new While(condition.AsT0, new Body(body.AsT0));
     }

@@ -41,6 +41,11 @@ public record Expression(OneOf<Identifier, Number, BinaryOperation> Value) : Sta
     );
 }
 
+public record If(Expression Condition, Body Body, Body? ElseBody = null) : Statement
+{
+    public override string ToString() => $"if ({Condition}) {Body}{(ElseBody is not null ? $" else {ElseBody}" : "")}";
+}
+
 public record While(Expression Condition, Body Body) : Statement
 {
     public override string ToString() => $"while ({Condition}) {Body}";

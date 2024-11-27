@@ -6,13 +6,15 @@
 
 `StatementList` -> Statement EndOfLine (except for blocks) StatementList | Statement EndOfLine (except for blocks)
 
-`Statement` -> Assignment | Declaration | While | Break (only in loops) | Continue (only in loops)
+`Statement` -> Assignment | Declaration | If | While | Break (only in loops) | Continue (only in loops) | \{ StatementList \}
 
 `Assignment` -> Declaration = Expression
 
 `Declaration` -> Type Identifier
 
-`While` -> while ( Expression ) \{ StatementList }
+`If` -> if ( Expression ) \{ StatementList \} else \{ StatementList \} | if ( Expression ) \{ StatementList \}
+
+`While` -> while ( Expression ) \{ StatementList \}
 
 `Type` -> int | var
 
@@ -50,6 +52,8 @@
 - `var` Variable Declaration
 - `int` Integer Type
 - `bool` Boolean Type
+- `if` If Statement
+- `else` Else Statement
 - `while` While Loop
 - `break` Break Statement
 - `continue` Continue Statement

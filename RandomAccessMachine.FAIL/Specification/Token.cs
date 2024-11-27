@@ -25,4 +25,6 @@ public enum TokenType
     RightCurlyBrace,
     Break,
     Continue,
+    If,
+    Else,
 }
