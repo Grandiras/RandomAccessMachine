@@ -7,8 +7,6 @@ var y = 1;
 while (x != 1) {
     y = y * x;
     x = x - 1;
-    if (x == 3) break;
-    else continue;
 }
 ";
 
@@ -60,13 +58,6 @@ if (ramTokens.IsT1)
     return;
 }
 
-foreach (var token in ramTokens.AsT0)
-{
-    Console.WriteLine(token);
-}
-
-Console.WriteLine();
-
 var ramScope = RandomAccessMachine.Backend.Interpreter.Parser.Parse(ramTokens.AsT0);
 
 if (ramScope.IsT1)
@@ -74,20 +65,6 @@ if (ramScope.IsT1)
     Console.WriteLine(ramScope.AsT1);
     return;
 }
-
-foreach (var instruction in ramScope.AsT0.Instructions)
-{
-    Console.WriteLine(instruction);
-}
-
-Console.WriteLine();
-
-foreach (var label in ramScope.AsT0.Labels)
-{
-    Console.WriteLine(label);
-}
-
-Console.WriteLine();
 
 var validationResult = RandomAccessMachine.Backend.Interpreter.LabelResolver.Validate(ramScope.AsT0);
 
