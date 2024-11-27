@@ -4,7 +4,7 @@ var code = @"
 var x = 5;
 // Do a factorial
 var y = 1;
-while (x > 1) {
+while (x != 1) {
     y = y * x;
     x = x - 1;
 }
@@ -106,6 +106,7 @@ var interpreter = new RandomAccessMachine.Backend.Interpreter.Interpreter
 {
     IsRealTime = true
 };
+interpreter.LoadProgram(ramScope.AsT0, 10);
 
 foreach (var register in interpreter.Registers)
 {
@@ -138,7 +139,6 @@ interpreter.Stopped += (sender, e) =>
 
 var cancellationToken = new CancellationTokenSource();
 
-interpreter.LoadProgram(ramScope.AsT0);
 _ = interpreter.Execute(cancellationToken.Token);
 
 await Task.Delay(5000);

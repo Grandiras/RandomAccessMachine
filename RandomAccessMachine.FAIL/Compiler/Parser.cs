@@ -98,7 +98,7 @@ public static class Parser
 
         if (calculations.HasFlag(Calculations.TestOperations))
         {
-            var result = ParseTestCalculation(tokens, heap);
+            var result = ParseTestOperation(tokens, heap);
             if (result.IsT2) return result.AsT2;
             heap = result.AsT0;
         }
@@ -144,7 +144,7 @@ public static class Parser
     {
         var token = tokens.Peek();
 
-        if (token.Type is TokenType.BinaryOperator && token.Value.AsT3 is BinaryOperator.Multiply or BinaryOperator.Divide)
+        if (token.Type is TokenType.BinaryOperator && token.Value.AsT3.IsDotCalculation())
         {
             _ = tokens.Dequeue();
 
@@ -166,7 +166,7 @@ public static class Parser
     {
         var token = tokens.Peek();
 
-        if (token.Type is TokenType.BinaryOperator && token.Value.AsT3 is BinaryOperator.Add or BinaryOperator.Subtract)
+        if (token.Type is TokenType.BinaryOperator && token.Value.AsT3.IsStrokeCalculation())
         {
             _ = tokens.Dequeue();
 
@@ -184,11 +184,11 @@ public static class Parser
         return heap.TryPickT0(out var some, out var none) ? some : none; ;
     }
 
-    private static OneOf<Expression, None, ErrorInfo> ParseTestCalculation(Queue<Token> tokens, OneOf<Expression, None> heap)
+    private static OneOf<Expression, None, ErrorInfo> ParseTestOperation(Queue<Token> tokens, OneOf<Expression, None> heap)
     {
         var token = tokens.Peek();
 
-        if (token.Type is TokenType.BinaryOperator && token.Value.AsT3 is BinaryOperator.Equal or BinaryOperator.GreaterThan)
+        if (token.Type is TokenType.BinaryOperator && token.Value.AsT3.IsTestOperation())
         {
             _ = tokens.Dequeue();
 
@@ -214,7 +214,7 @@ public static class Parser
 
         var condition = ParseArithmetic(tokens, new None());
         if (condition.IsT1) return condition.AsT1;
-        if (condition.AsT0.Value.IsT2 && condition.AsT0.Value.AsT2.Operator is not BinaryOperator.Equal and not BinaryOperator.GreaterThan) return new ErrorInfo($"Unexpected token type: {condition.AsT0.Value.AsT2.Operator}", new()); // TODO: improve error message (token)
+        if (condition.AsT0.Value.IsT2 && !condition.AsT0.Value.AsT2.Operator.IsTestOperation()) return new ErrorInfo($"Unexpected token type: {condition.AsT0.Value.AsT2.Operator}", new()); // TODO: improve error message (token)
 
         var rightParenthesis = tokens.Dequeue();
         if (rightParenthesis.Type is not TokenType.RightParenthesis) return new ErrorInfo($"Unexpected token type: {rightParenthesis.Type}", rightParenthesis);

@@ -43,15 +43,9 @@ public static class Emitter
     {
         if (operation.Left.Value.IsT0)
         {
-            if (operation.Right.Value.IsT0)
-            {
-                return EmitLoad(operation.Left.Value.AsT0, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT0, operation.Right.Value.AsT0, registerReservations);
-            }
+            if (operation.Right.Value.IsT0) return EmitLoad(operation.Left.Value.AsT0, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT0, operation.Right.Value.AsT0, registerReservations);
 
-            if (operation.Right.Value.IsT1)
-            {
-                return EmitLoad(operation.Left.Value.AsT0, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT0, operation.Right.Value.AsT1, registerReservations);
-            }
+            if (operation.Right.Value.IsT1) return EmitLoad(operation.Left.Value.AsT0, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT0, operation.Right.Value.AsT1, registerReservations);
 
             var tempRegister = ReserveRegister(Identifier.Temporary, registerReservations);
 
@@ -65,15 +59,9 @@ public static class Emitter
 
         if (operation.Left.Value.IsT1)
         {
-            if (operation.Right.Value.IsT0)
-            {
-                return EmitLoad(operation.Left.Value.AsT1, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT1, operation.Right.Value.AsT0, registerReservations);
-            }
+            if (operation.Right.Value.IsT0) return EmitLoad(operation.Left.Value.AsT1, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT1, operation.Right.Value.AsT0, registerReservations);
 
-            if (operation.Right.Value.IsT1)
-            {
-                return EmitLoad(operation.Left.Value.AsT1, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT1, operation.Right.Value.AsT1, registerReservations);
-            }
+            if (operation.Right.Value.IsT1) return EmitLoad(operation.Left.Value.AsT1, registerReservations) + EmitOperation(operation.Operator, operation.Left.Value.AsT1, operation.Right.Value.AsT1, registerReservations);
 
             var tempRegister = ReserveRegister(Identifier.Temporary, registerReservations);
 
@@ -85,15 +73,9 @@ public static class Emitter
             return right + EmitStore(tempRegister) + operationResult;
         }
 
-        if (operation.Right.Value.IsT0)
-        {
-            return EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2) + EmitOperation(operation.Operator, Identifier.Empty, operation.Right.Value.AsT0, registerReservations);
-        }
+        if (operation.Right.Value.IsT0) return EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2) + EmitOperation(operation.Operator, Identifier.Empty, operation.Right.Value.AsT0, registerReservations);
 
-        if (operation.Right.Value.IsT1)
-        {
-            return EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2) + EmitOperation(operation.Operator, Identifier.Empty, operation.Right.Value.AsT1, registerReservations);
-        }
+        if (operation.Right.Value.IsT1) return EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2) + EmitOperation(operation.Operator, Identifier.Empty, operation.Right.Value.AsT1, registerReservations);
 
         {
             var left = EmitBinaryOperation(registerReservations, operation.Left.Value.AsT2);
@@ -134,7 +116,11 @@ public static class Emitter
         BinaryOperator.Multiply => EmitMultiply(right, registerReservations),
         BinaryOperator.Divide => EmitDivide(right, registerReservations),
         BinaryOperator.Equal => EmitEqual(left, right, registerReservations),
+        BinaryOperator.NotEqual => EmitNotEqual(left, right, registerReservations),
         BinaryOperator.GreaterThan => EmitGreaterThan(right, registerReservations),
+        BinaryOperator.LessThan => EmitLessThan(left, right, registerReservations),
+        BinaryOperator.GreaterThanOrEqual => EmitGreaterThanOrEqual(left, right, registerReservations),
+        BinaryOperator.LessThanOrEqual => EmitLessThanOrEqual(left, right, registerReservations),
         _ => string.Empty
     };
 
@@ -148,15 +134,59 @@ public static class Emitter
         => right.Match(number => $"DIV #{number.Value}\n", identifier => $"DIV {registerReservations[identifier]}\n");
     private static string EmitEqual(OneOf<Number, Identifier> left, OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations)
     {
-        var firstCheckFailedLabel = Guid.NewGuid().ToLabelString();
-        var successLabel = Guid.NewGuid().ToLabelString();
+        var checkFailedLabel = Guid.NewGuid().ToLabelString();
+        var endLabel = Guid.NewGuid().ToLabelString();
 
         var subtractRightFromLeft = EmitSubtract(right, registerReservations);
         var subtractLeftFromRight = EmitLoad(right, registerReservations) + EmitSubtract(left, registerReservations);
 
-        return subtractRightFromLeft + EmitJumpIfNotZero(firstCheckFailedLabel) + subtractLeftFromRight + EmitJumpIfNotZero(firstCheckFailedLabel) + EmitLoad(new Number(1), registerReservations) + EmitGoto(successLabel) + EmitLabel(firstCheckFailedLabel) + EmitLabel(successLabel);
+        return subtractRightFromLeft + EmitJumpIfNotZero(checkFailedLabel) + subtractLeftFromRight + EmitJumpIfNotZero(checkFailedLabel) + EmitLoad(new Number(1), registerReservations) + EmitGoto(endLabel) + EmitLabel(checkFailedLabel) + EmitLoad(new Number(0), registerReservations) + EmitLabel(endLabel);
     }
-    private static string EmitGreaterThan(OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations) => EmitSubtract(right, registerReservations);
+    private static string EmitNotEqual(OneOf<Number, Identifier> left, OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations)
+    {
+        var equalLabel = Guid.NewGuid().ToLabelString();
+        var endLabel = Guid.NewGuid().ToLabelString();
+
+        var equal = EmitEqual(left, right, registerReservations);
+
+        return equal + EmitJumpIfNotZero(equalLabel) + EmitLoad(new Number(1), registerReservations) + EmitGoto(endLabel) + EmitLabel(equalLabel) + EmitLoad(new Number(0), registerReservations) + EmitLabel(endLabel);
+    }
+    private static string EmitGreaterThan(OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations)
+    {
+        var endLabel = Guid.NewGuid().ToLabelString();
+
+        var subtractRightFromLeft = EmitSubtract(right, registerReservations);
+
+        return subtractRightFromLeft + EmitJumpIfZero(endLabel) + EmitLoad(new Number(1), registerReservations) + EmitLabel(endLabel);
+    }
+    private static string EmitLessThan(OneOf<Number, Identifier> left, OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations)
+    {
+        var equalLabel = Guid.NewGuid().ToLabelString();
+        var endLabel = Guid.NewGuid().ToLabelString();
+
+        var greaterThan = EmitLoad(right, registerReservations) + EmitGreaterThan(left, registerReservations);
+        var equal = EmitEqual(left, right, registerReservations);
+
+        return greaterThan + EmitJumpIfZero(endLabel) + equal + EmitJumpIfNotZero(equalLabel) + EmitLoad(new Number(1), registerReservations) + EmitGoto(endLabel) + EmitLabel(equalLabel) + EmitLoad(new Number(0), registerReservations) + EmitLabel(endLabel);
+    }
+    private static string EmitGreaterThanOrEqual(OneOf<Number, Identifier> left, OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations)
+    {
+        var lessThanLabel = Guid.NewGuid().ToLabelString();
+        var successLabel = Guid.NewGuid().ToLabelString();
+
+        var lessThan = EmitLessThan(left, right, registerReservations);
+
+        return lessThan + EmitJumpIfNotZero(lessThanLabel) + EmitLoad(new Number(1), registerReservations) + EmitGoto(successLabel) + EmitLabel(lessThanLabel) + EmitLoad(new Number(0), registerReservations) + EmitLabel(successLabel);
+    }
+    private static string EmitLessThanOrEqual(OneOf<Number, Identifier> left, OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations)
+    {
+        var greaterThanLabel = Guid.NewGuid().ToLabelString();
+        var endLabel = Guid.NewGuid().ToLabelString();
+
+        var greaterThan = EmitGreaterThan(right, registerReservations);
+
+        return greaterThan + EmitJumpIfNotZero(greaterThanLabel) + EmitLoad(new Number(1), registerReservations) + EmitGoto(endLabel) + EmitLabel(greaterThanLabel) + EmitLoad(new Number(0), registerReservations) + EmitLabel(endLabel);
+    }
 
     private static string EmitEnd() => "END\n";
 

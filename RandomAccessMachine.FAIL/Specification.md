@@ -32,6 +32,12 @@
 - `-` Subtraction
 - `*` Multiplication
 - `/` Division
+- `==` Equality
+- `!=` Inequality
+- `<` Less Than
+- `>` Greater Than
+- `<=` Less Than or Equal
+- `>=` Greater Than or Equal
 
 ## Assignment
 
@@ -41,6 +47,7 @@
 
 - `var` Variable Declaration
 - `int` Integer Type
+- `bool` Boolean Type
 - `while` While Loop
 
 ## Parentheses
@@ -88,7 +95,44 @@ a = 1 * 2
 a = 1 / 2
 ```
 
+## Equality
+```
+a = 1 == 2
+```
+
+## Inequality
+```
+a = 1 != 2
+```
+
+## Less Than
+```
+a = 1 < 2
+```
+
+## Greater Than
+```
+a = 1 > 2
+```
+
+## Less Than or Equal
+```
+a = 1 <= 2
+```
+
+## Greater Than or Equal
+```
+a = 1 >= 2
+```
+
 ## Parentheses
 ```
 a = (1 + 2) * 3;
+```
+
+## While Loop
+```
+while (a < 10) {
+	a = a + 1;
+}
 ```

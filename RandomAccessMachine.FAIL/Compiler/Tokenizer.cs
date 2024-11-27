@@ -108,8 +108,17 @@ public static class Tokenizer
                 continue;
             }
 
+            // Two-character operator tokens
+            if (state is TokenizerState.Start && code[i..(i + 2)].ToString().GetBinaryOperator() is not null and BinaryOperator @operator)
+            {
+                tokens.Enqueue(new(@operator, TokenType.BinaryOperator, lineNumber, columnNumber, 2, code[i..(i + 2)].ToString()));
+                i++;
+                columnNumber++;
+                continue;
+            }
+
             // Operator tokens
-            if (state is TokenizerState.Start && currentChar.GetBinaryOperator() is not null and BinaryOperator binaryOperator)
+            if (state is TokenizerState.Start && currentChar.ToString().GetBinaryOperator() is not null and BinaryOperator binaryOperator)
             {
                 tokens.Enqueue(new(binaryOperator, TokenType.BinaryOperator, lineNumber, columnNumber, 1, currentChar.ToString()));
                 continue;
