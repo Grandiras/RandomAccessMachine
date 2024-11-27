@@ -4,29 +4,31 @@
 
 # Grammar Specification
 
-`StatementList` -> Statement EndOfLine (except for blocks) StatementList | Statement EndOfLine (except for blocks)
+`StatementList` -> Statement StatementList | Statement
 
-`Statement` -> Assignment | Declaration | If | While | Break (only in loops) | Continue (only in loops) | \{ StatementList \}
+`Statement` -> Command EndOfStatement | \{ StatementList \}
 
+`Command` -> Assignment | Declaration | If | While | Break (only in loops) | Continue (only in loops)
+ 
 `Assignment` -> Declaration = Expression
 
 `Declaration` -> Type Identifier
 
-`If` -> if ( Expression ) \{ StatementList \} else \{ StatementList \} | if ( Expression ) \{ StatementList \}
+`If` -> if ( Expression ) Statement else Statement | if ( Expression ) Statement
 
 `While` -> while ( Expression ) \{ StatementList \}
 
-`Type` -> int | var
+`Type` -> int | var | bool
 
 `Identifier` -> [a-zA-Z_][a-zA-Z0-9_]*
 
-`Expression` -> Number BinaryOperator Expression | Identifier BinaryOperator Expression | ( Expression ) BinaryOperator Expression | ( Expression ) | Number | Identifier
-
-`BinaryOperator` -> + | - | * | /
-
 `Number` -> [0-9]+
 
-`EndOfLine` -> ;
+`Expression` -> Number BinaryOperator Expression | Identifier BinaryOperator Expression | ( Expression ) BinaryOperator Expression | ( Expression ) | Number | Identifier
+
+`BinaryOperator` -> + | - | * | / | == | != | < | > | <= | >=
+
+`EndOfStatement` -> ;
 
 # Tokens
 
@@ -70,9 +72,9 @@
 - `[0-9]+` Number
 - `[a-zA-Z_][a-zA-Z0-9_]*` Identifier
 
-## End of Line
+## End of Statement
 
-- `;` End of Line
+- `;` End of Statement
 
 # Examples
 
@@ -142,6 +144,15 @@ a = 1 >= 2
 a = (1 + 2) * 3;
 ```
 
+## If Statement
+```
+if (a < 10) {
+	a = a + 1;
+} else {
+	a = a - 1;
+}
+```
+
 ## While Loop
 ```
 while (a < 10) {
@@ -163,4 +174,11 @@ while (a < 10) {
 	a = a + 1;
 	continue;
 }
+```
+
+## Bodyless Statements
+```
+if (a < 10) a = a + 1;
+else a = a - 1;
+while (a < 10) a = a + 1;
 ```

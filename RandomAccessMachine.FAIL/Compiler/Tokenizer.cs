@@ -174,12 +174,12 @@ public static class Tokenizer
             // End of line token
             if (state is TokenizerState.Start && currentChar is ';')
             {
-                tokens.Enqueue(new(currentChar.ToString(), TokenType.EndOfLine, lineNumber, columnNumber, 1, currentChar.ToString()));
+                tokens.Enqueue(new(currentChar.ToString(), TokenType.EndOfStatement, lineNumber, columnNumber, 1, currentChar.ToString()));
                 continue;
             }
 
             // Error token
-            return new ErrorInfo($"Unexpected character '{currentChar}' at line {lineNumber}, column {columnNumber}!", new(new Error(), TokenType.Error, lineNumber, columnNumber, 1, currentChar.ToString()));
+            return new ErrorInfo($"Unexpected character '{currentChar}' at line {lineNumber}, column {columnNumber}!", new(new Error(), TokenType.ErrorOrEmpty, lineNumber, columnNumber, 1, currentChar.ToString()));
         }
 
         return state is TokenizerState.Start

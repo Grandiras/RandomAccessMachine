@@ -12,22 +12,26 @@ public static class Emitter
         var output = new StringBuilder();
         registerReservations ??= [];
 
-        foreach (var statement in scope.Statements)
-        {
-            _ = output.Append(EmitComment(statement.ToString().Replace("\n", "; ")));
-
-            if (statement is Assignment assignment) _ = output.Append(EmitAssignment(registerReservations, assignment));
-            else if (statement is If @if) _ = output.Append(EmitIfElse(registerReservations, @if, startOfBlockLabel, endOfBlockLabel));
-            else if (statement is While @while) _ = output.Append(EmitWhileLoop(registerReservations, @while));
-            else if (statement is Body body) _ = output.Append(Emit(body.Scope, registerReservations, false, startOfBlockLabel, endOfBlockLabel));
-            else if (statement is Break) _ = output.Append(EmitBreak(endOfBlockLabel!));
-            else if (statement is Continue) _ = output.Append(EmitContinue(startOfBlockLabel!));
-            else _ = output.Append(EmitComment("Unknown statement"));
-        }
+        foreach (var statement in scope.Statements) _ = output.Append(EmitStatement(statement, registerReservations, startOfBlockLabel, endOfBlockLabel));
 
         if (emitEnd) _ = output.Append(EmitEnd());
 
         return output.ToString();
+    }
+
+    private static string EmitStatement(Statement statement, Dictionary<Identifier, uint> registerReservations, string? startOfBlockLabel = null, string? endOfBlockLabel = null)
+    {
+        var output = EmitComment(statement.ToString().Replace("\n", "; "));
+
+        if (statement is Assignment assignment) _ = output += EmitAssignment(registerReservations, assignment);
+        else if (statement is If @if) _ = output += EmitIfElse(registerReservations, @if, startOfBlockLabel, endOfBlockLabel);
+        else if (statement is While @while) _ = output += EmitWhileLoop(registerReservations, @while);
+        else if (statement is Body body) _ = output += Emit(body.Scope, registerReservations, false, startOfBlockLabel, endOfBlockLabel);
+        else if (statement is Break) _ = output += EmitBreak(endOfBlockLabel!);
+        else if (statement is Continue) _ = output += EmitContinue(startOfBlockLabel!);
+        else _ = output += EmitComment("Unknown statement");
+
+        return output;
     }
 
     private static string EmitAssignment(Dictionary<Identifier, uint> registerReservations, Assignment assignment)
@@ -101,8 +105,8 @@ public static class Emitter
         var conditionResult = EmitBinaryOperation(registerReservations, @if.Condition.Value.AsT2);
         var conditionJump = EmitJumpIfZero(elseLabel);
 
-        var body = Emit(@if.Body.Scope, registerReservations, false, startOfBlockLabel, endOfBlockLabel);
-        var elseBody = @if.ElseBody is not null ? Emit(@if.ElseBody.Scope, registerReservations, false, startOfBlockLabel, endOfBlockLabel) : string.Empty;
+        var body = EmitStatement(@if.Body, registerReservations, startOfBlockLabel, endOfBlockLabel);
+        var elseBody = @if.ElseBody is not null ? EmitStatement(@if.ElseBody, registerReservations, startOfBlockLabel, endOfBlockLabel) : string.Empty;
 
         return conditionResult + conditionJump + body + EmitGoto(endLabel) + EmitLabel(elseLabel) + elseBody + EmitLabel(endLabel);
     }
@@ -115,7 +119,7 @@ public static class Emitter
         var conditionResult = EmitBinaryOperation(registerReservations, @while.Condition.Value.AsT2);
         var conditionJump = EmitJumpIfZero(endLabel);
 
-        var body = Emit(@while.Body.Scope, registerReservations, false, startLabel, endLabel);
+        var body = EmitStatement(@while.Body, registerReservations, startLabel, endLabel);
 
         return EmitLabel(startLabel) + conditionResult + conditionJump + body + EmitGoto(startLabel) + EmitLabel(endLabel);
     }
