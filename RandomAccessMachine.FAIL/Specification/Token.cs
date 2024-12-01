@@ -30,4 +30,7 @@ public enum TokenType
     Else,
     SelfAssignment,
     IncrementalOperator,
+    LeftSquareBrace,
+    RightSquareBrace,
+    New,
 }

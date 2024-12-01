@@ -189,6 +189,16 @@ public static class Tokenizer
                 tokens.Enqueue(new(currentChar.ToString(), TokenType.RightCurlyBrace, lineNumber, columnNumber, 1, currentChar.ToString()));
                 continue;
             }
+            if (state is TokenizerState.Start && currentChar is '[')
+            {
+                tokens.Enqueue(new(currentChar.ToString(), TokenType.LeftSquareBrace, lineNumber, columnNumber, 1, currentChar.ToString()));
+                continue;
+            }
+            if (state is TokenizerState.Start && currentChar is ']')
+            {
+                tokens.Enqueue(new(currentChar.ToString(), TokenType.RightSquareBrace, lineNumber, columnNumber, 1, currentChar.ToString()));
+                continue;
+            }
 
             // End of line token
             if (state is TokenizerState.Start && currentChar is ';')

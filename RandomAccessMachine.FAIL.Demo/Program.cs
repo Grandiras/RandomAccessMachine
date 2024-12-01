@@ -1,13 +1,7 @@
 ﻿using RandomAccessMachine.FAIL.Compiler;
 
 var code = @"
-var x = 5;
-// Do a factorial
-var result = 1;
-while (x != 1) {
-    result *= x;
-    x--;
-}
+var test = int[10];
 ";
 
 Console.WriteLine(code.Trim());

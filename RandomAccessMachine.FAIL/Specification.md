@@ -66,6 +66,8 @@
 - `)` Right Parenthesis
 - `{` Left Curly Brace
 - `}` Right Curly Brace
+- `[` Left Square Bracket
+- `]` Right Square Bracket
 
 ## Identifiers
  
@@ -181,4 +183,27 @@ while (a < 10) {
 if (a < 10) a = a + 1;
 else a = a - 1;
 while (a < 10) a = a + 1;
+```
+
+## Nested Statements
+```
+if (a < 10) {
+	if (a < 5) {
+		a = a + 1;
+	}
+} else {
+	a = a - 1;
+}
+```
+
+## Array Operations
+```
+var a = new int[10];
+a[0] = 1;
+a[1] = a[0] + 1;
+```
+
+## Boolean Type
+```
+bool a = true;
 ```

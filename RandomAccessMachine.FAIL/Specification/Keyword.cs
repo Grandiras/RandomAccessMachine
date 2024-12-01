@@ -9,6 +9,7 @@ public enum Keyword
     While,
     Break,
     Continue,
+    New,
 }
 
 public static class KeywordExtensions
@@ -23,6 +24,7 @@ public static class KeywordExtensions
         Keyword.While => TokenType.While,
         Keyword.Break => TokenType.Break,
         Keyword.Continue => TokenType.Continue,
+        Keyword.New => TokenType.New,
         _ => throw new NotImplementedException(),
     };
 
@@ -36,6 +38,7 @@ public static class KeywordExtensions
         Keyword.While => "while",
         Keyword.Break => "break",
         Keyword.Continue => "continue",
+        Keyword.New => "new",
         _ => "",
     };
 
@@ -49,6 +52,7 @@ public static class KeywordExtensions
         "while" => true,
         "break" => true,
         "continue" => true,
+        "new" => true,
         _ => false,
     };
 

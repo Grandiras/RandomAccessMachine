@@ -44,7 +44,9 @@ public static class Emitter
         return assignment.Expression.Value.Match(
             number => EmitLoad(number, registerReservations),
             identifier => EmitLoad(identifier, registerReservations),
-            binaryOperation => EmitBinaryOperation(registerReservations, binaryOperation)
+            binaryOperation => EmitBinaryOperation(registerReservations, binaryOperation),
+            arrayAccessor => EmitArrayAccessor(registerReservations, arrayAccessor),
+            typeInitialization => EmitTypeInitialization(registerReservations, typeInitialization)
         ) + EmitStore(register);
     }
 
@@ -98,6 +100,32 @@ public static class Emitter
 
             return left + right + EmitStore(tempRegister) + operationResult;
         }
+    }
+
+    private static string EmitArrayAccessor(Dictionary<Identifier, uint> registerReservations, ArrayAccessor arrayAccessor)
+    {
+        var index = EmitBinaryOperation(registerReservations, arrayAccessor.Index.Value.AsT2);
+        var tempRegister = ReserveRegister(Identifier.Temporary, registerReservations);
+        return index + EmitStore(tempRegister) + EmitLoad(arrayAccessor.Identifier, registerReservations) + EmitAdd(Identifier.Temporary, registerReservations) + EmitStore(tempRegister);
+    }
+
+    private static string EmitTypeInitialization(Dictionary<Identifier, uint> registerReservations, TypeInitialization typeInitialization)
+    {
+        if (typeInitialization.Type.Name.IsT0)
+        {
+            var load = EmitLoad(new Number(0), registerReservations);
+
+            for (var i = 0; i < typeInitialization.Type.Name.AsT0.Size; i++)
+            {
+                var register = ReserveRegister(new Identifier($"t{i}", typeInitialization.Type), registerReservations);
+                load += EmitStore(register);
+            }
+
+            return load;
+        }
+
+        var tempRegister = ReserveRegister(Identifier.Temporary, registerReservations);
+        return EmitLoad(new Number(0), registerReservations) + EmitStore(tempRegister);
     }
 
     private static string EmitIfElse(Dictionary<Identifier, uint> registerReservations, If @if, string? startOfBlockLabel, string? endOfBlockLabel)

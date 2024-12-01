@@ -18,9 +18,14 @@ public record Identifier(string Name, ElementType? Type = null) : Statement
     public override string ToString() => Type is null ? Name : $"{Type} {Name}";
 }
 
-public record ElementType(string Name) : Statement
+public record ElementType(OneOf<Array, string> Name) : Statement
 {
-    public override string ToString() => Name;
+    public override string ToString() => Name.Match(x => x.ToString(), x => x);
+}
+
+public record Array(ElementType Type, uint Size) : Statement
+{
+    public override string ToString() => $"{Type}[]";
 }
 
 public record Number(uint Value) : Statement
@@ -28,17 +33,29 @@ public record Number(uint Value) : Statement
     public override string ToString() => Value.ToString();
 }
 
+public record TypeInitialization(ElementType Type) : Statement
+{
+    public override string ToString() => $"{Type}";
+}
+
+public record ArrayAccessor(Identifier Identifier, Expression Index) : Statement
+{
+    public override string ToString() => $"{Identifier}[{Index}]";
+}
+
 public record BinaryOperation(BinaryOperator Operator, Expression Left, Expression Right) : Statement
 {
     public override string ToString() => $"{Left} {Operator.GetBinaryOperatorString()} {Right}";
 }
 
-public record Expression(OneOf<Identifier, Number, BinaryOperation> Value) : Statement
+public record Expression(OneOf<Identifier, Number, BinaryOperation, ArrayAccessor, TypeInitialization> Value) : Statement
 {
     public override string ToString() => Value.Match(
         identifier => identifier.ToString(),
         number => number.ToString(),
-        binaryOperation => binaryOperation.ToString()
+        binaryOperation => binaryOperation.ToString(),
+        arrayAccessor => arrayAccessor.ToString(),
+        typeInitialization => typeInitialization.ToString()
     );
 }
 
