@@ -48,20 +48,17 @@ public static class Parser
         if (opCode is OpCode.GOTO or OpCode.JZERO or OpCode.JNZERO)
         {
             // Only labels are allowed for GOTO, JZERO and JNZERO
-            if (!argument.AsT0.Value.IsT3)
-                return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
+            if (!argument.AsT0.Value.IsT3) return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
         }
         else if (opCode is OpCode.STORE)
         {
             // Only addresses and address pointers are allowed for STORE
-            if (!argument.AsT0.Value.IsT1 && !argument.AsT0.Value.IsT2)
-                return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
+            if (!argument.AsT0.Value.IsT1 && !argument.AsT0.Value.IsT2) return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
         }
         else
         {
             // Only immediate values, addresses and address pointers are allowed for LOAD, ADD, SUB, MUL, and DIV
-            if (argument.AsT0.Value.IsT3)
-                return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
+            if (argument.AsT0.Value.IsT3) return new ErrorInfo($"Invalid argument type for OpCode {opCode}: {argument.AsT0.Value}", argumentToken);
         }
 
 

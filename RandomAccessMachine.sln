@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomAccessMachine.FAIL", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomAccessMachine.FAIL.Demo", "RandomAccessMachine.FAIL.Demo\RandomAccessMachine.FAIL.Demo.csproj", "{BA7B6608-C9BE-4C8D-933B-CF8D066313EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomAccessMachine.Tests", "RandomAccessMachine.Tests\RandomAccessMachine.Tests.csproj", "{4852A3EF-6EA6-411E-AC5E-F045FFA552CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{BA7B6608-C9BE-4C8D-933B-CF8D066313EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA7B6608-C9BE-4C8D-933B-CF8D066313EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA7B6608-C9BE-4C8D-933B-CF8D066313EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4852A3EF-6EA6-411E-AC5E-F045FFA552CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4852A3EF-6EA6-411E-AC5E-F045FFA552CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4852A3EF-6EA6-411E-AC5E-F045FFA552CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4852A3EF-6EA6-411E-AC5E-F045FFA552CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
