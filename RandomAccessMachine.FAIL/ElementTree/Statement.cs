@@ -5,9 +5,9 @@ using RandomAccessMachine.FAIL.Specification.Operators;
 namespace RandomAccessMachine.FAIL.ElementTree;
 public record Statement();
 
-public record Assignment(Identifier Identifier, Expression Expression) : Statement
+public record Assignment(OneOf<Identifier, ArrayAccessor> Identifier, Expression Expression, bool IsInitial = false) : Statement
 {
-    public override string ToString() => $"{Identifier} = {Expression}";
+    public override string ToString() => $"{Identifier.Match(x => x.ToString(), x => x.ToString())} = {Expression}";
 }
 
 public record Identifier(string Name, ElementType? Type = null) : Statement

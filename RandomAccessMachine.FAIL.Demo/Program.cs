@@ -1,7 +1,9 @@
 ﻿using RandomAccessMachine.FAIL.Compiler;
 
 var code = @"
-var test = int[10];
+var test = new int[10];
+test[0] = 5;
+var first = test[0];
 ";
 
 Console.WriteLine(code.Trim());
@@ -72,7 +74,7 @@ var interpreter = new RandomAccessMachine.Backend.Interpreter.Interpreter
 {
     IsRealTime = true
 };
-interpreter.LoadProgram(ramScope.AsT0, 10);
+interpreter.LoadProgram(ramScope.AsT0, 25);
 
 foreach (var register in interpreter.Registers)
 {

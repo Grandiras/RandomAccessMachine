@@ -10,7 +10,7 @@
 
 `Command` -> Assignment | Declaration | If | While | Break (only in loops) | Continue (only in loops)
  
-`Assignment` -> Declaration = Expression
+`Assignment` -> Declaration = Expression | Identifier = Expression | Identifier [ Expression ] = Expression
 
 `Declaration` -> Type Identifier
 
@@ -24,7 +24,7 @@
 
 `Number` -> [0-9]+
 
-`Expression` -> Number BinaryOperator Expression | Identifier BinaryOperator Expression | ( Expression ) BinaryOperator Expression | ( Expression ) | Number | Identifier
+`Expression` -> Number BinaryOperator Expression | Identifier BinaryOperator Expression | ( Expression ) BinaryOperator Expression | ( Expression ) | Number | Identifier | Identifier [ Expression ]
 
 `BinaryOperator` -> + | - | * | / | == | != | < | > | <= | >=
 

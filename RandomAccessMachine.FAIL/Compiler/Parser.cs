@@ -74,10 +74,12 @@ public static class Parser
         var token = tokens.Dequeue();
         if (token.Type is not TokenType.Assignment) return new ErrorInfo($"Unexpected token type {token.Type}! Requiring type {TokenType.Assignment}.", token);
 
+        if (tokens.Peek().Type is TokenType.New) return ParseTypeInitialization(identifier, tokens);
+
         var expression = ParseArithmetic(tokens, new None());
         if (expression.IsT1) return expression.AsT1;
 
-        return new Assignment(new(identifier.Value.AsT0, new(type.Value.AsT2.GetTypeName())), expression.AsT0);
+        return new Assignment(new Identifier(identifier.Value.AsT0, new(type.Value.AsT2.GetTypeName())), expression.AsT0, true);
     }
 
     private static OneOf<Statement, ErrorInfo> ParseAssignment(Queue<Token> tokens)
@@ -88,6 +90,7 @@ public static class Parser
 
         if (token.Type is TokenType.SelfAssignment) return ParseSelfAssignment(identifier, tokens);
         if (token.Type is TokenType.IncrementalOperator) return ParseIncrementalAssignment(identifier, tokens);
+        if (token.Type is TokenType.LeftSquareBrace) return ParseArrayModification(identifier, tokens);
 
         _ = tokens.Dequeue();
         if (token.Type is not TokenType.Assignment) return new ErrorInfo($"Unexpected token type {token.Type}! Requiring type {TokenType.Assignment}.", token);
@@ -97,7 +100,7 @@ public static class Parser
         var expression = ParseArithmetic(tokens, new None());
         if (expression.IsT1) return expression.AsT1;
 
-        return new Assignment(new(identifier.Value.AsT0, new("var")), expression.AsT0); // TODO: validate type later
+        return new Assignment(new Identifier(identifier.Value.AsT0, new("var")), expression.AsT0); // TODO: validate type later
     }
 
     private static OneOf<Statement, ErrorInfo> ParseSelfAssignment(Token identifier, Queue<Token> tokens)
@@ -107,13 +110,35 @@ public static class Parser
         var expression = ParseArithmetic(tokens, new None());
         if (expression.IsT1) return expression.AsT1;
 
-        return new Assignment(new(identifier.Value.AsT0, new("var")), new(new BinaryOperation(selfAssignment.Value.AsT4.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, new("var"))), expression.AsT0)));
+        return new Assignment(new Identifier(identifier.Value.AsT0, new("var")), new(new BinaryOperation(selfAssignment.Value.AsT4.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, new("var"))), expression.AsT0)));
     }
 
     private static OneOf<Statement, ErrorInfo> ParseIncrementalAssignment(Token identifier, Queue<Token> tokens)
     {
         var incrementalOperator = tokens.Dequeue();
-        return new Assignment(new(identifier.Value.AsT0, new("var")), new(new BinaryOperation(incrementalOperator.Value.AsT5.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, new("var"))), new Expression(new Number(1)))));
+        return new Assignment(new Identifier(identifier.Value.AsT0, new("var")), new(new BinaryOperation(incrementalOperator.Value.AsT5.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, new("var"))), new Expression(new Number(1)))));
+    }
+
+    private static OneOf<Statement, ErrorInfo> ParseArrayModification(Token identifier, Queue<Token> tokens)
+    {
+        var leftSquareBrace = tokens.Dequeue();
+        if (leftSquareBrace.Type is not TokenType.LeftSquareBrace) return new ErrorInfo($"Unexpected token type {leftSquareBrace.Type}! Requiring type {TokenType.LeftSquareBrace}.", leftSquareBrace);
+
+        var index = ParseArithmetic(tokens, new None());
+        if (index.IsT1) return index.AsT1;
+
+        var rightSquareBrace = tokens.Dequeue();
+        if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return new ErrorInfo($"Unexpected token type {rightSquareBrace.Type}! Requiring type {TokenType.RightSquareBrace}.", rightSquareBrace);
+
+        var assignment = tokens.Dequeue();
+        if (assignment.Type is not TokenType.Assignment) return new ErrorInfo($"Unexpected token type {assignment.Type}! Requiring type {TokenType.Assignment}.", assignment);
+
+        if (tokens.Peek().Type is TokenType.New) return ParseTypeInitialization(identifier, tokens);
+
+        var expression = ParseArithmetic(tokens, new None());
+        if (expression.IsT1) return expression.AsT1;
+
+        return new Assignment(new ArrayAccessor(new(identifier.Value.AsT0, new("var")), index.AsT0), expression.AsT0); // TODO: validate type later
     }
 
     private static OneOf<Statement, ErrorInfo> ParseTypeInitialization(Token identifier, Queue<Token> tokens)
@@ -140,7 +165,7 @@ public static class Parser
         var rightSquareBrace = tokens.Dequeue();
         if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return new ErrorInfo($"Unexpected token type {rightSquareBrace.Type}! Requiring type {TokenType.RightSquareBrace}.", rightSquareBrace);
 
-        return new Assignment(new(identifier.Value.AsT0, new("var")), new(new TypeInitialization(new(new ElementTree.Array(new("int"), size.AsT0.Value.AsT1.Value))))); // TODO: validate type later, special rules for arrays
+        return new Assignment(new Identifier(identifier.Value.AsT0, new("var")), new(new TypeInitialization(new(new ElementTree.Array(new("int"), size.AsT0.Value.AsT1.Value))))); // TODO: validate type later, special rules for arrays
     }
 
     private static OneOf<Expression, ErrorInfo> ParseArithmetic(Queue<Token> tokens, OneOf<Expression, None> heap) => ParseArithmetic(tokens, CalculationsExtensions.All, heap);
@@ -173,6 +198,8 @@ public static class Parser
             if (result.IsT2) return result.AsT2;
             heap = result.TryPickT0(out var expression, out var none) ? expression : none.AsT0;
         }
+
+        if (heap.IsT1) return new ErrorInfo($"Empty heap for arithmetic calculation!", new());
 
         return heap.AsT0;
     }

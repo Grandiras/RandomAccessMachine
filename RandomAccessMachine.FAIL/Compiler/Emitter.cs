@@ -17,7 +17,18 @@ public static class Emitter
 
         if (emitEnd) _ = output.Append(EmitEnd());
 
-        foreach (var register in scope.Where(x => x is Assignment).Select(x => ((Assignment)x).Identifier)) _ = registerReservations.Remove(register);
+        foreach (var register in scope.Where(x => x is Assignment assignment && assignment.IsInitial).Select(x => (Assignment)x))
+        {
+            if (register.Identifier.IsT0) _ = registerReservations.Remove(register.Identifier.AsT0);
+            else if (register.Identifier.IsT1)
+            {
+                for (var i = 0; i < register.Expression.Value.AsT4.Type.Name.AsT0.Size; i++)
+                {
+                    var tempIdentifier = new Identifier($"{register.Identifier.AsT1.Identifier.Name}{i}");
+                    _ = registerReservations.Remove(tempIdentifier);
+                }
+            }
+        }
 
         return output.ToString();
     }
@@ -39,15 +50,33 @@ public static class Emitter
 
     private static string EmitAssignment(Dictionary<Identifier, uint> registerReservations, Assignment assignment)
     {
-        var register = GetOrReserveRegister(assignment.Identifier, registerReservations);
-
-        return assignment.Expression.Value.Match(
+        var expression = assignment.Expression.Value.Match(
             number => EmitLoad(number, registerReservations),
             identifier => EmitLoad(identifier, registerReservations),
             binaryOperation => EmitBinaryOperation(registerReservations, binaryOperation),
             arrayAccessor => EmitArrayAccessor(registerReservations, arrayAccessor),
-            typeInitialization => EmitTypeInitialization(registerReservations, typeInitialization)
-        ) + EmitStore(register);
+            typeInitialization => EmitTypeInitialization(registerReservations, typeInitialization, assignment.Identifier)
+        );
+
+        if (assignment.Identifier.IsT1)
+        {
+            var index = assignment.Identifier.AsT1.Index.Value.Match(
+                number => EmitLoad(number, registerReservations),
+                identifier => EmitLoad(identifier, registerReservations),
+                binaryOperation => EmitBinaryOperation(registerReservations, binaryOperation),
+                _ => "",
+                _ => "");
+
+            var tempRegister = ReserveRegister(Identifier.Temporary, registerReservations);
+            var tempIdentifier = new Identifier($"{assignment.Identifier.AsT1.Identifier.Name}{0}");
+
+            return index + EmitAdd(new Number(registerReservations[tempIdentifier]), registerReservations) + EmitStore(tempRegister) + expression + EmitPointerStore(Identifier.Temporary, registerReservations);
+        }
+
+        var register = GetOrReserveRegister(assignment.Identifier.AsT0, registerReservations);
+        var store = EmitStore(register);
+
+        return expression + store;
     }
 
     private static string EmitBinaryOperation(Dictionary<Identifier, uint> registerReservations, BinaryOperation operation)
@@ -104,12 +133,20 @@ public static class Emitter
 
     private static string EmitArrayAccessor(Dictionary<Identifier, uint> registerReservations, ArrayAccessor arrayAccessor)
     {
-        var index = EmitBinaryOperation(registerReservations, arrayAccessor.Index.Value.AsT2);
+        var index = arrayAccessor.Index.Value.Match(
+            number => EmitLoad(number, registerReservations),
+            identifier => EmitLoad(identifier, registerReservations),
+            binaryOperation => EmitBinaryOperation(registerReservations, binaryOperation),
+            _ => "",
+            _ => "");
+
         var tempRegister = ReserveRegister(Identifier.Temporary, registerReservations);
-        return index + EmitStore(tempRegister) + EmitLoad(arrayAccessor.Identifier, registerReservations) + EmitAdd(Identifier.Temporary, registerReservations) + EmitStore(tempRegister);
+        var tempIdentifier = new Identifier($"{arrayAccessor.Identifier.Name}{0}");
+
+        return index + EmitAdd(new Number(registerReservations[tempIdentifier]), registerReservations) + EmitStore(tempRegister) + EmitPointerLoad(Identifier.Temporary, registerReservations);
     }
 
-    private static string EmitTypeInitialization(Dictionary<Identifier, uint> registerReservations, TypeInitialization typeInitialization)
+    private static string EmitTypeInitialization(Dictionary<Identifier, uint> registerReservations, TypeInitialization typeInitialization, OneOf<Identifier, ArrayAccessor> identifier)
     {
         if (typeInitialization.Type.Name.IsT0)
         {
@@ -117,7 +154,7 @@ public static class Emitter
 
             for (var i = 0; i < typeInitialization.Type.Name.AsT0.Size; i++)
             {
-                var register = ReserveRegister(new Identifier($"t{i}", typeInitialization.Type), registerReservations);
+                var register = ReserveRegister(new Identifier($"{identifier.Match(identifier => identifier.Name, arrayAccessor => arrayAccessor.Identifier.Name)}{i}"), registerReservations);
                 load += EmitStore(register);
             }
 
@@ -159,8 +196,12 @@ public static class Emitter
 
     private static string EmitLoad(OneOf<Number, Identifier> value, Dictionary<Identifier, uint> registerReservations)
         => value.Match(number => $"LOAD #{number.Value}\n", identifier => $"LOAD {registerReservations[identifier]}\n");
+    private static string EmitPointerLoad(Identifier identifier, Dictionary<Identifier, uint> registerReservations)
+        => $"LOAD *{registerReservations[identifier]}\n";
 
     private static string EmitStore(uint register) => $"STORE {register}\n";
+    private static string EmitStore(Identifier identifier, Dictionary<Identifier, uint> registerReservations) => $"STORE {registerReservations[identifier]}\n";
+    private static string EmitPointerStore(Identifier identifier, Dictionary<Identifier, uint> registerReservations) => $"STORE *{registerReservations[identifier]}\n";
 
     private static string EmitOperation(BinaryOperator @operator, OneOf<Number, Identifier> left, OneOf<Number, Identifier> right, Dictionary<Identifier, uint> registerReservations) => @operator switch
     {
