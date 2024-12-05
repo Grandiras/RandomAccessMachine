@@ -10,6 +10,8 @@ public enum Keyword
     Break,
     Continue,
     New,
+    Fn,
+    Return,
 }
 
 public static class KeywordExtensions
@@ -25,6 +27,8 @@ public static class KeywordExtensions
         Keyword.Break => TokenType.Break,
         Keyword.Continue => TokenType.Continue,
         Keyword.New => TokenType.New,
+        Keyword.Fn => TokenType.FunctionDeclaration,
+        Keyword.Return => TokenType.Return,
         _ => throw new NotImplementedException(),
     };
 
@@ -39,6 +43,8 @@ public static class KeywordExtensions
         Keyword.Break => "break",
         Keyword.Continue => "continue",
         Keyword.New => "new",
+        Keyword.Fn => "fn",
+        Keyword.Return => "return",
         _ => "",
     };
 
@@ -53,6 +59,8 @@ public static class KeywordExtensions
         "break" => true,
         "continue" => true,
         "new" => true,
+        "fn" => true,
+        "return" => true,
         _ => false,
     };
 

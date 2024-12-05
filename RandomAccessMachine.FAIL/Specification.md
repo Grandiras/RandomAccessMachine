@@ -54,6 +54,9 @@
 - `var` Variable Declaration
 - `int` Integer Type
 - `bool` Boolean Type
+- `new` Array Declaration
+- `fn` Function Declaration
+- `return` Return Statement
 - `if` If Statement
 - `else` Else Statement
 - `while` While Loop
@@ -77,6 +80,10 @@
 ## End of Statement
 
 - `;` End of Statement
+
+## Function Declaration
+
+- `->` Return Type
 
 # Examples
 
@@ -206,4 +213,20 @@ a[1] = a[0] + 1;
 ## Boolean Type
 ```
 bool a = true;
+```
+
+## Function Declaration
+```
+fn add(int a, int b) -> int {
+	return a + b;
+}
+
+fn sub(int a, int b) -> int {
+	return a - b;
+}
+```
+
+## Function Call
+```
+var a = add(1, 2);
 ```

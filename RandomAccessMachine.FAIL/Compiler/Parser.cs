@@ -10,7 +10,7 @@ public static class Parser
 {
     public static OneOf<Scope, ErrorInfo> Parse(Queue<Token> tokens) => ParseStatementList(tokens);
 
-    private static OneOf<Scope, ErrorInfo> ParseStatementList(Queue<Token> tokens, TokenType startOfBlockSign = TokenType.ErrorOrEmpty, TokenType endOfBlockSign = TokenType.ErrorOrEmpty, bool isLoop = false, params Scope[] sharedScopes)
+    private static OneOf<Scope, ErrorInfo> ParseStatementList(Queue<Token> tokens, TokenType startOfBlockSign = TokenType.ErrorOrEmpty, TokenType endOfBlockSign = TokenType.ErrorOrEmpty, TokenType endOfStatementSign = TokenType.EndOfStatement, bool isLoop = false, bool isFunction = false, params Scope[] sharedScopes)
     {
         var scope = new Scope([], sharedScopes);
 
@@ -22,8 +22,16 @@ public static class Parser
 
         while (tokens.Count > 0 && (endOfBlockSign is TokenType.ErrorOrEmpty || tokens.Peek().Type != endOfBlockSign))
         {
-            var statement = ParseStatement(tokens, scope, isLoop);
+            var statement = ParseStatement(tokens, scope, out var isBlock, isLoop, isFunction);
             if (statement.IsT1) return statement.AsT1;
+
+            if (!isBlock && tokens.Count > 0 && tokens.Peek().Type != endOfBlockSign)
+            {
+                var endOfStatement = tokens.Dequeue();
+                if (endOfStatement.Type != endOfStatementSign) return new ErrorInfo($"Unexpected token type {endOfStatement.Type}! Requiring type {endOfStatementSign}.", endOfStatement);
+            }
+
+
             scope.Add(statement.AsT0);
         }
 
@@ -36,40 +44,40 @@ public static class Parser
         return scope;
     }
 
-    private static OneOf<Statement, ErrorInfo> ParseStatement(Queue<Token> tokens, Scope scope, bool isLoop = false)
+    private static OneOf<Statement, ErrorInfo> ParseStatement(Queue<Token> tokens, Scope scope, out bool isBlock, bool isLoop = false, bool isFunction = false)
     {
         var token = tokens.Peek();
 
-        var isBlock = false;
+        var internalIsBlock = false;
 
         var statement = token.Type switch
         {
-            TokenType.Var or TokenType.Type => ParseDeclaration(tokens),
+            TokenType.Var or TokenType.Type => ParseDeclaration(tokens, isFunction),
             TokenType.Identifier => ParseAssignment(tokens),
-            TokenType.If => ParseIf(tokens, scope, out isBlock, isLoop),
-            TokenType.While => ParseWhile(tokens, scope, out isBlock),
-            TokenType.LeftCurlyBrace => ParseStatementList(tokens, TokenType.LeftCurlyBrace, TokenType.RightCurlyBrace, isLoop, scope).TryPickT0(out var bodyScope, out var error) ? new Body(bodyScope) : error,
+            TokenType.If => ParseIf(tokens, scope, out internalIsBlock, isLoop),
+            TokenType.While => ParseWhile(tokens, scope, out internalIsBlock),
+            TokenType.LeftCurlyBrace => ParseStatementList(tokens, TokenType.LeftCurlyBrace, TokenType.RightCurlyBrace, TokenType.EndOfStatement, isLoop, isFunction, scope).TryPickT0(out var bodyScope, out var error) ? new Body(bodyScope, token) : error,
             TokenType.Break => ParseBreak(tokens, isLoop),
             TokenType.Continue => ParseContinue(tokens, isLoop),
+            TokenType.FunctionDeclaration => ParseFunction(tokens, scope, out internalIsBlock),
+            TokenType.Return => ParseReturn(tokens, isFunction),
+            TokenType.Number => ParseArithmetic(tokens, new None()).TryPickT0(out var value, out var error) ? value : error,
             _ => new ErrorInfo($"Unexpected token type {token.Type} at start of statement!", token)
         };
 
-        if (statement.IsT1) return statement.AsT1;
+        isBlock = internalIsBlock;
 
-        if (isBlock || token.Type is TokenType.LeftCurlyBrace) return statement.AsT0;
-
-        var endOfLine = tokens.Dequeue();
-        if (endOfLine.Type is not TokenType.EndOfStatement) return new ErrorInfo($"Unexpected token type {endOfLine.Type}! Requiring type {TokenType.EndOfStatement}.", endOfLine);
-
-        return statement.AsT0;
+        return statement;
     }
 
-    private static OneOf<Statement, ErrorInfo> ParseDeclaration(Queue<Token> tokens)
+    private static OneOf<Statement, ErrorInfo> ParseDeclaration(Queue<Token> tokens, bool isFunction)
     {
         var type = tokens.Dequeue();
 
         var identifier = tokens.Dequeue();
         if (identifier.Type is not TokenType.Identifier) return new ErrorInfo($"Unexpected token type {identifier.Type}! Requiring type {TokenType.Identifier}.", identifier);
+
+        if (tokens.Peek().Type is not TokenType.Assignment && isFunction) return new ArgumentDefinition(new(identifier.Value.AsT0, identifier), new(type.Value.AsT2.GetTypeName(), type), identifier);
 
         var token = tokens.Dequeue();
         if (token.Type is not TokenType.Assignment) return new ErrorInfo($"Unexpected token type {token.Type}! Requiring type {TokenType.Assignment}.", token);
@@ -79,7 +87,7 @@ public static class Parser
         var expression = ParseArithmetic(tokens, new None());
         if (expression.IsT1) return expression.AsT1;
 
-        return new Assignment(new Identifier(identifier.Value.AsT0, new(type.Value.AsT2.GetTypeName())), expression.AsT0, true);
+        return new Assignment(new Identifier(identifier.Value.AsT0, identifier, new(type.Value.AsT2.GetTypeName(), type)), expression.AsT0, identifier, true);
     }
 
     private static OneOf<Statement, ErrorInfo> ParseAssignment(Queue<Token> tokens)
@@ -91,6 +99,7 @@ public static class Parser
         if (token.Type is TokenType.SelfAssignment) return ParseSelfAssignment(identifier, tokens);
         if (token.Type is TokenType.IncrementalOperator) return ParseIncrementalAssignment(identifier, tokens);
         if (token.Type is TokenType.LeftSquareBrace) return ParseArrayModification(identifier, tokens);
+        if (token.Type is TokenType.LeftParenthesis) return ParseFunctionCall(identifier, tokens).TryPickT0(out var value, out var error) ? value : error.AsT1;
 
         _ = tokens.Dequeue();
         if (token.Type is not TokenType.Assignment) return new ErrorInfo($"Unexpected token type {token.Type}! Requiring type {TokenType.Assignment}.", token);
@@ -100,7 +109,7 @@ public static class Parser
         var expression = ParseArithmetic(tokens, new None());
         if (expression.IsT1) return expression.AsT1;
 
-        return new Assignment(new Identifier(identifier.Value.AsT0, new("var")), expression.AsT0); // TODO: validate type later
+        return new Assignment(new Identifier(identifier.Value.AsT0, identifier, new("var", default)), expression.AsT0, identifier); // TODO: validate type later
     }
 
     private static OneOf<Statement, ErrorInfo> ParseSelfAssignment(Token identifier, Queue<Token> tokens)
@@ -110,13 +119,13 @@ public static class Parser
         var expression = ParseArithmetic(tokens, new None());
         if (expression.IsT1) return expression.AsT1;
 
-        return new Assignment(new Identifier(identifier.Value.AsT0, new("var")), new(new BinaryOperation(selfAssignment.Value.AsT4.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, new("var"))), expression.AsT0)));
+        return new Assignment(new Identifier(identifier.Value.AsT0, identifier, new("var", default)), new(new BinaryOperation(selfAssignment.Value.AsT4.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, identifier, new("var", default)), identifier), expression.AsT0, selfAssignment), identifier), identifier);
     }
 
     private static OneOf<Statement, ErrorInfo> ParseIncrementalAssignment(Token identifier, Queue<Token> tokens)
     {
         var incrementalOperator = tokens.Dequeue();
-        return new Assignment(new Identifier(identifier.Value.AsT0, new("var")), new(new BinaryOperation(incrementalOperator.Value.AsT5.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, new("var"))), new Expression(new Number(1)))));
+        return new Assignment(new Identifier(identifier.Value.AsT0, identifier, new("var", default)), new(new BinaryOperation(incrementalOperator.Value.AsT5.GetBinaryOperator(), new Expression(new Identifier(identifier.Value.AsT0, identifier, new("var", default)), identifier), new Expression(new Number(1, default), identifier), incrementalOperator), identifier), identifier);
     }
 
     private static OneOf<Statement, ErrorInfo> ParseArrayModification(Token identifier, Queue<Token> tokens)
@@ -138,7 +147,7 @@ public static class Parser
         var expression = ParseArithmetic(tokens, new None());
         if (expression.IsT1) return expression.AsT1;
 
-        return new Assignment(new ArrayAccessor(new(identifier.Value.AsT0, new("var")), index.AsT0), expression.AsT0); // TODO: validate type later
+        return new Assignment(new ArrayAccessor(new(identifier.Value.AsT0, identifier, new("var", default)), index.AsT0, assignment), expression.AsT0, assignment); // TODO: validate type later
     }
 
     private static OneOf<Statement, ErrorInfo> ParseTypeInitialization(Token identifier, Queue<Token> tokens)
@@ -165,7 +174,7 @@ public static class Parser
         var rightSquareBrace = tokens.Dequeue();
         if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return new ErrorInfo($"Unexpected token type {rightSquareBrace.Type}! Requiring type {TokenType.RightSquareBrace}.", rightSquareBrace);
 
-        return new Assignment(new Identifier(identifier.Value.AsT0, new("var")), new(new TypeInitialization(new(new ElementTree.Array(new("int"), size.AsT0.Value.AsT1.Value))))); // TODO: validate type later, special rules for arrays
+        return new Assignment(new Identifier(identifier.Value.AsT0, identifier, new("var", default)), new(new TypeInitialization(new(new ElementTree.Array(new("int", default), size.AsT0.Value.AsT1.Value, rightSquareBrace), type), type), identifier), identifier); // TODO: validate type later, special rules for arrays
     }
 
     private static OneOf<Expression, ErrorInfo> ParseArithmetic(Queue<Token> tokens, OneOf<Expression, None> heap) => ParseArithmetic(tokens, CalculationsExtensions.All, heap);
@@ -213,8 +222,9 @@ public static class Parser
             _ = tokens.Dequeue();
 
             if (tokens.Peek().Type is TokenType.LeftSquareBrace) return ParseArrayAccess(token, tokens, heap);
+            if (tokens.Peek().Type is TokenType.LeftParenthesis) return ParseFunctionCall(token, tokens);
 
-            return new Expression(new Identifier(token.Value.AsT0, new("var"))); // TODO: validate type later
+            return new Expression(new Identifier(token.Value.AsT0, token, new("var", default)), token); // TODO: validate type later
         }
 
         if (token.Type is TokenType.LeftParenthesis)
@@ -232,9 +242,9 @@ public static class Parser
 
         if (token.Type is TokenType.Number)
         {
-            _ = tokens.Dequeue();
+            var number = tokens.Dequeue();
 
-            return new Expression(new Number(token.Value.AsT1));
+            return new Expression(new Number(token.Value.AsT1, number), number);
         }
 
         return heap.TryPickT0(out var some, out var none) ? some : none;
@@ -253,7 +263,7 @@ public static class Parser
 
             if (heap.IsT1) return new ErrorInfo($"Unexpected token type: {token.Type}", token);
 
-            var term = ParseArithmetic(tokens, Calculations.DotCalculations.SelfAndBelow(), new Expression(new BinaryOperation(token.Value.AsT3, heap.AsT0, right.AsT0)));
+            var term = ParseArithmetic(tokens, Calculations.DotCalculations.SelfAndBelow(), new Expression(new BinaryOperation(token.Value.AsT3, heap.AsT0, right.AsT0, token), token));
             if (term.IsT1) return term.AsT1;
 
             return term.AsT0;
@@ -275,7 +285,7 @@ public static class Parser
 
             if (heap.IsT1) return new ErrorInfo($"Unexpected token type: {token.Type}", token);
 
-            var term = ParseArithmetic(tokens, Calculations.StrokeCalculations.SelfAndBelow(), new Expression(new BinaryOperation(token.Value.AsT3, heap.AsT0, right.AsT0)));
+            var term = ParseArithmetic(tokens, Calculations.StrokeCalculations.SelfAndBelow(), new Expression(new BinaryOperation(token.Value.AsT3, heap.AsT0, right.AsT0, token), token));
             if (term.IsT1) return term.AsT1;
 
             return term.AsT0;
@@ -297,7 +307,7 @@ public static class Parser
 
             if (heap.IsT1) return new ErrorInfo($"Empty heap!", new());
 
-            var term = ParseArithmetic(tokens, Calculations.TestOperations.SelfAndBelow(), new Expression(new BinaryOperation(token.Value.AsT3, heap.AsT0, right.AsT0)));
+            var term = ParseArithmetic(tokens, Calculations.TestOperations.SelfAndBelow(), new Expression(new BinaryOperation(token.Value.AsT3, heap.AsT0, right.AsT0, token), token));
             if (term.IsT1) return term.AsT1;
 
             return term.AsT0;
@@ -315,12 +325,12 @@ public static class Parser
         var rightSquareBrace = tokens.Dequeue();
         if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return new ErrorInfo($"Unexpected token type {rightSquareBrace.Type}! Requiring type {TokenType.RightSquareBrace}.", rightSquareBrace);
 
-        return new Expression(new ArrayAccessor(new(identifier.Value.AsT0, new("var")), index.AsT0)); // TODO: validate type later
+        return new Expression(new ArrayAccessor(new(identifier.Value.AsT0, identifier, new("var", default)), index.AsT0, rightSquareBrace), identifier); // TODO: validate type later
     }
 
     private static OneOf<Statement, ErrorInfo> ParseIf(Queue<Token> tokens, Scope scope, out bool isBlock, bool isLoop = false)
     {
-        _ = tokens.Dequeue();
+        var token = tokens.Dequeue();
 
         isBlock = true;
 
@@ -334,23 +344,23 @@ public static class Parser
         var rightParenthesis = tokens.Dequeue();
         if (rightParenthesis.Type is not TokenType.RightParenthesis) return new ErrorInfo($"Unexpected token type {rightParenthesis.Type}! Requiring type {TokenType.RightParenthesis}.", rightParenthesis);
 
-        var body = ParseStatement(tokens, scope, isLoop);
+        var body = ParseStatement(tokens, scope, out _, isLoop);
         if (body.IsT1) return body.AsT1;
 
         var next = tokens.Peek();
-        if (next.Type is not TokenType.Else) return new If(condition.AsT0, (Body)body.AsT0);
+        if (next.Type is not TokenType.Else) return new If(condition.AsT0, (Body)body.AsT0, token);
 
         _ = tokens.Dequeue();
 
-        var elseBody = ParseStatement(tokens, scope, isLoop);
+        var elseBody = ParseStatement(tokens, scope, out _, isLoop);
         if (elseBody.IsT1) return elseBody.AsT1;
 
-        return new If(condition.AsT0, body.AsT0, elseBody.AsT0);
+        return new If(condition.AsT0, body.AsT0, token, elseBody.AsT0);
     }
 
     private static OneOf<Statement, ErrorInfo> ParseWhile(Queue<Token> tokens, Scope scope, out bool isBlock)
     {
-        _ = tokens.Dequeue();
+        var token = tokens.Dequeue();
 
         isBlock = true;
 
@@ -364,25 +374,77 @@ public static class Parser
         var rightParenthesis = tokens.Dequeue();
         if (rightParenthesis.Type is not TokenType.RightParenthesis) return new ErrorInfo($"Unexpected token type {rightParenthesis.Type}! Requiring type {TokenType.RightParenthesis}.", rightParenthesis);
 
-        var body = ParseStatement(tokens, scope, true);
+        var body = ParseStatement(tokens, scope, out _, true);
         if (body.IsT1) return body.AsT1;
 
-        return new While(condition.AsT0, body.AsT0);
+        return new While(condition.AsT0, body.AsT0, token);
     }
 
     private static OneOf<Statement, ErrorInfo> ParseBreak(Queue<Token> tokens, bool isLoop)
     {
-        _ = tokens.Dequeue();
+        var token = tokens.Dequeue();
 
         if (!isLoop) return new ErrorInfo($"Break must be inside a loop!", new()); // TODO: improve error message (token)
 
-        return new Break();
+        return new Break(token);
     }
 
     private static OneOf<Statement, ErrorInfo> ParseContinue(Queue<Token> tokens, bool isLoop)
     {
-        _ = tokens.Dequeue();
+        var token = tokens.Dequeue();
+
         if (!isLoop) return new ErrorInfo($"Continue must be inside a loop!", new()); // TODO: improve error message (token)
-        return new Continue();
+
+        return new Continue(token);
+    }
+
+    private static OneOf<Statement, ErrorInfo> ParseFunction(Queue<Token> tokens, Scope scope, out bool isBlock)
+    {
+        _ = tokens.Dequeue();
+
+        isBlock = true;
+
+        var identifier = tokens.Dequeue();
+        if (identifier.Type is not TokenType.Identifier) return new ErrorInfo($"Unexpected token type {identifier.Type}! Requiring type {TokenType.Identifier}.", identifier);
+
+        var arguments = ParseStatementList(tokens, TokenType.LeftParenthesis, TokenType.RightParenthesis, TokenType.Comma, false, true, scope);
+        if (arguments.IsT1) return arguments.AsT1; // TODO: check, if only argument definitions are present and their types are explicitly defined
+        // TODO: check, if identifiers are unique (in their own scope and parent scopes)
+        if (tokens.Peek().Type is TokenType.ReturnDeclaration)
+        {
+            _ = tokens.Dequeue();
+
+            var returnType = tokens.Dequeue();
+            if (returnType.Type is not TokenType.Type) return new ErrorInfo($"Unexpected token type {returnType.Type}! Requiring type {TokenType.Type}.", returnType);
+
+            var returnBody = ParseStatement(tokens, scope, out _, false, true);
+            if (returnBody.IsT1) return returnBody.AsT1;
+            // TODO: Validate if there are all necessary return statements and if they are of the correct type
+            return new FunctionDeclaration(new(identifier.Value.AsT0, identifier), arguments.AsT0, (Body)returnBody.AsT0, identifier, new(returnType.Value.AsT2.GetTypeName(), returnType));
+        }
+
+        var body = ParseStatement(tokens, scope, out _, false, true);
+        if (body.IsT1) return body.AsT1;
+
+        return new FunctionDeclaration(new(identifier.Value.AsT0, identifier), arguments.AsT0, (Body)body.AsT0, identifier);
+    }
+
+    private static OneOf<Statement, ErrorInfo> ParseReturn(Queue<Token> tokens, bool isFunction)
+    {
+        var token = tokens.Dequeue();
+        if (!isFunction) return new ErrorInfo($"Return must be inside a function!", new()); // TODO: improve error message (token)
+
+        var expression = ParseArithmetic(tokens, new None());
+        if (expression.IsT1) return expression.AsT1;
+
+        return new Return(expression.AsT0, token);
+    }
+
+    private static OneOf<Expression, None, ErrorInfo> ParseFunctionCall(Token identifier, Queue<Token> tokens)
+    {
+        var parameters = ParseStatementList(tokens, TokenType.LeftParenthesis, TokenType.RightParenthesis, TokenType.Comma, false, false); // TODO: validate parameters
+        if (parameters.IsT1) return parameters.AsT1;
+
+        return new Expression(new FunctionCall(new(identifier.Value.AsT0, identifier), parameters.AsT0, identifier), identifier);
     }
 }

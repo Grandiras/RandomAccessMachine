@@ -113,6 +113,15 @@ public static class Tokenizer
                 continue;
             }
 
+            // Function return declaration token
+            if (state is TokenizerState.Start && code[i..(i + 2)] is "->")
+            {
+                tokens.Enqueue(new("->", TokenType.ReturnDeclaration, lineNumber, columnNumber, 2, "->"));
+                i++;
+                columnNumber++;
+                continue;
+            }
+
             // Self-assignment operator tokens
             if (state is TokenizerState.Start && code[i..(i + 2)].ToString().GetSelfAssignmentOperator() is not null and SelfAssignmentOperator selfAssignmentOperator)
             {
@@ -204,6 +213,13 @@ public static class Tokenizer
             if (state is TokenizerState.Start && currentChar is ';')
             {
                 tokens.Enqueue(new(currentChar.ToString(), TokenType.EndOfStatement, lineNumber, columnNumber, 1, currentChar.ToString()));
+                continue;
+            }
+
+            // Comma token
+            if (state is TokenizerState.Start && currentChar is ',')
+            {
+                tokens.Enqueue(new(currentChar.ToString(), TokenType.Comma, lineNumber, columnNumber, 1, currentChar.ToString()));
                 continue;
             }
 

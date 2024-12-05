@@ -33,4 +33,8 @@ public enum TokenType
     LeftSquareBrace,
     RightSquareBrace,
     New,
+    FunctionDeclaration,
+    Return,
+    ReturnDeclaration,
+    Comma,
 }

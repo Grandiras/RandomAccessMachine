@@ -4,6 +4,15 @@ using System.Collections;
 namespace RandomAccessMachine.FAIL.Specification;
 public record struct Scope(List<Statement> Statements, Scope[] SharedScopes) : IEnumerable<Statement>
 {
+    public readonly int Count => Statements.Count;
+
+    public readonly Statement this[int index]
+    {
+        get => Statements[index];
+        set => Statements[index] = value;
+    }
+
+
     public Scope(params Scope[] sharedScopes) : this([], sharedScopes) { }
 
 

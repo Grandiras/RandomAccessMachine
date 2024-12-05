@@ -1,9 +1,17 @@
 ﻿using RandomAccessMachine.FAIL.Compiler;
 
 var code = @"
-var test = new int[10];
-test[0] = 5;
-var first = test[0];
+fn function() -> int {
+    return 5;
+}
+fn function2() {
+}
+fn function3(int a, int b) {
+    return a + b;
+}
+var test = function();
+function2();
+function3(1, 2);
 ";
 
 Console.WriteLine(code.Trim());
@@ -36,6 +44,22 @@ if (scope.IsT1)
 foreach (var statement in scope.AsT0.Statements)
 {
     Console.WriteLine(statement);
+}
+
+scope = FunctionResolver.ResolveFunctions(scope.AsT0);
+
+if (scope.IsT1)
+{
+    Console.WriteLine(scope.AsT1);
+    return;
+}
+
+scope = TypeChecker.CheckTypes(scope.AsT0);
+
+if (scope.IsT1)
+{
+    Console.WriteLine(scope.AsT1);
+    return;
 }
 
 Console.WriteLine();
@@ -74,7 +98,7 @@ var interpreter = new RandomAccessMachine.Backend.Interpreter.Interpreter
 {
     IsRealTime = true
 };
-interpreter.LoadProgram(ramScope.AsT0, 25);
+interpreter.LoadProgram(ramScope.AsT0, 10);
 
 foreach (var register in interpreter.Registers)
 {
