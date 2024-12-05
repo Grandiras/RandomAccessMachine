@@ -17,7 +17,7 @@ public static class Parser
         if (startOfBlockSign is not TokenType.ErrorOrEmpty)
         {
             var startOfBlock = tokens.Dequeue();
-            if (startOfBlock.Type != startOfBlockSign) return new ErrorInfo($"Unexpected token type {startOfBlock.Type}! Requiring type {startOfBlockSign}.", startOfBlock);
+            if (startOfBlock.Type != startOfBlockSign) return ErrorInfo.WrongBlockStart(startOfBlockSign, startOfBlock);
         }
 
         while (tokens.Count > 0 && (endOfBlockSign is TokenType.ErrorOrEmpty || tokens.Peek().Type != endOfBlockSign))
@@ -28,7 +28,7 @@ public static class Parser
             if (!isBlock && tokens.Count > 0 && tokens.Peek().Type != endOfBlockSign)
             {
                 var endOfStatement = tokens.Dequeue();
-                if (endOfStatement.Type != endOfStatementSign) return new ErrorInfo($"Unexpected token type {endOfStatement.Type}! Requiring type {endOfStatementSign}.", endOfStatement);
+                if (endOfStatement.Type != endOfStatementSign) return ErrorInfo.WrongStatementEnd(endOfStatementSign, endOfStatement);
             }
 
 
@@ -38,7 +38,7 @@ public static class Parser
         if (endOfBlockSign is not TokenType.ErrorOrEmpty)
         {
             var endOfBlock = tokens.Dequeue();
-            if (endOfBlock.Type != endOfBlockSign) return new ErrorInfo($"Unexpected token type {endOfBlock.Type}! Requiring type {endOfBlockSign}.", endOfBlock);
+            if (endOfBlock.Type != endOfBlockSign) return ErrorInfo.WrongBlockEnd(endOfBlockSign, endOfBlock);
         }
 
         return scope;
@@ -62,7 +62,7 @@ public static class Parser
             TokenType.FunctionDeclaration => ParseFunction(tokens, scope, out internalIsBlock),
             TokenType.Return => ParseReturn(tokens, isFunction),
             TokenType.Number => ParseArithmetic(tokens, new None()).TryPickT0(out var value, out var error) ? value : error,
-            _ => new ErrorInfo($"Unexpected token type {token.Type} at start of statement!", token)
+            _ => ErrorInfo.WrongStatementStart(token)
         };
 
         isBlock = internalIsBlock;
@@ -75,12 +75,12 @@ public static class Parser
         var type = tokens.Dequeue();
 
         var identifier = tokens.Dequeue();
-        if (identifier.Type is not TokenType.Identifier) return new ErrorInfo($"Unexpected token type {identifier.Type}! Requiring type {TokenType.Identifier}.", identifier);
+        if (identifier.Type is not TokenType.Identifier) return ErrorInfo.DeclarationMissingIdentifier(identifier);
 
         if (tokens.Peek().Type is not TokenType.Assignment && isFunction) return new ArgumentDefinition(new(identifier.Value.AsT0, identifier), new(type.Value.AsT2.GetTypeName(), type), identifier);
 
         var token = tokens.Dequeue();
-        if (token.Type is not TokenType.Assignment) return new ErrorInfo($"Unexpected token type {token.Type}! Requiring type {TokenType.Assignment}.", token);
+        if (token.Type is not TokenType.Assignment) return ErrorInfo.DeclarationNeedingInitialization(token);
 
         if (tokens.Peek().Type is TokenType.New) return ParseTypeInitialization(identifier, tokens);
 
@@ -102,7 +102,7 @@ public static class Parser
         if (token.Type is TokenType.LeftParenthesis) return ParseFunctionCall(identifier, tokens).TryPickT0(out var value, out var error) ? value : error.AsT1;
 
         _ = tokens.Dequeue();
-        if (token.Type is not TokenType.Assignment) return new ErrorInfo($"Unexpected token type {token.Type}! Requiring type {TokenType.Assignment}.", token);
+        if (token.Type is not TokenType.Assignment) return ErrorInfo.AssignmentMissingOperator(token);
 
         if (tokens.Peek().Type is TokenType.New) return ParseTypeInitialization(identifier, tokens);
 
@@ -130,17 +130,16 @@ public static class Parser
 
     private static OneOf<Statement, ErrorInfo> ParseArrayModification(Token identifier, Queue<Token> tokens)
     {
-        var leftSquareBrace = tokens.Dequeue();
-        if (leftSquareBrace.Type is not TokenType.LeftSquareBrace) return new ErrorInfo($"Unexpected token type {leftSquareBrace.Type}! Requiring type {TokenType.LeftSquareBrace}.", leftSquareBrace);
+        _ = tokens.Dequeue();
 
         var index = ParseArithmetic(tokens, new None());
         if (index.IsT1) return index.AsT1;
 
         var rightSquareBrace = tokens.Dequeue();
-        if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return new ErrorInfo($"Unexpected token type {rightSquareBrace.Type}! Requiring type {TokenType.RightSquareBrace}.", rightSquareBrace);
+        if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return ErrorInfo.ArrayAccessorMissingClosingBrace(rightSquareBrace);
 
         var assignment = tokens.Dequeue();
-        if (assignment.Type is not TokenType.Assignment) return new ErrorInfo($"Unexpected token type {assignment.Type}! Requiring type {TokenType.Assignment}.", assignment);
+        if (assignment.Type is not TokenType.Assignment) return ErrorInfo.AssignmentMissingOperator(assignment);
 
         if (tokens.Peek().Type is TokenType.New) return ParseTypeInitialization(identifier, tokens);
 
@@ -155,13 +154,12 @@ public static class Parser
         _ = tokens.Dequeue();
 
         var type = tokens.Dequeue();
-        if (type.Type is not TokenType.Type) return new ErrorInfo($"Unexpected token type {type.Type}! Requiring type {TokenType.Type}.", type);
+        if (type.Type is not TokenType.Type) return ErrorInfo.TypeNeededForInitialization(type);
 
         var token = tokens.Peek();
-
         if (token.Type is TokenType.LeftSquareBrace) return ParseArrayInitialization(type, identifier, tokens);
 
-        return new ErrorInfo($"Unexpected token type {token.Type}! Requiring type {TokenType.LeftSquareBrace}.", token);
+        return ErrorInfo.WrongToken(TokenType.LeftSquareBrace, token);
     }
 
     private static OneOf<Statement, ErrorInfo> ParseArrayInitialization(Token type, Token identifier, Queue<Token> tokens)
@@ -172,7 +170,7 @@ public static class Parser
         if (size.IsT1 || !size.AsT0.Value.IsT1) return size.AsT1;
 
         var rightSquareBrace = tokens.Dequeue();
-        if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return new ErrorInfo($"Unexpected token type {rightSquareBrace.Type}! Requiring type {TokenType.RightSquareBrace}.", rightSquareBrace);
+        if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return ErrorInfo.ArrayAccessorMissingClosingBrace(rightSquareBrace);
 
         return new Assignment(new Identifier(identifier.Value.AsT0, identifier, new("var", default)), new(new TypeInitialization(new(new ElementTree.Array(new("int", default), size.AsT0.Value.AsT1.Value, rightSquareBrace), type), type), identifier), identifier); // TODO: validate type later, special rules for arrays
     }
@@ -208,7 +206,7 @@ public static class Parser
             heap = result.TryPickT0(out var expression, out var none) ? expression : none.AsT0;
         }
 
-        if (heap.IsT1) return new ErrorInfo($"Empty heap for arithmetic calculation!", new());
+        if (heap.IsT1) return ErrorInfo.InvalidExpression(tokens.Peek());
 
         return heap.AsT0;
     }
@@ -235,7 +233,7 @@ public static class Parser
             if (expression.IsT1) return expression.AsT1;
 
             var rightParenthesis = tokens.Dequeue();
-            if (rightParenthesis.Type is not TokenType.RightParenthesis) return new ErrorInfo($"Unexpected token type {rightParenthesis.Type}! Requiring type {TokenType.RightParenthesis}.", rightParenthesis);
+            if (rightParenthesis.Type is not TokenType.RightParenthesis) return ErrorInfo.ClosingParenthesisMissing(rightParenthesis);
 
             return expression.AsT0;
         }
@@ -261,7 +259,7 @@ public static class Parser
             var right = ParseArithmetic(tokens, Calculations.DotCalculations.Above(), new None());
             if (right.IsT1) return right.AsT1;
 
-            if (heap.IsT1) return new ErrorInfo($"Unexpected token type: {token.Type}", token);
+            if (heap.IsT1) return ErrorInfo.InvalidExpression(tokens.Peek());
 
             var term = ParseArithmetic(tokens, Calculations.DotCalculations.SelfAndBelow(), new Expression(new BinaryOperation(token.Value.AsT3, heap.AsT0, right.AsT0, token), token));
             if (term.IsT1) return term.AsT1;
@@ -283,7 +281,7 @@ public static class Parser
             var right = ParseArithmetic(tokens, Calculations.StrokeCalculations.Above(), new None());
             if (right.IsT1) return right.AsT1;
 
-            if (heap.IsT1) return new ErrorInfo($"Unexpected token type: {token.Type}", token);
+            if (heap.IsT1) return ErrorInfo.InvalidExpression(tokens.Peek());
 
             var term = ParseArithmetic(tokens, Calculations.StrokeCalculations.SelfAndBelow(), new Expression(new BinaryOperation(token.Value.AsT3, heap.AsT0, right.AsT0, token), token));
             if (term.IsT1) return term.AsT1;
@@ -305,7 +303,7 @@ public static class Parser
             var right = ParseArithmetic(tokens, Calculations.TestOperations.Above(), new None());
             if (right.IsT1) return right.AsT1;
 
-            if (heap.IsT1) return new ErrorInfo($"Empty heap!", new());
+            if (heap.IsT1) return ErrorInfo.InvalidExpression(tokens.Peek());
 
             var term = ParseArithmetic(tokens, Calculations.TestOperations.SelfAndBelow(), new Expression(new BinaryOperation(token.Value.AsT3, heap.AsT0, right.AsT0, token), token));
             if (term.IsT1) return term.AsT1;
@@ -323,7 +321,7 @@ public static class Parser
         if (index.IsT1) return index.AsT1;
 
         var rightSquareBrace = tokens.Dequeue();
-        if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return new ErrorInfo($"Unexpected token type {rightSquareBrace.Type}! Requiring type {TokenType.RightSquareBrace}.", rightSquareBrace);
+        if (rightSquareBrace.Type is not TokenType.RightSquareBrace) return ErrorInfo.ArrayAccessorMissingClosingBrace(rightSquareBrace);
 
         return new Expression(new ArrayAccessor(new(identifier.Value.AsT0, identifier, new("var", default)), index.AsT0, rightSquareBrace), identifier); // TODO: validate type later
     }
@@ -335,14 +333,14 @@ public static class Parser
         isBlock = true;
 
         var leftParenthesis = tokens.Dequeue();
-        if (leftParenthesis.Type is not TokenType.LeftParenthesis) return new ErrorInfo($"Unexpected token type {leftParenthesis.Type}! Requiring type {TokenType.LeftParenthesis}.", leftParenthesis);
+        if (leftParenthesis.Type is not TokenType.LeftParenthesis) return ErrorInfo.IfMissingOpeningParenthesis(leftParenthesis);
 
         var condition = ParseArithmetic(tokens, new None());
         if (condition.IsT1) return condition.AsT1;
-        if (condition.AsT0.Value.IsT2 && !condition.AsT0.Value.AsT2.Operator.IsTestOperation()) return new ErrorInfo($"Unexpected token type {condition.AsT0.Value.AsT2.Operator}! Must return a boolean.", new()); // TODO: improve error message (token)
+        if (condition.AsT0.Value.IsT2 && !condition.AsT0.Value.AsT2.Operator.IsTestOperation()) return ErrorInfo.ConditionMustReturnBoolean(condition.AsT0.Value.AsT2.Token);
 
         var rightParenthesis = tokens.Dequeue();
-        if (rightParenthesis.Type is not TokenType.RightParenthesis) return new ErrorInfo($"Unexpected token type {rightParenthesis.Type}! Requiring type {TokenType.RightParenthesis}.", rightParenthesis);
+        if (rightParenthesis.Type is not TokenType.RightParenthesis) return ErrorInfo.ClosingParenthesisMissing(rightParenthesis);
 
         var body = ParseStatement(tokens, scope, out _, isLoop);
         if (body.IsT1) return body.AsT1;
@@ -365,14 +363,14 @@ public static class Parser
         isBlock = true;
 
         var leftParenthesis = tokens.Dequeue();
-        if (leftParenthesis.Type is not TokenType.LeftParenthesis) return new ErrorInfo($"Unexpected token type {leftParenthesis.Type}! Requiring type {TokenType.LeftParenthesis}.", leftParenthesis);
+        if (leftParenthesis.Type is not TokenType.LeftParenthesis) return ErrorInfo.WhileMissingOpeningParenthesis(leftParenthesis);
 
         var condition = ParseArithmetic(tokens, new None());
         if (condition.IsT1) return condition.AsT1;
-        if (condition.AsT0.Value.IsT2 && !condition.AsT0.Value.AsT2.Operator.IsTestOperation()) return new ErrorInfo($"Unexpected token type {condition.AsT0.Value.AsT2.Operator}! Must return a boolean.", new()); // TODO: improve error message (token)
+        if (condition.AsT0.Value.IsT2 && !condition.AsT0.Value.AsT2.Operator.IsTestOperation()) return ErrorInfo.ConditionMustReturnBoolean(condition.AsT0.Value.AsT2.Token);
 
         var rightParenthesis = tokens.Dequeue();
-        if (rightParenthesis.Type is not TokenType.RightParenthesis) return new ErrorInfo($"Unexpected token type {rightParenthesis.Type}! Requiring type {TokenType.RightParenthesis}.", rightParenthesis);
+        if (rightParenthesis.Type is not TokenType.RightParenthesis) return ErrorInfo.ClosingParenthesisMissing(rightParenthesis);
 
         var body = ParseStatement(tokens, scope, out _, true);
         if (body.IsT1) return body.AsT1;
@@ -384,7 +382,7 @@ public static class Parser
     {
         var token = tokens.Dequeue();
 
-        if (!isLoop) return new ErrorInfo($"Break must be inside a loop!", new()); // TODO: improve error message (token)
+        if (!isLoop) return ErrorInfo.BreakMustBeInsideLoop(token);
 
         return new Break(token);
     }
@@ -393,7 +391,7 @@ public static class Parser
     {
         var token = tokens.Dequeue();
 
-        if (!isLoop) return new ErrorInfo($"Continue must be inside a loop!", new()); // TODO: improve error message (token)
+        if (!isLoop) return ErrorInfo.ContinueMustBeInsideLoop(token);
 
         return new Continue(token);
     }
@@ -405,7 +403,7 @@ public static class Parser
         isBlock = true;
 
         var identifier = tokens.Dequeue();
-        if (identifier.Type is not TokenType.Identifier) return new ErrorInfo($"Unexpected token type {identifier.Type}! Requiring type {TokenType.Identifier}.", identifier);
+        if (identifier.Type is not TokenType.Identifier) return ErrorInfo.FunctionNeedingIdentifier(identifier);
 
         var arguments = ParseStatementList(tokens, TokenType.LeftParenthesis, TokenType.RightParenthesis, TokenType.Comma, false, true, scope);
         if (arguments.IsT1) return arguments.AsT1; // TODO: check, if only argument definitions are present and their types are explicitly defined
@@ -415,7 +413,7 @@ public static class Parser
             _ = tokens.Dequeue();
 
             var returnType = tokens.Dequeue();
-            if (returnType.Type is not TokenType.Type) return new ErrorInfo($"Unexpected token type {returnType.Type}! Requiring type {TokenType.Type}.", returnType);
+            if (returnType.Type is not TokenType.Type) return ErrorInfo.FunctionWithReturnNeedingReturnType(returnType);
 
             var returnBody = ParseStatement(tokens, scope, out _, false, true);
             if (returnBody.IsT1) return returnBody.AsT1;
@@ -432,7 +430,7 @@ public static class Parser
     private static OneOf<Statement, ErrorInfo> ParseReturn(Queue<Token> tokens, bool isFunction)
     {
         var token = tokens.Dequeue();
-        if (!isFunction) return new ErrorInfo($"Return must be inside a function!", new()); // TODO: improve error message (token)
+        if (!isFunction) return ErrorInfo.ReturnMustBeInsideFunction(token);
 
         var expression = ParseArithmetic(tokens, new None());
         if (expression.IsT1) return expression.AsT1;
