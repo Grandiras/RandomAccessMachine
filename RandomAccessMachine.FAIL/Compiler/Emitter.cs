@@ -215,7 +215,7 @@ public static class Emitter
 
         return expression;
     }
-    private static string EmitFunctionCall(Dictionary<string, uint> registerReservations, FunctionCall functionCall)
+    private static string EmitFunctionCall(Dictionary<string, uint> registerReservations, FunctionCall functionCall) // TODO: Add support for early returns
     {
         var comment = EmitComment(functionCall.Function!.ToString().Replace("\n", "; "));
 
