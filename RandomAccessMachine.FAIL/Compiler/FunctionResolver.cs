@@ -16,12 +16,9 @@ public static class FunctionResolver
         foreach (var functionCall in functionCalls)
         {
             var function = functions.FirstOrDefault(x => x.Identifier.Name == functionCall.Identifier.Name);
-            if (function is null) return new ErrorInfo($"Function {functionCall.Identifier.Name} not found!", functionCall.Token);
+            if (function is null) return ErrorInfo.FunctionNotFound(functionCall.Token);
 
-            if (functionCall.Arguments.Count != function.Arguments.Count)
-            {
-                return new ErrorInfo($"Function {functionCall.Identifier.Name} expects {function.Arguments.Count} arguments, but {functionCall.Arguments.Count} were provided!", functionCall.Token);
-            }
+            if (functionCall.Arguments.Count != function.Arguments.Count) return ErrorInfo.FunctionArgumentMismatch(functionCall.Token);
 
             functionCall.Function = function;
         }

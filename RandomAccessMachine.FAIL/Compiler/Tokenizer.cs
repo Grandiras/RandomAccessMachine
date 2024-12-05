@@ -1,5 +1,4 @@
 ﻿using OneOf;
-using OneOf.Types;
 using RandomAccessMachine.FAIL.Debugging;
 using RandomAccessMachine.FAIL.Specification;
 using RandomAccessMachine.FAIL.Specification.Operators;
@@ -224,12 +223,12 @@ public static class Tokenizer
             }
 
             // Error token
-            return new ErrorInfo($"Unexpected character '{currentChar}' at line {lineNumber}, column {columnNumber}!", new(new Error(), TokenType.ErrorOrEmpty, lineNumber, columnNumber, 1, currentChar.ToString()));
+            return ErrorInfo.UnexpectedCharacter(currentChar, lineNumber, columnNumber);
         }
 
         return state is TokenizerState.Start
             ? tokens
-            : new ErrorInfo("Unexpected state at file end!", new());
+            : ErrorInfo.UnexpectedEndOfCode(lineNumber, columnNumber);
     }
 }
 
