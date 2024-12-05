@@ -6,7 +6,7 @@ fn function() -> int {
 }
 fn function2() {
 }
-fn function3(int a, int b) {
+fn function3(int a, int b) -> int {
     return a + b;
 }
 var test = function();
