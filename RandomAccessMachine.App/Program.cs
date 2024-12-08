@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.AnimatedVisuals;
-using RandomAccessMachine.App;
 using RandomAccessMachine.App.Components.Settings;
 using RandomAccessMachine.App.Pages;
 using RandomAccessMachine.Backend.Interpreter;
@@ -11,32 +10,37 @@ using WinSharp.Pages.Components.Settings;
 using WinSharp.Services;
 using WinSharp.Windows;
 
-new AppBuilder()
-
-.AddNavigationWindow(window => _ = window
-    .AddMenuPage<MainPage>(Resources.MainPage_Title, Symbol.Home, true)
-    .AddFooterPage<SettingsPage>(Resources.SettingsPage_Title, new AnimatedSettingsVisualSource(), true))
-.Configure<EventBinding>(events => events.ExceptionThrown += (sender, e) => Debugger.Break())
-.Configure<LocalizationService>(localization => localization.ResourceManager = Resources.ResourceManager)
-.Configure<TitleBar>(titleBar => titleBar.Title = Resources.Title)
-
-.Configure<SettingsPage>(settings => settings
-    .AddComponent<ThemeSelector>()
-    .AddComponent<StartupComponent>()
-    .AddComponent<AutoSaveComponent>()
-    .AddComponent<AboutSection>())
-.Configure<AboutSection>(section =>
+namespace RandomAccessMachine.App;
+public static class Program
 {
-    section.AppName = Resources.Title;
-    section.Publisher = "Grandiras";
-    section.Version = "1.0.0.0";
+    [STAThread]
+    public static void Main(string[] args) => new AppBuilder()
 
-    section.Links.Add(new("Repository", "https://github.com/Grandiras/RandomAccessMachine"));
-})
+        .AddNavigationWindow(window => _ = window
+            .AddMenuPage<MainPage>(Resources.MainPage_Title, Symbol.Home, true)
+            .AddFooterPage<SettingsPage>(Resources.SettingsPage_Title, new AnimatedSettingsVisualSource(), true))
+        .Configure<EventBinding>(events => events.ExceptionThrown += (sender, e) => Debugger.Break())
+        .Configure<LocalizationService>(localization => localization.ResourceManager = Resources.ResourceManager)
+        .Configure<TitleBar>(titleBar => titleBar.Title = Resources.Title)
 
-.AddSingleton<Interpreter>()
+        .Configure<SettingsPage>(settings => settings
+            .AddComponent<ThemeSelector>()
+            .AddComponent<StartupComponent>()
+            .AddComponent<AutoSaveComponent>()
+            .AddComponent<AboutSection>())
+        .Configure<AboutSection>(section =>
+        {
+            section.AppName = Resources.Title;
+            section.Publisher = "Grandiras";
+            section.Version = "1.0.0.0";
 
-.AddTransient<AutoSaveComponent>()
-.AddTransient<StartupComponent>()
+            section.Links.Add(new("Repository", "https://github.com/Grandiras/RandomAccessMachine"));
+        })
 
-.Build();
+        .AddSingleton<Interpreter>()
+
+        .AddTransient<AutoSaveComponent>()
+        .AddTransient<StartupComponent>()
+
+        .Build();
+}

@@ -225,10 +225,4 @@
   <data name="Settings.Startup.OpenLastFileDescription" xml:space="preserve">
     <value>Beim Starten die zuletzt geöffnete Datei öffnen</value>
   </data>
-  <data name="MainPage.Copy.Tooltip" xml:space="preserve">
-    <value>Kopieren</value>
-  </data>
-  <data name="MainPage.Paste.Tooltip" xml:space="preserve">
-    <value>Einfügen</value>
-  </data>
 </root>

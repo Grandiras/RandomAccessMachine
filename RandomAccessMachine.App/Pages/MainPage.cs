@@ -10,7 +10,6 @@ using RandomAccessMachine.Backend.Interpreter;
 using RandomAccessMachine.Backend.Specification;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using Windows.System;
 using WinSharp.BindingExtensions;
@@ -35,8 +34,6 @@ public sealed class MainPage : Page, INotifyPropertyChanged
 
     private Scope CurrentScope = default;
 
-    private readonly RelayCommand CopyCommand;
-    private readonly RelayCommand PasteCommand;
     private readonly RelayCommand NewCommand;
     private readonly RelayCommand OpenCommand;
     private readonly RelayCommand SaveCommand;
@@ -62,30 +59,6 @@ public sealed class MainPage : Page, INotifyPropertyChanged
 
         Registers = [.. Interpreter.Registers];
 
-        CopyCommand = new(async () =>
-        {
-            // get the text out of all selected ranges combined and copy it to the clipboard
-            var text = Editor!.Editor.GetSelText();
-            // make a content dialog to show the copied text
-            var dialog = new ContentDialog
-            {
-                Title = "Copy",
-                Content = text,
-                DefaultButton = ContentDialogButton.Close,
-                CloseButtonText = "Close",
-                IsSecondaryButtonEnabled = false
-            };
-            _ = DispatcherQueue.TryEnqueue(async () => _ = await dialog.ShowAsync(this));
-            var dataPackage = new DataPackage { RequestedOperation = DataPackageOperation.Copy };
-            dataPackage.SetText(text);
-            Clipboard.SetContent(dataPackage);
-        }, () => Editor is not null && Editor.Editor.Selections is not 0 && !Editor.Editor.SelectionEmpty);
-        PasteCommand = new(async () => _ = DispatcherQueue.TryEnqueue(async () =>
-        {
-            var content = Clipboard.GetContent();
-            var text = await content.GetTextAsync();
-            Editor!.Editor.ReplaceSel(text);
-        }), () => Editor is not null && Clipboard.GetContent().Contains(StandardDataFormats.Text));
         NewCommand = new(async () =>
         {
             if (Editor!.Editor.Modify)
@@ -218,34 +191,6 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                 Spacing = 4,
                 Children =
                 {
-                    // Copy
-                    new Button
-                    {
-                        Content = Symbol.Copy.ToIcon(),
-                        Height = 36,
-                        Command = CopyCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.C, Modifiers = VirtualKeyModifiers.Control }
-                        }
-                    }
-                    .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_Copy_Tooltip} (Ctrl + C)"),
-
-                    // Paste
-                    new Button
-                    {
-                        Content = Symbol.Paste.ToIcon(),
-                        Height = 36,
-                        Command = PasteCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.V, Modifiers = VirtualKeyModifiers.Control }
-                        }
-                    }
-                    .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_Paste_Tooltip} (Ctrl + V)"),
-
-                    new AppBarSeparator(),
-
                     // Run
                     new Button
                     {
@@ -468,12 +413,6 @@ public sealed class MainPage : Page, INotifyPropertyChanged
             PersistenceService.Code = Editor.Editor.GetText(Editor.Editor.TextLength);
 
             _ = EnqueueSyntaxCheck();
-        };
-
-        Editor.Editor.UpdateUI += (_, _) =>
-        {
-            CopyCommand.NotifyCanExecuteChanged();
-            PasteCommand.NotifyCanExecuteChanged();
         };
 
         RegistersListView.SelectionChanged += (_, _) =>
