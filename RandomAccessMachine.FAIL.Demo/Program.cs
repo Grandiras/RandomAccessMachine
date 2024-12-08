@@ -1,16 +1,9 @@
 ﻿using RandomAccessMachine.FAIL.Compiler;
 
 var code = @"
-fn function() -> int {
-    return 5;
-}
-fn function2() {
-}
 fn function3(int a, int b) -> int {
     return a + b;
 }
-var test = function();
-function2();
 function3(1, 2);
 ";
 

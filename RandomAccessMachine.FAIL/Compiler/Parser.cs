@@ -54,8 +54,8 @@ public static class Parser
         {
             TokenType.Var or TokenType.Type => ParseDeclaration(tokens, isFunction),
             TokenType.Identifier => ParseAssignment(tokens),
-            TokenType.If => ParseIf(tokens, scope, out internalIsBlock, isLoop),
-            TokenType.While => ParseWhile(tokens, scope, out internalIsBlock),
+            TokenType.If => ParseIf(tokens, scope, out internalIsBlock, isLoop, isFunction),
+            TokenType.While => ParseWhile(tokens, scope, out internalIsBlock, isFunction),
             TokenType.LeftCurlyBrace => ParseStatementList(tokens, TokenType.LeftCurlyBrace, TokenType.RightCurlyBrace, TokenType.EndOfStatement, isLoop, isFunction, scope).TryPickT0(out var bodyScope, out var error) ? new Body(bodyScope, token) : error,
             TokenType.Break => ParseBreak(tokens, isLoop),
             TokenType.Continue => ParseContinue(tokens, isLoop),
@@ -326,7 +326,7 @@ public static class Parser
         return new Expression(new ArrayAccessor(new(identifier.Value.AsT0, identifier, new("var", default)), index.AsT0, rightSquareBrace), identifier); // TODO: validate type later
     }
 
-    private static OneOf<Statement, ErrorInfo> ParseIf(Queue<Token> tokens, Scope scope, out bool isBlock, bool isLoop = false)
+    private static OneOf<Statement, ErrorInfo> ParseIf(Queue<Token> tokens, Scope scope, out bool isBlock, bool isLoop, bool isFunction)
     {
         var token = tokens.Dequeue();
 
@@ -342,7 +342,7 @@ public static class Parser
         var rightParenthesis = tokens.Dequeue();
         if (rightParenthesis.Type is not TokenType.RightParenthesis) return ErrorInfo.ClosingParenthesisMissing(rightParenthesis);
 
-        var body = ParseStatement(tokens, scope, out _, isLoop);
+        var body = ParseStatement(tokens, scope, out _, isLoop, isFunction);
         if (body.IsT1) return body.AsT1;
 
         var next = tokens.Peek();
@@ -350,13 +350,13 @@ public static class Parser
 
         _ = tokens.Dequeue();
 
-        var elseBody = ParseStatement(tokens, scope, out _, isLoop);
+        var elseBody = ParseStatement(tokens, scope, out _, isLoop, isFunction);
         if (elseBody.IsT1) return elseBody.AsT1;
 
         return new If(condition.AsT0, body.AsT0, token, elseBody.AsT0);
     }
 
-    private static OneOf<Statement, ErrorInfo> ParseWhile(Queue<Token> tokens, Scope scope, out bool isBlock)
+    private static OneOf<Statement, ErrorInfo> ParseWhile(Queue<Token> tokens, Scope scope, out bool isBlock, bool isFunction)
     {
         var token = tokens.Dequeue();
 
@@ -372,7 +372,7 @@ public static class Parser
         var rightParenthesis = tokens.Dequeue();
         if (rightParenthesis.Type is not TokenType.RightParenthesis) return ErrorInfo.ClosingParenthesisMissing(rightParenthesis);
 
-        var body = ParseStatement(tokens, scope, out _, true);
+        var body = ParseStatement(tokens, scope, out _, true, isFunction);
         if (body.IsT1) return body.AsT1;
 
         return new While(condition.AsT0, body.AsT0, token);

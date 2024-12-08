@@ -45,7 +45,7 @@ public static class Emitter
         else if (statement is Body body) _ = output.Append(Emit(body.Scope, registerReservations, false, startOfBlockLabel, endOfBlockLabel));
         else if (statement is Break) _ = output.Append(EmitBreak(endOfBlockLabel!));
         else if (statement is Continue) _ = output.Append(EmitContinue(startOfBlockLabel!));
-        else if (statement is Return @return) _ = output.Append(EmitReturn(registerReservations, @return));
+        else if (statement is Return @return) _ = output.Append(EmitReturn(registerReservations, @return, endOfBlockLabel!));
         else if (statement is FunctionCall functionCall) _ = output.Append(EmitFunctionCall(registerReservations, functionCall));
         else if (statement is Expression expression && expression.Value.IsT5) _ = output.Append(EmitFunctionCall(registerReservations, expression.Value.AsT5));
         else _ = output.Append(EmitComment("Unknown statement"));
@@ -202,7 +202,7 @@ public static class Emitter
     private static string EmitBreak(string endOfBlockLabel) => EmitGoto(endOfBlockLabel);
     private static string EmitContinue(string startOfBlockLabel) => EmitGoto(startOfBlockLabel);
 
-    private static string EmitReturn(Dictionary<string, uint> registerReservations, Return @return)
+    private static string EmitReturn(Dictionary<string, uint> registerReservations, Return @return, string endOfBlockLabel)
     {
         var expression = @return.Expression.Value.Match(
             number => EmitLoad(number, registerReservations),
@@ -213,9 +213,9 @@ public static class Emitter
             functionCall => EmitFunctionCall(registerReservations, functionCall)
         );
 
-        return expression;
+        return expression + EmitGoto(endOfBlockLabel);
     }
-    private static string EmitFunctionCall(Dictionary<string, uint> registerReservations, FunctionCall functionCall) // TODO: Add support for early returns
+    private static string EmitFunctionCall(Dictionary<string, uint> registerReservations, FunctionCall functionCall)
     {
         var comment = EmitComment(functionCall.Function!.ToString().Replace("\n", "; "));
 
@@ -236,9 +236,11 @@ public static class Emitter
             comment += expression + EmitStore(argumentRegister);
         }
 
-        var body = Emit(functionCall.Function!.Body.Scope, registerReservations, false);
+        var endOfFunctionLabel = Guid.NewGuid().ToLabelString();
 
-        return comment + body;
+        var body = Emit(functionCall.Function!.Body.Scope, registerReservations, false, endOfBlockLabel: endOfFunctionLabel);
+
+        return comment + body + EmitLabel(endOfFunctionLabel);
     }
 
     private static string EmitLoad(OneOf<Number, Identifier> value, Dictionary<string, uint> registerReservations)
