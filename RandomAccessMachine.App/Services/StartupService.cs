@@ -1,38 +1,59 @@
-﻿using Windows.Storage;
-using WinSharp.FlagInterfaces;
+﻿using WinSharp.FlagInterfaces;
 using WinSharp.Services;
 
 namespace RandomAccessMachine.App.Services;
-public sealed class StartupService(LocalSettingsService LocalSettingsService, FileService FileService, PersistenceService PersistenceService) : IService, IMustInitialize
+public sealed class StartupService(LocalSettingsService LocalSettingsService, FileService FileService) : IService, IMustInitialize
 {
     private const string SETTINGS_KEY = "Startup";
 
     public StartupSettings? Settings { get; private set; }
 
+    public event EventHandler? StartupCompleted;
+
 
     public async Task InitializeAsync()
     {
-        Settings = LocalSettingsService.Read<StartupSettings>(SETTINGS_KEY).Match(x => x, _ => new(false, ""));
-        if (Settings.ShouldOpenLastFile && !string.IsNullOrWhiteSpace(Settings.LastFilePath) && File.Exists(Settings.LastFilePath))
-        {
-            await FileService.OpenFileAsync(Settings.LastFilePath);
-            PersistenceService.Code = await FileIO.ReadTextAsync(FileService.OpenFile);
-        }
+        Settings = LocalSettingsService.Read<StartupSettings>(SETTINGS_KEY).Match(x => x, _ => new(false, []));
 
-        FileService.FileOpened += async (sender, _) =>
+        // TODO: Add proper migration and remove this
+        if (Settings.FilePaths is null) Settings = Settings with { FilePaths = [] };
+
+        if (Settings.ShouldOpenLastFile)
+            foreach (var path in Settings.FilePaths)
+            {
+                if (!File.Exists(path)) continue;
+                await FileService.OpenFileAsync(path);
+            }
+
+        FileService.FileOpened += async (sender, file) =>
         {
-            Settings = Settings! with { LastFilePath = FileService.OpenFile!.Path };
+            if (!Settings.ShouldOpenLastFile) return;
+
+            Settings.FilePaths.Add(file.Path);
             await LocalSettingsService.SaveAsync(SETTINGS_KEY, Settings);
         };
+
+        FileService.FileClosed += async (sender, file) =>
+        {
+            if (!Settings.ShouldOpenLastFile) return;
+
+            _ = Settings.FilePaths.Remove(file.Path);
+            await LocalSettingsService.SaveAsync(SETTINGS_KEY, Settings);
+        };
+
+        StartupCompleted?.Invoke(this, EventArgs.Empty);
     }
 
     public async Task UpdateStatus(bool shouldOpenLastFile)
     {
         Settings = Settings! with { ShouldOpenLastFile = shouldOpenLastFile };
-        if (Settings.ShouldOpenLastFile && FileService.OpenFile is not null) Settings = Settings! with { LastFilePath = FileService.OpenFile.Path };
+        if (Settings.ShouldOpenLastFile)
+            foreach (var path in FileService.OpenedFiles)
+                Settings.FilePaths.Add(path.Key.Path);
+        else Settings.FilePaths.Clear();
 
         await LocalSettingsService.SaveAsync(SETTINGS_KEY, Settings);
     }
 }
 
-public record StartupSettings(bool ShouldOpenLastFile, string LastFilePath);
+public record StartupSettings(bool ShouldOpenLastFile, List<string> FilePaths);

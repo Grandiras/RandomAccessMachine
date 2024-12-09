@@ -3,6 +3,7 @@ using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using RandomAccessMachine.App.Helpers;
 using RandomAccessMachine.App.Services;
@@ -10,31 +11,25 @@ using RandomAccessMachine.Backend.Interpreter;
 using RandomAccessMachine.Backend.Specification;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using Windows.Storage;
 using Windows.System;
 using WinSharp.BindingExtensions;
 using WinSharp.Helpers;
 using WinSharp.Styles;
-using WinUIEditor;
 
 namespace RandomAccessMachine.App.Pages;
-public sealed class MainPage : Page, INotifyPropertyChanged
+public sealed partial class MainPage : Page, INotifyPropertyChanged
 {
-    private readonly FileService FileService;
     private readonly Interpreter Interpreter;
     private readonly PersistenceService PersistenceService;
+    private readonly TabService TabService;
 
-    private readonly CodeEditorControl Editor;
     private readonly Slider SpeedSlider;
     private readonly ToggleSwitch RealtimeToggle;
     private readonly ListView RegistersListView;
-    private readonly InfoBar ErrorInfo;
+    private readonly TabView MainEditorTabView;
 
     private readonly ObservableCollection<Register> Registers;
 
-    private Scope CurrentScope = default;
-
-    private readonly RelayCommand NewCommand;
     private readonly RelayCommand OpenCommand;
     private readonly RelayCommand SaveCommand;
     private readonly RelayCommand RunCommand;
@@ -43,113 +38,52 @@ public sealed class MainPage : Page, INotifyPropertyChanged
     private readonly RelayCommand AddRegisterCommand;
     private readonly RelayCommand DeleteRegistersCommand;
 
-    private CancellationTokenSource? SyntaxCheckCancellationTokenSource;
-    private DateTime LastTimeChecked = DateTime.MinValue;
-
     private CancellationTokenSource? RunnerCancellationTokenSource;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
 
-    public MainPage(FileService fileService, Interpreter interpreter, PersistenceService persistenceService, AutoSaveService autoSaveService, object? parameter = null)
+    public MainPage(Interpreter interpreter, PersistenceService persistenceService, TabService tabService)
     {
-        FileService = fileService;
         Interpreter = interpreter;
         PersistenceService = persistenceService;
+        TabService = tabService;
 
         Registers = [.. Interpreter.Registers];
 
-        NewCommand = new(async () =>
-        {
-            if (Editor!.Editor.Modify)
-            {
-                var dialog = new ContentDialog
-                {
-                    Title = App.Resources.MainPage_New_UnsavedChanges_Title,
-                    Content = App.Resources.MainPage_New_UnsavedChanges_Content,
-                    PrimaryButtonText = App.Resources.MainPage_New_UnsavedChanges_Save,
-                    SecondaryButtonText = App.Resources.MainPage_New_UnsavedChanges_DontSave,
-                    CloseButtonText = App.Resources.MainPage_New_UnsavedChanges_Cancel,
-                    DefaultButton = ContentDialogButton.Primary
-                };
-                var result = await dialog.ShowAsync(this);
-                if (result is not ContentDialogResult.Primary or ContentDialogResult.Secondary) return;
-                if (result is ContentDialogResult.Primary)
-                {
-                    if (FileService.OpenFile is not null) await FileIO.WriteTextAsync(FileService.OpenFile, Editor!.Editor.GetText(Editor.Editor.TextLength) ?? "");
-                    else
-                    {
-                        await FileService.SaveFileAsync();
-                        if (FileService.OpenFile is null) return;
-
-                        CachedFileManager.DeferUpdates(FileService.OpenFile);
-                        using var stream = await FileService.OpenFile.OpenStreamForWriteAsync();
-                        using var writer = new StreamWriter(stream);
-                        writer.WriteLine(Editor?.Editor.GetText(Editor.Editor.TextLength));
-                    }
-
-                    Editor?.Editor.SetSavePoint();
-                }
-            };
-
-            await FileService.CreateFileAsync();
-
-            Editor?.Editor.SetText("");
-            Editor?.Editor.SetSavePoint();
-        });
         OpenCommand = new(async () =>
         {
-            await FileService.OpenFileAsync();
-            if (FileService.OpenFile is null) return;
-
-            Editor?.Editor.SetText(await FileIO.ReadTextAsync(FileService.OpenFile));
-            Editor?.Editor.SetSavePoint();
+            await TabService.OpenTab();
 
             SaveCommand!.NotifyCanExecuteChanged();
             RunCommand!.NotifyCanExecuteChanged();
             StepCommand!.NotifyCanExecuteChanged();
         });
-        SaveCommand = new(async () =>
-        {
-            if (FileService.OpenFile is not null) await FileIO.WriteTextAsync(FileService.OpenFile, Editor!.Editor.GetText(Editor.Editor.TextLength) ?? "");
-            else
-            {
-                await FileService.SaveFileAsync();
-                if (FileService.OpenFile is null) return;
-
-                CachedFileManager.DeferUpdates(FileService.OpenFile);
-                using var stream = await FileService.OpenFile.OpenStreamForWriteAsync();
-                using var writer = new StreamWriter(stream);
-                writer.WriteLine(Editor?.Editor.GetText(Editor.Editor.TextLength));
-            }
-
-            Editor?.Editor.SetSavePoint();
-            SaveCommand!.NotifyCanExecuteChanged();
-        }, () => Editor is not null && Editor.Editor.Modify);
+        SaveCommand = new(async () => await TabService.SaveCurrentTab(), () => TabService.HasCurrentChanged);
         RunCommand = new(() =>
         {
             Interpreter.Speed = SpeedSlider!.Value;
             Interpreter.IsRealTime = RealtimeToggle!.IsOn;
 
-            Interpreter.LoadProgram(CurrentScope, (uint)(Registers.Count - 1));
+            if (TabService.Current is null) return;
+
+            Interpreter.LoadProgram(TabService.Current.CurrentScope, (uint)(Registers.Count - 1));
 
             Registers.Clear();
             foreach (var register in Interpreter.Registers) Registers.Add(register);
 
             RunnerCancellationTokenSource = new();
             _ = Interpreter.Execute(RunnerCancellationTokenSource.Token);
-        }, () => !Interpreter.IsRunning && CurrentScope != default && CurrentScope.Instructions.Count is not 0 && ErrorInfo!.Severity is not InfoBarSeverity.Error);
+        }, () => !Interpreter.IsRunning && TabService.Current is not null && TabService.Current.CurrentScope != default && TabService.Current.CurrentScope.Instructions.Count is not 0 && TabService.Current.CanExecute);
         StopCommand = new(() => RunnerCancellationTokenSource?.Cancel(), () => Interpreter.IsRunning);
-        StepCommand = new(async () =>
-        {
-
-        });
+        StepCommand = new(() => { });
         AddRegisterCommand = new(() =>
         {
             var register = new Register($"R{Registers.Count}", 0);
             Registers.Add(register);
             Interpreter.Registers.Add(register);
-            PerformSyntaxCheck();
+
+            _ = TabService.Current?.EnqueueSyntaxCheck();
         });
         DeleteRegistersCommand = new(() =>
         {
@@ -170,16 +104,11 @@ public sealed class MainPage : Page, INotifyPropertyChanged
             RunCommand.NotifyCanExecuteChanged();
             StopCommand.NotifyCanExecuteChanged();
         });
-        Interpreter.Stepped += (_, pointer) => DispatcherQueue.TryEnqueue(() =>
+        Interpreter.Stepped += (_, pointer) =>
         {
-            Editor!.Editor.ClearSelections();
-
             var lineNumber = Interpreter.Memory[(int)pointer].Token.LineNumber - 1;
-            var index = Editor.Editor.IndexPositionFromLine(lineNumber, LineCharacterIndexType.None);
-            var length = Editor.Editor.LineLength(lineNumber);
-            var offset = Editor.Editor.GetLine(lineNumber).TakeWhile(x => char.IsWhiteSpace(x)).Count();
-            Editor.Editor.AddSelection(index + offset, index + length);
-        });
+            TabService.Current?.SelectOnly(lineNumber);
+        };
 
         Content = new WinSharp.Controls.DockPanel
         {
@@ -197,10 +126,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                         Content = Symbol.Play.ToIcon(),
                         Height = 36,
                         Command = RunCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.F5 }
-                        }
+                        KeyboardAccelerators = { new() { Key = VirtualKey.F5 } }
                     }
                     .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_Run_Tooltip} (F5)")
                     .SetStyle(ButtonStyles.AccentButtonStyle),
@@ -211,10 +137,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                         Content = Symbol.Stop.ToIcon(),
                         Height = 36,
                         Command = StopCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.F5, Modifiers = VirtualKeyModifiers.Shift }
-                        }
+                        KeyboardAccelerators = { new() { Key = VirtualKey.F5, Modifiers = VirtualKeyModifiers.Shift } }
                     }
                     .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_Stop_Tooltip} (Shift + F5)"),
 
@@ -224,27 +147,11 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                         Content = Symbol.Next.ToIcon(),
                         Height = 36,
                         Command = StepCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.F5, Modifiers = VirtualKeyModifiers.Control }
-                        }
+                        KeyboardAccelerators = { new() { Key = VirtualKey.F5, Modifiers = VirtualKeyModifiers.Control } }
                     }
                     .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_Step_Tooltip} (Ctrl + F5)"),
 
                     new AppBarSeparator(),
-
-                    // New file
-                    new Button
-                    {
-                        Content = Symbol.Add.ToIcon(),
-                        Height = 36,
-                        Command = NewCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.N, Modifiers = VirtualKeyModifiers.Control }
-                        }
-                    }
-                    .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_NewFile_Tooltip} (Ctrl + N)"),
 
                     // Open file
                     new Button
@@ -252,10 +159,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                         Content = Symbol.OpenFile.ToIcon(),
                         Height = 36,
                         Command = OpenCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.O, Modifiers = VirtualKeyModifiers.Control }
-                        }
+                        KeyboardAccelerators = { new() { Key = VirtualKey.O, Modifiers = VirtualKeyModifiers.Control } }
                     }
                     .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_OpenFile_Tooltip} (Ctrl + O)"),
 
@@ -265,10 +169,7 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                         Content = Symbol.Save.ToIcon(),
                         Height = 36,
                         Command = SaveCommand,
-                        KeyboardAccelerators =
-                        {
-                            new() { Key = VirtualKey.S, Modifiers = VirtualKeyModifiers.Control }
-                        }
+                        KeyboardAccelerators = { new() { Key = VirtualKey.S, Modifiers = VirtualKeyModifiers.Control } }
                     }
                     .SetAttached(ToolTipService.ToolTipProperty, $"{App.Resources.MainPage_SaveFile_Tooltip} (Ctrl + S)")
                     .SetStyle(ButtonStyles.AccentButtonStyle)
@@ -360,21 +261,14 @@ public sealed class MainPage : Page, INotifyPropertyChanged
                     .Dock(Dock.Right)
                     .SetStyle(WinSharpStyles.OverlayBorder),
 
-                    new InfoBar
+                    new TabView
                     {
-                        Content = App.Resources.MainPage_Issues_None,
-                        Severity = InfoBarSeverity.Success,
-                        IsOpen = true,
-                        IsClosable = false,
-                        Margin = MarginStyles.XSmallLeftTopRightBottomMargin,
+                        VerticalAlignment = VerticalAlignment.Stretch,
+                        VerticalContentAlignment = VerticalAlignment.Stretch,
+                        KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden,
                     }
-                    .BindSelf(out ErrorInfo)
-                    .Dock(Dock.Bottom),
-
-                    new CodeEditorControl
-                    {
-                        Margin = MarginStyles.SmallRightMargin
-                    }.BindSelf(out Editor)
+                    .BindSelf(out MainEditorTabView)
+                    .Dock(Dock.Bottom)
                 }
             }
         }.SetProperties(x =>
@@ -391,29 +285,12 @@ public sealed class MainPage : Page, INotifyPropertyChanged
 
         Loaded += (_, _) => _ = DispatcherQueue.TryEnqueue(async () =>
         {
-            if (FileService.OpenFile is null)
-            {
-                Editor.Editor.SetText(PersistenceService.Code);
-                Editor.Editor.SetSavePoint();
-                return;
-            }
-
-            Editor.Editor.SetText(await FileIO.ReadTextAsync(FileService.OpenFile));
-            Editor.Editor.SetSavePoint();
+            await TabService.Load();
 
             SaveCommand.NotifyCanExecuteChanged();
 
             Registers[0].Value = 1;
         });
-
-        Editor.Editor.Modified += (_, _) =>
-        {
-            SaveCommand.NotifyCanExecuteChanged();
-
-            PersistenceService.Code = Editor.Editor.GetText(Editor.Editor.TextLength);
-
-            _ = EnqueueSyntaxCheck();
-        };
 
         RegistersListView.SelectionChanged += (_, _) =>
         {
@@ -422,88 +299,32 @@ public sealed class MainPage : Page, INotifyPropertyChanged
             DeleteRegistersCommand.NotifyCanExecuteChanged();
         };
 
-        autoSaveService.AutoSaved += (_, _) => DispatcherQueue.TryEnqueue(() =>
-        {
-            Editor.Editor.SetSavePoint();
-            SaveCommand.NotifyCanExecuteChanged();
-        });
-    }
+        TabService.TabView = MainEditorTabView;
 
-    private async Task EnqueueSyntaxCheck()
-    {
-        SyntaxCheckCancellationTokenSource?.Cancel();
-        SyntaxCheckCancellationTokenSource = new CancellationTokenSource();
-
-        var token = SyntaxCheckCancellationTokenSource.Token;
-        var delay = TimeSpan.FromSeconds(1);
-        var timeSinceLastCheck = DateTime.Now - LastTimeChecked;
-
-        if (timeSinceLastCheck >= delay)
+        TabService.CanSaveChanged += (_, _) => SaveCommand.NotifyCanExecuteChanged();
+        TabService.CanRunChanged += (_, _) =>
         {
-            PerformSyntaxCheck();
-            LastTimeChecked = DateTime.Now;
-        }
-        else
+            RunCommand.NotifyCanExecuteChanged();
+            StepCommand.NotifyCanExecuteChanged();
+        };
+
+        TabService.FileNeedsSaving += async (_, index) =>
         {
-            try
+            var dialog = new ContentDialog
             {
-                var timeToWait = delay - timeSinceLastCheck;
-                await Task.Delay(timeToWait, token);
+                Title = App.Resources.MainPage_New_UnsavedChanges_Title,
+                Content = App.Resources.MainPage_New_UnsavedChanges_Content,
+                PrimaryButtonText = App.Resources.MainPage_New_UnsavedChanges_Save,
+                SecondaryButtonText = App.Resources.MainPage_New_UnsavedChanges_DontSave,
+                CloseButtonText = App.Resources.MainPage_New_UnsavedChanges_Cancel
+            };
+            var result = await dialog.ShowAsync(this);
 
-                if (!token.IsCancellationRequested)
-                {
-                    PerformSyntaxCheck();
-                    RunCommand?.NotifyCanExecuteChanged();
-                    LastTimeChecked = DateTime.Now;
-                }
-            }
-            catch (TaskCanceledException) { } // Syntax check was canceled due to new modifications
-        }
-    }
-    private void PerformSyntaxCheck()
-    {
-        var tokens = Tokenizer.Tokenize(Editor.Editor.GetText(Editor.Editor.TextLength));
+            if (result is ContentDialogResult.None) return;
 
-        if (tokens.IsT1)
-        {
-            ErrorInfo.Severity = InfoBarSeverity.Error;
-            ErrorInfo.Content = tokens.AsT1;
-            return;
-        }
+            if (result is ContentDialogResult.Primary) await TabService.SaveCurrentTab();
 
-        var scope = Parser.Parse(tokens.AsT0);
-
-        if (scope.IsT1)
-        {
-            ErrorInfo.Severity = InfoBarSeverity.Error;
-            ErrorInfo.Content = scope.AsT1;
-            return;
-        }
-
-        var validationResult = LabelResolver.Validate(scope.AsT0);
-
-        if (validationResult.IsT1)
-        {
-            ErrorInfo.Severity = InfoBarSeverity.Error;
-            ErrorInfo.Content = validationResult.AsT1;
-            return;
-        }
-
-        scope = validationResult.AsT0;
-
-        var boundsCheckResult = BoundsChecker.CheckBounds(scope.AsT0, Interpreter);
-        if (boundsCheckResult.IsT1)
-        {
-            ErrorInfo!.Severity = InfoBarSeverity.Error;
-            ErrorInfo.Content = boundsCheckResult.AsT1;
-            return;
-        }
-
-        CurrentScope = scope.AsT0;
-
-        ErrorInfo.Content = App.Resources.MainPage_Issues_None;
-        ErrorInfo.Severity = InfoBarSeverity.Success;
-
-        RunCommand?.NotifyCanExecuteChanged();
+            TabService.RemoveTab(index);
+        };
     }
 }

@@ -15,10 +15,11 @@
 	<EnableMsixTooling>true</EnableMsixTooling>
 	<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 	<LangVersion>preview</LangVersion>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="WinSharp" Version="0.4.1" />
+    <PackageReference Include="WinSharp" Version="0.4.2" />
     <PackageReference Include="WinUIEdit" Version="0.0.3-prerelease" />
   </ItemGroup>
 

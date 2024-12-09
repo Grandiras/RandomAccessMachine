@@ -16,9 +16,15 @@ public static class Program
     [STAThread]
     public static void Main(string[] args) => new AppBuilder()
 
-        .AddNavigationWindow(window => _ = window
+        .AddNavigationWindow(window =>
+        {
+            window.Height = 1080;
+            window.Width = 1920;
+
+            _ = window
             .AddMenuPage<MainPage>(Resources.MainPage_Title, Symbol.Home, true)
-            .AddFooterPage<SettingsPage>(Resources.SettingsPage_Title, new AnimatedSettingsVisualSource(), true))
+            .AddFooterPage<SettingsPage>(Resources.SettingsPage_Title, new AnimatedSettingsVisualSource(), true);
+        })
         .Configure<EventBinding>(events => events.ExceptionThrown += (sender, e) => Debugger.Break())
         .Configure<LocalizationService>(localization => localization.ResourceManager = Resources.ResourceManager)
         .Configure<TitleBar>(titleBar => titleBar.Title = Resources.Title)

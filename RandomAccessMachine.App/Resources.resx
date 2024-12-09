@@ -174,9 +174,6 @@
   <data name="MainPage.Step.Tooltip" xml:space="preserve">
     <value>Step</value>
   </data>
-  <data name="MainPage.NewFile.Tooltip" xml:space="preserve">
-    <value>New file</value>
-  </data>
   <data name="MainPage.OpenFile.Tooltip" xml:space="preserve">
     <value>Open file</value>
   </data>

@@ -1,13 +1,11 @@
-﻿using Windows.Storage;
-using WinSharp.FlagInterfaces;
+﻿using WinSharp.FlagInterfaces;
 using WinSharp.Services;
 
 namespace RandomAccessMachine.App.Services;
-public sealed class AutoSaveService(LocalSettingsService LocalSettingsService, FileService FileService, PersistenceService PersistenceService) : IService, IMustInitialize
+public sealed class AutoSaveService(LocalSettingsService LocalSettingsService) : IService, IMustInitialize
 {
     private const string SETTINGS_KEY = "AutoSave";
     private PeriodicTimer? Timer;
-    private Task? Task;
 
     private CancellationTokenSource CancellationTokenSource = new();
 
@@ -21,26 +19,13 @@ public sealed class AutoSaveService(LocalSettingsService LocalSettingsService, F
         Settings = LocalSettingsService.Read<AutoSaveSettings>(SETTINGS_KEY).Match(x => x, _ => new(false, 30));
 
         Timer = new PeriodicTimer(TimeSpan.FromSeconds(Settings.Interval));
-        Task = Task.Run(Update(), CancellationTokenSource.Token);
+        _ = Task.Run(Update, CancellationTokenSource.Token);
 
         await Task.CompletedTask;
     }
 
 
-    private Func<Task?> Update() => async () =>
-    {
-        while (Settings!.ShouldAutoSave && await Timer!.WaitForNextTickAsync(CancellationTokenSource.Token))
-        {
-            if (FileService.OpenFile is null) continue;
-
-            CachedFileManager.DeferUpdates(FileService.OpenFile);
-            using var stream = await FileService.OpenFile.OpenStreamForWriteAsync();
-            using var writer = new StreamWriter(stream);
-            writer.WriteLine(PersistenceService.Code);
-
-            AutoSaved?.Invoke(this, EventArgs.Empty);
-        }
-    };
+    private async Task Update() { while (Settings!.ShouldAutoSave && await Timer!.WaitForNextTickAsync(CancellationTokenSource.Token)) AutoSaved?.Invoke(this, EventArgs.Empty); }
 
     public async Task UpdateStatus(bool shouldAutoSave)
     {
@@ -54,7 +39,7 @@ public sealed class AutoSaveService(LocalSettingsService LocalSettingsService, F
             CancellationTokenSource.Dispose();
             CancellationTokenSource = new();
 
-            Task = Task.Run(Update(), CancellationTokenSource.Token);
+            _ = Task.Run(Update, CancellationTokenSource.Token);
         }
     }
     public async Task UpdateInterval(uint interval)

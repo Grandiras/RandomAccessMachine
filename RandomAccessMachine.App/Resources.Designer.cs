@@ -115,15 +115,6 @@ namespace RandomAccessMachine.App {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New file.
-        /// </summary>
-        internal static string MainPage_NewFile_Tooltip {
-            get {
-                return ResourceManager.GetString("MainPage.NewFile.Tooltip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Open file.
         /// </summary>
         internal static string MainPage_OpenFile_Tooltip {
