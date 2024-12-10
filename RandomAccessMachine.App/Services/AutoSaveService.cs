@@ -13,7 +13,6 @@ public sealed class AutoSaveService(LocalSettingsService LocalSettingsService) :
 
     public event EventHandler? AutoSaved;
 
-
     public async Task InitializeAsync()
     {
         Settings = LocalSettingsService.Read<AutoSaveSettings>(SETTINGS_KEY).Match(x => x, _ => new(false, 30));
@@ -24,30 +23,44 @@ public sealed class AutoSaveService(LocalSettingsService LocalSettingsService) :
         await Task.CompletedTask;
     }
 
-
-    private async Task Update() { while (Settings!.ShouldAutoSave && await Timer!.WaitForNextTickAsync(CancellationTokenSource.Token)) AutoSaved?.Invoke(this, EventArgs.Empty); }
+    private async Task Update()
+    {
+        while (Settings!.ShouldAutoSave && await Timer!.WaitForNextTickAsync(CancellationTokenSource.Token))
+        {
+            AutoSaved?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     public async Task UpdateStatus(bool shouldAutoSave)
     {
         Settings = Settings! with { ShouldAutoSave = shouldAutoSave };
         await LocalSettingsService.SaveAsync(SETTINGS_KEY, Settings);
 
-        if (!Settings.ShouldAutoSave) CancellationTokenSource.Cancel();
-        else
+        if (!Settings.ShouldAutoSave)
         {
             CancellationTokenSource.Cancel();
-            CancellationTokenSource.Dispose();
-            CancellationTokenSource = new();
-
-            _ = Task.Run(Update, CancellationTokenSource.Token);
+        }
+        else
+        {
+            RestartTimer();
         }
     }
+
     public async Task UpdateInterval(uint interval)
     {
         Settings = Settings! with { Interval = interval };
         await LocalSettingsService.SaveAsync(SETTINGS_KEY, Settings);
 
         Timer!.Period = TimeSpan.FromSeconds(Settings.Interval);
+    }
+
+    private void RestartTimer()
+    {
+        CancellationTokenSource.Cancel();
+        CancellationTokenSource.Dispose();
+        CancellationTokenSource = new();
+
+        _ = Task.Run(Update, CancellationTokenSource.Token);
     }
 }
 

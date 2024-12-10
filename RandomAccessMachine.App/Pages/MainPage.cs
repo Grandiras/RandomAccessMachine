@@ -55,10 +55,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         OpenCommand = new(async () =>
         {
             await TabService.OpenTab();
-
-            SaveCommand!.NotifyCanExecuteChanged();
-            RunCommand!.NotifyCanExecuteChanged();
-            StepCommand!.NotifyCanExecuteChanged();
+            UpdateCommandStates();
         });
         SaveCommand = new(async () => await TabService.SaveCurrentTab(), () => TabService.HasCurrentChanged);
         RunCommand = new(() =>
@@ -79,11 +76,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         StopCommand = new(() =>
         {
             RunnerCancellationTokenSource?.Cancel();
-            _ = DispatcherQueue.TryEnqueue(() =>
-            {
-                RunCommand?.NotifyCanExecuteChanged();
-                StopCommand?.NotifyCanExecuteChanged();
-            });
+            _ = DispatcherQueue.TryEnqueue(UpdateCommandStates);
         }, () => Interpreter.IsRunning);
         StepCommand = new(() => { });
         AddRegisterCommand = new(() =>
@@ -96,23 +89,15 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         });
         DeleteRegistersCommand = new(() =>
         {
-            foreach (var register in RegistersListView!.SelectedItems)
+            foreach (var register in RegistersListView!.SelectedItems.Cast<Register>().ToList())
             {
-                _ = Registers.Remove((Register)register);
-                _ = Interpreter.Registers.Remove((Register)register);
+                _ = Registers.Remove(register);
+                _ = Interpreter.Registers.Remove(register);
             }
         }, () => RegistersListView is not null && RegistersListView.SelectedItems.Count is not 0);
 
-        Interpreter.Started += (_, _) => DispatcherQueue.TryEnqueue(() =>
-        {
-            RunCommand.NotifyCanExecuteChanged();
-            StopCommand.NotifyCanExecuteChanged();
-        });
-        Interpreter.Stopped += (_, _) => DispatcherQueue.TryEnqueue(() =>
-        {
-            RunCommand.NotifyCanExecuteChanged();
-            StopCommand.NotifyCanExecuteChanged();
-        });
+        Interpreter.Started += (_, _) => DispatcherQueue.TryEnqueue(UpdateCommandStates);
+        Interpreter.Stopped += (_, _) => DispatcherQueue.TryEnqueue(UpdateCommandStates);
         Interpreter.Stepped += (_, pointer) =>
         {
             if (TabService.Current is not null && TabService.Current.Type is not FileType.RAM) return;
@@ -188,7 +173,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
             }.Dock(Dock.Top),
             new DockPanel
             {
-                Margin = MarginStyles.PageContentMargin with { Left = 40, Right = 40},
+                Margin = MarginStyles.PageContentMargin with { Left = 40, Right = 40 },
                 Children =
                 {
                     new Border
@@ -337,5 +322,13 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
             if (result is ContentDialogResult.Primary) await TabService.SaveAndRemoveCurrentTab();
             else TabService.RemoveCurrentTab(true);
         };
+    }
+
+
+    private void UpdateCommandStates()
+    {
+        RunCommand.NotifyCanExecuteChanged();
+        StopCommand.NotifyCanExecuteChanged();
+        StepCommand.NotifyCanExecuteChanged();
     }
 }

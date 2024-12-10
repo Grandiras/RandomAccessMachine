@@ -70,10 +70,7 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
     }
     public async Task AddTab(StorageFile file)
     {
-        var tab = new CodeEditorTab(Interpreter, FileService, AutoSaveService, this, file);
-        tab.CanSaveChanged += (_, _) => CanSaveChanged?.Invoke(this, EventArgs.Empty);
-        tab.CanRunChanged += (_, _) => CanRunChanged?.Invoke(this, EventArgs.Empty);
-
+        var tab = CreateNewTab(file);
         Tabs.Add(tab);
         TabView?.TabItems.Add(new TabViewItem { Header = file.Name, IconSource = new FontIconSource { Glyph = "\uE943" }, Content = tab.Content });
 
@@ -86,11 +83,7 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
         if (!await FileService.OpenFileAsync()) return;
 
         var file = FileService.OpenedFiles.Last().Key;
-
-        var tab = new CodeEditorTab(Interpreter, FileService, AutoSaveService, this, file);
-        tab.CanSaveChanged += (_, _) => CanSaveChanged?.Invoke(this, EventArgs.Empty);
-        tab.CanRunChanged += (_, _) => CanRunChanged?.Invoke(this, EventArgs.Empty);
-
+        var tab = CreateNewTab(file);
         Tabs.Add(tab);
         TabView?.TabItems.Add(new TabViewItem { Header = file.Name, Content = tab.Content });
 
@@ -157,7 +150,14 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
     public void MarkTabAsSaved(CodeEditorTab tab)
     {
         if (TabView is null) return;
-
         ((TabViewItem)TabView.TabItems[Tabs.IndexOf(tab)]!).Header = tab.File is not null ? tab.File.Name : "New File";
+    }
+
+    private CodeEditorTab CreateNewTab(StorageFile? file = null)
+    {
+        var tab = new CodeEditorTab(Interpreter, FileService, AutoSaveService, this, file);
+        tab.CanSaveChanged += (_, _) => CanSaveChanged?.Invoke(this, EventArgs.Empty);
+        tab.CanRunChanged += (_, _) => CanRunChanged?.Invoke(this, EventArgs.Empty);
+        return tab;
     }
 }
