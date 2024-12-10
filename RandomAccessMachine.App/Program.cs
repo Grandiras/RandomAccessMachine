@@ -1,5 +1,4 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.AnimatedVisuals;
+﻿using Microsoft.UI.Xaml.Controls.AnimatedVisuals;
 using RandomAccessMachine.App.Components.Settings;
 using RandomAccessMachine.App.Pages;
 using RandomAccessMachine.Backend.Interpreter;
@@ -22,7 +21,7 @@ public static class Program
             window.Width = 1920;
 
             _ = window
-            .AddMenuPage<MainPage>(Resources.MainPage_Title, Symbol.Home, true)
+            .AddMenuPage<MainPage>(Resources.MainPage_Title, "\uE943", true)
             .AddFooterPage<SettingsPage>(Resources.SettingsPage_Title, new AnimatedSettingsVisualSource(), true);
         })
         .Configure<EventBinding>(events => events.ExceptionThrown += (sender, e) => Debugger.Break())
