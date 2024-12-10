@@ -39,7 +39,7 @@ foreach (var statement in scope.AsT0.Statements)
     Console.WriteLine(statement);
 }
 
-scope = FunctionResolver.ResolveFunctions(scope.AsT0);
+scope = IdentifierResolver.ResolveFunctions(scope.AsT0);
 
 if (scope.IsT1)
 {

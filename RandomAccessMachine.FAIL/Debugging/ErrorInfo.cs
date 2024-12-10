@@ -20,6 +20,7 @@ public record struct ErrorInfo(string Message, ErrorType Type, ErrorCode ErrorCo
     public static ErrorInfo DeclarationNeedingInitialization(Token actual) => new(new("Declaration needs initialization!"), ErrorType.Semantic, ErrorCode.DeclarationNeedingInitialization, actual);
 
     public static ErrorInfo AssignmentMissingOperator(Token actual) => new(new("Incomplete assignment! Missing assignment operator."), ErrorType.Syntax, ErrorCode.AssignmentMissingOperator, actual);
+    public static ErrorInfo VariableNeedsDeclaration(Token actual) => new(new($"Variable `{actual.Raw}` needs declaration!"), ErrorType.Semantic, ErrorCode.VariableNeedingDeclaration, actual);
 
     public static ErrorInfo ArrayAccessorMissingClosingBrace(Token actual) => new(new("Array accessor is missing closing square brace!"), ErrorType.Syntax, ErrorCode.ArrayAccessorMissingClosingBrace, actual);
     public static ErrorInfo ClosingParenthesisMissing(Token actual) => new(new("Closing parenthesis missing!"), ErrorType.Syntax, ErrorCode.ClosingParenthesisMissing, actual);
@@ -89,4 +90,5 @@ public enum ErrorCode
     ReturnMustBeInsideFunction,
     FunctionNotFound,
     FunctionArgumentMismatch,
+    VariableNeedingDeclaration,
 }

@@ -53,7 +53,7 @@ public static class Parser
         var statement = token.Type switch
         {
             TokenType.Var or TokenType.Type => ParseDeclaration(tokens, isFunction),
-            TokenType.Identifier => ParseAssignment(tokens),
+            TokenType.Identifier => ParseAssignment(tokens, scope),
             TokenType.If => ParseIf(tokens, scope, out internalIsBlock, isLoop, isFunction),
             TokenType.While => ParseWhile(tokens, scope, out internalIsBlock, isFunction),
             TokenType.LeftCurlyBrace => ParseStatementList(tokens, TokenType.LeftCurlyBrace, TokenType.RightCurlyBrace, TokenType.EndOfStatement, isLoop, isFunction, scope).TryPickT0(out var bodyScope, out var error) ? new Body(bodyScope, token) : error,
@@ -90,11 +90,12 @@ public static class Parser
         return new Assignment(new Identifier(identifier.Value.AsT0, identifier, new(type.Value.AsT2.GetTypeName(), type)), expression.AsT0, identifier, true);
     }
 
-    private static OneOf<Statement, ErrorInfo> ParseAssignment(Queue<Token> tokens)
+    private static OneOf<Statement, ErrorInfo> ParseAssignment(Queue<Token> tokens, Scope scope)
     {
         var identifier = tokens.Dequeue();
-
         var token = tokens.Peek();
+
+        if (token.Type is not TokenType.LeftParenthesis && scope.Search(x => x is Assignment assignment && assignment.Identifier.Match(x => x.Name, x => x.Identifier.Name) == identifier.Value.AsT0) is null) return ErrorInfo.VariableNeedsDeclaration(identifier);
 
         if (token.Type is TokenType.SelfAssignment) return ParseSelfAssignment(identifier, tokens);
         if (token.Type is TokenType.IncrementalOperator) return ParseIncrementalAssignment(identifier, tokens);

@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
 using RandomAccessMachine.App.Helpers;
+using RandomAccessMachine.App.Models;
 using RandomAccessMachine.App.Services;
 using RandomAccessMachine.Backend.Interpreter;
 using RandomAccessMachine.Backend.Specification;
@@ -106,6 +107,8 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
         });
         Interpreter.Stepped += (_, pointer) =>
         {
+            if (TabService.Current is not null && TabService.Current.Type is not FileType.RAM) return;
+
             var lineNumber = Interpreter.Memory[(int)pointer].Token.LineNumber - 1;
             TabService.Current?.SelectOnly(lineNumber);
         };

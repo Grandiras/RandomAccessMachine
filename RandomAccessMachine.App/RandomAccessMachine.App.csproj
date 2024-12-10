@@ -19,12 +19,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="WinSharp" Version="0.4.2" />
+    <PackageReference Include="WinSharp" Version="0.4.3" />
     <PackageReference Include="WinUIEdit" Version="0.0.3-prerelease" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\RandomAccessMachine.Backend\RandomAccessMachine.Backend.csproj" />
+    <ProjectReference Include="..\RandomAccessMachine.FAIL\RandomAccessMachine.FAIL.csproj" />
   </ItemGroup>
 
   <ItemGroup>

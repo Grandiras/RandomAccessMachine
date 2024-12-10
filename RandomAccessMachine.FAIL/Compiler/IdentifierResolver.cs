@@ -4,7 +4,7 @@ using RandomAccessMachine.FAIL.ElementTree;
 using RandomAccessMachine.FAIL.Specification;
 
 namespace RandomAccessMachine.FAIL.Compiler;
-public static class FunctionResolver
+public static class IdentifierResolver
 {
     public static OneOf<Scope, ErrorInfo> ResolveFunctions(Scope scope)
     {

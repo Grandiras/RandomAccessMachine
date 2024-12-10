@@ -22,7 +22,7 @@ public sealed class FileService(FilePickerService FilePickerService) : IService
     }
     public async Task<bool> OpenFileAsync()
     {
-        var file = await FilePickerService.OpenSingleFileAsync(PickerLocationId.DocumentsLibrary, ".txt");
+        var file = await FilePickerService.OpenSingleFileAsync(PickerLocationId.DocumentsLibrary, "txt", "fail");
         if (file is null) return false;
 
         OpenedFiles.Add(file, await FileIO.ReadTextAsync(file));
@@ -32,7 +32,7 @@ public sealed class FileService(FilePickerService FilePickerService) : IService
 
     public async Task<bool> SaveFileAsync()
     {
-        var file = await FilePickerService.SaveFileAsync(DateTime.Now.ToString("yyyy-MM-dd--hh-mm-ss"), PickerLocationId.DocumentsLibrary, ".txt");
+        var file = await FilePickerService.SaveFileAsync(DateTime.Now.ToString("yyyy-MM-dd--hh-mm-ss"), PickerLocationId.DocumentsLibrary, "txt", "fail");
         if (file is null) return false;
 
         OpenedFiles.Add(file, await FileIO.ReadTextAsync(file));
@@ -59,7 +59,7 @@ public sealed class FileService(FilePickerService FilePickerService) : IService
     }
     public async Task<StorageFile?> SaveContent(string content)
     {
-        var file = await FilePickerService.SaveFileAsync(DateTime.Now.ToString("yyyy-MM-dd--hh-mm-ss"), PickerLocationId.DocumentsLibrary, ".txt");
+        var file = await FilePickerService.SaveFileAsync(DateTime.Now.ToString("yyyy-MM-dd--hh-mm-ss"), PickerLocationId.DocumentsLibrary, "txt", "fail");
         if (file is null) return null;
 
         OpenedFiles.Add(file, content);
