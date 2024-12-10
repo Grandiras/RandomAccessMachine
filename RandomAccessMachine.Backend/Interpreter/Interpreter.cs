@@ -33,6 +33,8 @@ public class Interpreter
         IsRunning = true;
         Started?.Invoke(this, EventArgs.Empty);
 
+        var registration = token.UnsafeRegister((_, _) => IsRunning = false, null);
+
         var periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(1 / Speed));
 
         while (MemoryPointer < Memory.Count && IsRunning && !token.IsCancellationRequested && (IsRealTime || await periodicTimer.WaitForNextTickAsync(token)))

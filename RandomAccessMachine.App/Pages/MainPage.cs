@@ -76,7 +76,15 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
             RunnerCancellationTokenSource = new();
             _ = Interpreter.Execute(RunnerCancellationTokenSource.Token);
         }, () => !Interpreter.IsRunning && TabService.Current is not null && TabService.Current.CurrentScope != default && TabService.Current.CurrentScope.Instructions.Count is not 0 && TabService.Current.CanExecute);
-        StopCommand = new(() => RunnerCancellationTokenSource?.Cancel(), () => Interpreter.IsRunning);
+        StopCommand = new(() =>
+        {
+            RunnerCancellationTokenSource?.Cancel();
+            _ = DispatcherQueue.TryEnqueue(() =>
+            {
+                RunCommand?.NotifyCanExecuteChanged();
+                StopCommand?.NotifyCanExecuteChanged();
+            });
+        }, () => Interpreter.IsRunning);
         StepCommand = new(() => { });
         AddRegisterCommand = new(() =>
         {
