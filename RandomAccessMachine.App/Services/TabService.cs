@@ -152,7 +152,7 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
     {
         if (TabView is null) return;
 
-        ((TabViewItem)TabView.TabItems[Tabs.IndexOf(tab)]!).Header = tab.File is not null ? $"{tab.File.Name} •" : "New File •";
+        ((TabViewItem)TabView.TabItems[Tabs.IndexOf(tab)]!).Header = tab.File is not null ? $"{tab.File.Name} ●" : "New File ●";
     }
     public void MarkTabAsSaved(CodeEditorTab tab)
     {
