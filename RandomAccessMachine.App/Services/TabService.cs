@@ -19,39 +19,13 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
 
     public event EventHandler? CanSaveChanged;
     public event EventHandler? CanRunChanged;
-    public event EventHandler<int>? FileNeedsSaving;
+    public event EventHandler? FileNeedsSaving;
 
     public async Task Load()
     {
         if (TabView is not null)
         {
-            TabView.TabCloseRequested += async (_, e) =>
-            {
-                var index = TabView.TabItems.IndexOf(e.Tab);
-                var file = Tabs[index].File;
-
-                var tab = Tabs[index];
-                if (tab.HasChanged && tab.File is null)
-                {
-                    FileNeedsSaving?.Invoke(this, index);
-                    return;
-                }
-
-                Tabs.RemoveAt(index);
-                TabView.TabItems.RemoveAt(index);
-
-                if (TabView.TabItems.Count > 0)
-                {
-                    if (index >= TabView.TabItems.Count) index = TabView.TabItems.Count - 1;
-                    TabView.SelectedIndex = index;
-                    Tabs[index].Focus();
-                }
-
-                if (file is not null) FileService.CloseFile(file);
-
-                CanSaveChanged?.Invoke(this, EventArgs.Empty);
-            };
-
+            TabView.TabCloseRequested += (_, e) => RemoveTab(Tabs[TabView.TabItems.IndexOf(e.Tab)]);
             TabView.AddTabButtonCommand = new RelayCommand(async () => await AddNewTab());
 
             var accelerator = new KeyboardAccelerator { Key = VirtualKey.N, Modifiers = VirtualKeyModifiers.Control };
@@ -78,12 +52,12 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
 
     public async Task AddNewTab()
     {
-        var tab = new CodeEditorTab(Interpreter, FileService, AutoSaveService);
+        var tab = new CodeEditorTab(Interpreter, FileService, AutoSaveService, this);
         tab.CanSaveChanged += (_, _) => CanSaveChanged?.Invoke(this, EventArgs.Empty);
         tab.CanRunChanged += (_, _) => CanRunChanged?.Invoke(this, EventArgs.Empty);
 
         Tabs.Add(tab);
-        TabView?.TabItems.Add(new TabViewItem { Header = "New file", Content = tab.Content });
+        TabView?.TabItems.Add(new TabViewItem { Header = "New file", IconSource = new FontIconSource { Glyph = "\uE943" }, Content = tab.Content });
 
         if (TabView is not null) TabView.SelectedIndex = TabView.TabItems.Count - 1;
 
@@ -96,12 +70,12 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
     }
     public async Task AddTab(StorageFile file)
     {
-        var tab = new CodeEditorTab(Interpreter, FileService, AutoSaveService, file);
+        var tab = new CodeEditorTab(Interpreter, FileService, AutoSaveService, this, file);
         tab.CanSaveChanged += (_, _) => CanSaveChanged?.Invoke(this, EventArgs.Empty);
         tab.CanRunChanged += (_, _) => CanRunChanged?.Invoke(this, EventArgs.Empty);
 
         Tabs.Add(tab);
-        TabView?.TabItems.Add(new TabViewItem { Header = file.Name, Content = tab.Content });
+        TabView?.TabItems.Add(new TabViewItem { Header = file.Name, IconSource = new FontIconSource { Glyph = "\uE943" }, Content = tab.Content });
 
         if (TabView is not null) TabView.SelectedIndex = TabView.TabItems.Count - 1;
 
@@ -113,7 +87,7 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
 
         var file = FileService.OpenedFiles.Last().Key;
 
-        var tab = new CodeEditorTab(Interpreter, FileService, AutoSaveService, file);
+        var tab = new CodeEditorTab(Interpreter, FileService, AutoSaveService, this, file);
         tab.CanSaveChanged += (_, _) => CanSaveChanged?.Invoke(this, EventArgs.Empty);
         tab.CanRunChanged += (_, _) => CanRunChanged?.Invoke(this, EventArgs.Empty);
 
@@ -123,29 +97,34 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
         if (TabView is not null) TabView.SelectedIndex = TabView.TabItems.Count - 1;
     }
 
-    public async Task SaveCurrentTab()
+    public async Task SaveCurrentTab() { if (Current is not null) await SaveTab(Current); }
+    public async Task SaveTab(CodeEditorTab tab)
     {
-        if (Current is null) return;
-
-        if (Current.File is not null) _ = await FileService.SaveFileAsync(Current.File);
+        if (tab.File is not null) _ = await FileService.SaveFileAsync(tab.File);
         else
         {
-            var file = await FileService.SaveContent(Current.Text);
-            Current.File = file;
+            var file = await FileService.SaveContent(tab.Text);
+
+            if (file is null) return;
+            tab.File = file;
         }
 
-        Current.Save();
-        CanSaveChanged?.Invoke(this, EventArgs.Empty);
+        tab.Save();
     }
 
-    public void RemoveTab(int index)
+    public void RemoveCurrentTab(bool force = false) { if (Current is not null) RemoveTab(Current, force); }
+    public void RemoveTab(CodeEditorTab tab, bool force = false)
     {
         if (TabView is null) return;
-        if (index < 0 || index >= TabView.TabItems.Count) return;
 
-        var file = Tabs[index].File;
+        if (tab.File is null && tab.HasChanged && !force)
+        {
+            FileNeedsSaving?.Invoke(this, EventArgs.Empty);
+            return;
+        }
 
-        Tabs.RemoveAt(index);
+        var index = Tabs.IndexOf(tab);
+        _ = Tabs.Remove(tab);
         TabView.TabItems.RemoveAt(index);
 
         if (TabView.TabItems.Count > 0)
@@ -155,8 +134,30 @@ public sealed class TabService(FileService FileService, Interpreter Interpreter,
             Tabs[index].Focus();
         }
 
-        if (file is not null) FileService.CloseFile(file);
+        if (tab.File is not null) FileService.CloseFile(tab.File);
+
+        tab.Dispose();
 
         CanSaveChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task SaveAndRemoveCurrentTab(bool force = false) { if (Current is not null) await SaveAndRemoveTab(Current, force); }
+    public async Task SaveAndRemoveTab(CodeEditorTab tab, bool force = false)
+    {
+        await SaveTab(tab);
+        RemoveTab(tab, force);
+    }
+
+    public void MarkTabAsUnsaved(CodeEditorTab tab)
+    {
+        if (TabView is null) return;
+
+        ((TabViewItem)TabView.TabItems[Tabs.IndexOf(tab)]!).Header = tab.File is not null ? $"{tab.File.Name} •" : "New File •";
+    }
+    public void MarkTabAsSaved(CodeEditorTab tab)
+    {
+        if (TabView is null) return;
+
+        ((TabViewItem)TabView.TabItems[Tabs.IndexOf(tab)]!).Header = tab.File is not null ? tab.File.Name : "New File";
     }
 }

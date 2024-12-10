@@ -308,7 +308,7 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
             StepCommand.NotifyCanExecuteChanged();
         };
 
-        TabService.FileNeedsSaving += async (_, index) =>
+        TabService.FileNeedsSaving += async (_, _) =>
         {
             var dialog = new ContentDialog
             {
@@ -316,15 +316,15 @@ public sealed partial class MainPage : Page, INotifyPropertyChanged
                 Content = App.Resources.MainPage_New_UnsavedChanges_Content,
                 PrimaryButtonText = App.Resources.MainPage_New_UnsavedChanges_Save,
                 SecondaryButtonText = App.Resources.MainPage_New_UnsavedChanges_DontSave,
-                CloseButtonText = App.Resources.MainPage_New_UnsavedChanges_Cancel
+                CloseButtonText = App.Resources.MainPage_New_UnsavedChanges_Cancel,
+                DefaultButton = ContentDialogButton.Primary
             };
             var result = await dialog.ShowAsync(this);
 
             if (result is ContentDialogResult.None) return;
 
-            if (result is ContentDialogResult.Primary) await TabService.SaveCurrentTab();
-
-            TabService.RemoveTab(index);
+            if (result is ContentDialogResult.Primary) await TabService.SaveAndRemoveCurrentTab();
+            else TabService.RemoveCurrentTab(true);
         };
     }
 }

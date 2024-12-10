@@ -17,6 +17,7 @@ public sealed partial class CodeEditorTab : Component, IDisposable
     private readonly Interpreter Interpreter;
     private readonly FileService FileService;
     private readonly AutoSaveService AutoSaveService;
+    private readonly TabService TabService;
 
     public Scope CurrentScope { get; private set; } = default;
 
@@ -44,11 +45,12 @@ public sealed partial class CodeEditorTab : Component, IDisposable
     public event EventHandler? CanRunChanged;
 
 
-    public CodeEditorTab(Interpreter interpreter, FileService fileService, AutoSaveService autoSaveService, StorageFile? file = null)
+    public CodeEditorTab(Interpreter interpreter, FileService fileService, AutoSaveService autoSaveService, TabService tabService, StorageFile? file = null)
     {
         Interpreter = interpreter;
         FileService = fileService;
         AutoSaveService = autoSaveService;
+        TabService = tabService;
 
         File = file;
 
@@ -83,23 +85,26 @@ public sealed partial class CodeEditorTab : Component, IDisposable
 
         Editor.Loaded += (_, _) =>
         {
-            if (File is null) return;
+            if (File is not null)
+            {
+                Editor.Editor.SetText(FileService.OpenedFiles[File]);
+                Editor.Editor.SetSavePoint();
 
-            Editor.Editor.SetText(FileService.OpenedFiles[File]);
-            Editor.Editor.SetSavePoint();
-
-            _ = EnqueueSyntaxCheck();
+                _ = EnqueueSyntaxCheck();
+            }
 
             Editor.Editor.GrabFocus();
 
+            if (File is not null) TabService.MarkTabAsSaved(this);
             CanSaveChanged?.Invoke(this, EventArgs.Empty);
         };
 
         Editor.Editor.Modified += (_, _) =>
         {
-            if (File is null) return;
-
+            TabService.MarkTabAsUnsaved(this);
             CanSaveChanged?.Invoke(this, EventArgs.Empty);
+
+            if (File is null) return;
 
             FileService.OpenedFiles[File] = Editor.Editor.GetText(Editor.Editor.TextLength);
 
@@ -115,6 +120,7 @@ public sealed partial class CodeEditorTab : Component, IDisposable
         Editor.Editor.SetSavePoint();
         _ = await FileService.SaveFileWithContentAsync(File, Editor.Editor.GetText(Editor.Editor.TextLength));
 
+        TabService.MarkTabAsSaved(this);
         CanSaveChanged?.Invoke(this, EventArgs.Empty);
     });
 
@@ -198,7 +204,14 @@ public sealed partial class CodeEditorTab : Component, IDisposable
         CanRunChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public void Save() => Editor.Editor.SetSavePoint();
+    public void Save()
+    {
+        Editor.Editor.SetSavePoint();
+
+        TabService.MarkTabAsSaved(this);
+        CanSaveChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     public void Focus() => Editor.Editor.GrabFocus();
 
     public void SelectOnly(long lineNumber)
